@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spendly – Anmelden</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+  <div class="auth-shell">
+
+    <div class="auth-logo">
+      <div class="auth-logo-mark">💸</div>
+      <div class="auth-logo-text">Spendly</div>
+    </div>
+
+    <div class="card auth-card">
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Anmelden</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Registrieren</button>
+      </div>
+
+      <!-- ══ LOGIN ══ -->
+      <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">E-Mail oder Benutzername</label>
+          <input class="form-input" type="text" id="loginIdentifier" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Passwort</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="loginPassword" autocomplete="current-password" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('loginPassword', this)"
+              aria-label="Passwort anzeigen">👁️</button>
+          </div>
+        </div>
+        <label class="remember-row">
+          <input type="checkbox" id="loginRemember" checked>
+          <span>Angemeldet bleiben</span>
+        </label>
+        <div class="auth-error" id="loginError"></div>
+        <button class="btn-save auth-submit" type="submit" id="loginSubmitBtn">Anmelden</button>
+        <button type="button" class="auth-reset-link" onclick="openResetConfirm()">Passwort vergessen?</button>
+      </form>
+
+      <!-- ══ REGISTRIEREN ══ -->
+      <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
+        <div class="register-exists-notice" id="registerExistsNotice">
+          Es existiert bereits ein Konto auf diesem Gerät. Bitte melde dich stattdessen an.
+        </div>
+        <div class="form-group">
+          <label class="form-label">Benutzername</label>
+          <input class="form-input" type="text" id="regUsername" autocomplete="username" required minlength="3">
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-Mail</label>
+          <input class="form-input" type="email" id="regEmail" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Passwort</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="regPassword" autocomplete="new-password" required
+              minlength="8">
+            <button type="button" class="pw-toggle" onclick="togglePw('regPassword', this)"
+              aria-label="Passwort anzeigen">👁️</button>
+          </div>
+          <div class="pw-strength" id="pwStrength"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Passwort bestätigen</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="regPasswordConfirm" autocomplete="new-password" required
+              minlength="8">
+            <button type="button" class="pw-toggle" onclick="togglePw('regPasswordConfirm', this)"
+              aria-label="Passwort anzeigen">👁️</button>
+          </div>
+        </div>
+        <div class="auth-error" id="registerError"></div>
+        <button class="btn-save auth-submit" type="submit">Konto erstellen</button>
+      </form>
+
+    </div><!-- /auth-card -->
+
+    <div class="auth-footnote">
+      🔒 Dein Passwort wird nur als gesalzener Hash (PBKDF2) lokal in diesem Browser gespeichert –
+      nie im Klartext und nirgendwo hochgeladen.
+    </div>
+
+  </div><!-- /auth-shell -->
+
+  <!-- ══ MODAL: PASSWORT VERGESSEN ══ -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Passwort zurücksetzen</div>
+
+      <!-- Eingabe -->
+      <div id="resetInputStep">
+        <div class="modal-sub">Gib deine E-Mail-Adresse ein. Du erhältst einen Link zum Zurücksetzen deines Passworts.</div>
+        <div class="form-group">
+          <label class="form-label">E-Mail-Adresse</label>
+          <input class="form-input" type="email" id="resetEmailInput" autocomplete="email" placeholder="deine@email.ch">
+        </div>
+        <div class="auth-error" id="resetEmailError"></div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeResetConfirm()">Abbrechen</button>
+          <button class="btn-save" id="resetSendBtn" onclick="sendResetEmail()">Link senden</button>
+        </div>
+      </div>
+
+      <!-- Bestätigung -->
+      <div id="resetSentStep" style="display:none; text-align:center; padding: 8px 0 4px;">
+        <div style="font-size:2rem; margin-bottom:10px;">📬</div>
+        <div style="font-weight:600; margin-bottom:6px;">E-Mail gesendet!</div>
+        <div style="font-size:.82rem; color:var(--muted); margin-bottom:20px; line-height:1.5;">
+          Falls ein Konto mit dieser E-Mail existiert, erhältst du in Kürze einen Reset-Link.<br>
+          Der Link ist 1 Stunde gültig.
+        </div>
+        <button class="btn-save" onclick="closeResetConfirm()">Schliessen</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+
+</html>

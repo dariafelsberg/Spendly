@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <script>
+  fetch('/api/verify.php', { credentials: 'include' })
+    .then(r => r.json())
+    .then(d => { if (!d.success) window.location.replace('login.html'); })
+    .catch(() => window.location.replace('login.html'));
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker – Einstellungen</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ── SETTINGS TOPBAR ── -->
+  <div class="settings-topbar">
+    <h1 class="settings-title">Einstellungen</h1>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="settings-main">
+
+    <!-- ANMELDUNG -->
+    <div class="settings-section" id="authProfile">
+      <div class="settings-section-header">
+        <span class="settings-section-icon">👤</span>
+        <div>
+          <div class="settings-section-title">Anmeldung</div>
+          <div class="settings-section-sub">Dein Login für dieses Gerät</div>
+        </div>
+      </div>
+      <div class="auth-profile-row">
+        <div class="auth-profile-info">
+          <div class="auth-profile-name" id="authProfileName">—</div>
+          <div class="auth-profile-email" id="authProfileEmail">—</div>
+        </div>
+        <button class="auth-logout-btn" onclick="logout()">Abmelden</button>
+      </div>
+    </div>
+
+    <!-- KONTEN -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <span class="settings-section-icon">🏦</span>
+        <div>
+          <div class="settings-section-title">Konten</div>
+          <div class="settings-section-sub">Konten verwalten &amp; im Guthaben anzeigen</div>
+        </div>
+      </div>
+      <div id="accountsList" class="settings-list"></div>
+      <button class="settings-add-btn" onclick="openAccountModal()">＋ Konto hinzufügen</button>
+    </div>
+
+    <!-- MONATLICHE EINNAHMEN -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <span class="settings-section-icon">📥</span>
+        <div>
+          <div class="settings-section-title">Monatliche Einnahmen</div>
+          <div class="settings-section-sub">Wiederkehrende Einnahmen verwalten</div>
+        </div>
+      </div>
+      <div id="recurringIncomeList" class="settings-list"></div>
+      <button class="settings-add-btn" onclick="openRecurringModal('income')">＋ Einnahme hinzufügen</button>
+    </div>
+
+    <!-- MONATLICHE AUSGABEN -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <span class="settings-section-icon">📤</span>
+        <div>
+          <div class="settings-section-title">Monatliche Ausgaben</div>
+          <div class="settings-section-sub">Wiederkehrende Ausgaben verwalten</div>
+        </div>
+      </div>
+      <div id="recurringExpenseList" class="settings-list"></div>
+      <button class="settings-add-btn" onclick="openRecurringModal('expense')">＋ Ausgabe hinzufügen</button>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <span class="settings-section-icon">💰</span>
+        <div>
+          <div class="settings-section-title">Monatsbudget</div>
+          <div class="settings-section-sub">Wird jeden Monat automatisch wiederholt</div>
+        </div>
+      </div>
+      <div class="budget-setting-row">
+        <div class="budget-setting-val" id="budgetSettingDisplay">CHF 0.00</div>
+        <button class="icon-btn" onclick="openBudgetModal()">✏️</button>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav">
+    <a class="nav-btn" href="index.html">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </a>
+    <a class="nav-btn" href="calendar.html">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">Kalender</span>
+  </a>
+  <a class="nav-btn active" href="settings.html">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Einstellungen</span>
+    </a>
+  </nav>
+
+</div><!-- /app-shell -->
+
+
+<!-- ══ MODAL: BUDGET ══ -->
+<div class="modal-overlay" id="budgetModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Monatsbudget</div>
+    <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
+    <div class="form-group">
+      <label class="form-label">Budget (CHF)</label>
+      <input class="form-input" type="number" id="budgetInput" placeholder="z.B. 3000" step="0.01" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>
+      <button class="btn-save" onclick="saveBudget()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: KONTO ══ -->
+<div class="modal-overlay" id="accountModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="accountModalTitle">Konto hinzufügen</div>
+    <div class="form-group">
+      <label class="form-label">Kontoname</label>
+      <input class="form-input" type="text" id="accountName" placeholder="z.B. Raiffeisen, Neon…">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Guthaben (CHF)</label>
+      <input class="form-input" type="number" id="accountBalance" placeholder="0.00" step="0.01">
+    </div>
+    <div class="form-group toggle-row">
+      <div>
+        <div class="toggle-label">Im Gesamtguthaben anzeigen</div>
+        <div class="toggle-sub">Zählt zum Gesamtguthaben</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="accountVisible" checked>
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAccountModal()">Abbrechen</button>
+      <button class="btn-save" onclick="saveAccount()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: WIEDERKEHREND ══ -->
+<div class="modal-overlay" id="recurringModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="recurringModalTitle">Einnahme hinzufügen</div>
+    <div class="form-group">
+      <label class="form-label">Bezeichnung</label>
+      <input class="form-input" type="text" id="recurringName" placeholder="z.B. Lohn, Miete…">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Betrag (CHF)</label>
+      <input class="form-input" type="number" id="recurringAmount" placeholder="0.00" step="0.01" min="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kategorie</label>
+      <select class="form-input form-select" id="recurringCategory"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeRecurringModal()">Abbrechen</button>
+      <button class="btn-save" onclick="saveRecurring()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="script.js"></script>
+</body>
+</html>ss

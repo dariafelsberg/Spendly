@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <script>
+  fetch('/api/verify.php', { credentials: 'include' })
+    .then(r => r.json())
+    .then(d => { if (!d.success) window.location.replace('login.html'); })
+    .catch(() => window.location.replace('login.html'));
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker – Home</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- ── TOPBAR ── -->
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-label">Gesamtguthaben</div>
+        <div class="total-balance">
+          <span class="currency">CHF </span><span id="totalBalanceDisplay">0.00</span>
+        </div>
+      </div>
+      
+      <div class="topbar-inner-accounts">
+        <div class="account-pills" id="accountPills"></div>
+      </div>
+
+    </div>
+
+    <!-- ── MAIN ── -->
+    <div class="main">
+
+      <div class="month-label" id="monthLabel"></div>
+
+      <!-- Budget card -->
+      <div class="card budget-section">
+        <div class="budget-icon">💰</div>
+        <div class="budget-info">
+          <div class="section-label">Monatsbudget</div>
+          <div class="budget-amount" id="budgetDisplay">CHF 0.00</div>
+          <div class="budget-sub" id="budgetSub">Noch kein Budget gesetzt</div>
+        </div>
+        <button class="icon-btn" onclick="openBudgetModal()">✏️</button>
+      </div>
+
+      <!-- Donut chart -->
+      <div class="card donut-wrapper">
+        <div class="donut-container">
+          <svg id="donutSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="72" fill="none" stroke="#f0e8f0" stroke-width="28" />
+            <g id="donutArcs"></g>
+          </svg>
+          <div class="donut-center">
+            <div class="donut-center-budget" id="donutBudget">CHF 0</div>
+            <div class="donut-center-spent" id="donutSpent">−CHF 0</div>
+            <div class="donut-center-label">Ausgaben</div>
+          </div>
+        </div>
+        <div class="categories-grid" id="categoriesGrid"></div>
+      </div>
+
+      <!-- Transactions -->
+      <div class="card transactions-section">
+        <div class="tx-header" onclick="toggleTxList()" id="txHeader">
+          <div class="tx-header-left">
+            <span class="tx-title">Einträge</span>
+            <span class="tx-count" id="txCount">0</span>
+          </div>
+          <span class="tx-chevron" id="txChevron">▾</span>
+        </div>
+        <div class="tx-list" id="txList">
+          <div class="empty-tx" id="txEmpty">Noch keine Einträge vorhanden.</div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+
+    <!-- ── FAB ── -->
+    <button class="fab" onclick="openEntryModal()">
+      <span class="fab-icon">＋</span>
+      <span class="fab-label">Eintrag hinzufügen</span>
+    </button>
+
+    <!-- ── BOTTOM NAV ── -->
+    <nav class="bottom-nav">
+      <a class="nav-btn active" href="index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-btn" href="calendar.html">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Kalender</span>
+      </a>
+      <a class="nav-btn" href="settings.html">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Einstellungen</span>
+      </a>
+    </nav>
+
+  </div><!-- /app-shell -->
+
+
+  <!-- ══ MODAL: EINTRAG ══ -->
+  <div class="modal-overlay" id="entryModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="entryModalTitle">Eintrag hinzufügen</div>
+      <div class="type-toggle" id="typeToggle">
+        <button class="type-btn active" id="typeBtnExpense" onclick="setEntryType('expense')">📤 Ausgabe</button>
+        <button class="type-btn" id="typeBtnIncome" onclick="setEntryType('income')">📥 Einnahme</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Betrag (CHF)</label>
+          <input class="form-input" type="number" id="entryAmount" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategorie</label>
+          <select class="form-input form-select" id="entryCategory"></select>
+        </div>
+      </div>
+      <div class="form-group" id="accountSelectGroup">
+        <label class="form-label">Konto (optional)</label>
+        <select class="form-input form-select" id="entryAccount">
+          <option value="">— Kein Konto —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notiz (optional)</label>
+        <input class="form-input" type="text" id="entryNote" placeholder="z.B. Migros Wocheneinkauf">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" type="date" id="entryDate">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeEntryModal()">Abbrechen</button>
+        <button class="btn-save" onclick="saveEntry()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: BUDGET ══ -->
+  <div class="modal-overlay" id="budgetModal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Monatsbudget</div>
+      <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
+      <div class="form-group">
+        <label class="form-label">Budget (CHF)</label>
+        <input class="form-input" type="number" id="budgetInput" placeholder="z.B. 3000" step="0.01" min="0">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>
+        <button class="btn-save" onclick="saveBudget()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

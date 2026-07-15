@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <script>
+  fetch('/api/verify.php', { credentials: 'include' })
+    .then(r => r.json())
+    .then(d => { if (!d.success) window.location.replace('login.html'); })
+    .catch(() => window.location.replace('login.html'));
+  </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Tracker – Kalender</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- ── SETTINGS-STYLE TOPBAR ── -->
+    <div class="settings-topbar">
+      <h1 class="settings-title">Kalender</h1>
+    </div>
+
+    <!-- ── MAIN ── -->
+    <div class="calendar-main">
+
+      <!-- Month navigation -->
+      <div class="card calendar-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-month-label" id="calMonthLabel">—</div>
+        <div class="cal-month-label cal-month-label-2" id="calMonthLabel2" style="display:none">—</div>
+        <button class="cal-nav-btn" id="calNavNext" onclick="changeMonth(1)">›</button>
+      </div>
+
+      <!-- Calendar grid (current month) -->
+      <div class="card calendar-card">
+        <div class="calendar-weekdays" id="calWeekdays"></div>
+        <div class="calendar-grid" id="calGrid"></div>
+      </div>
+
+      <!-- Calendar grid (next month, desktop only) -->
+      <div class="card calendar-card calendar-card-2" id="calCard2" style="display:none">
+        <div class="calendar-weekdays" id="calWeekdays2"></div>
+        <div class="calendar-grid" id="calGrid2"></div>
+      </div>
+
+      <!-- Day detail -->
+      <div class="card day-detail" id="dayDetail" style="display:none;">
+        <div class="day-detail-header">
+          <span class="day-detail-title" id="dayDetailTitle"></span>
+          <span class="day-detail-total" id="dayDetailTotal"></span>
+        </div>
+        <div class="day-detail-list" id="dayDetailList"></div>
+      </div>
+
+    </div><!-- /main -->
+
+    <!-- ── BOTTOM NAV ── -->
+    <nav class="bottom-nav">
+      <a class="nav-btn" href="index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-btn active" href="calendar.html">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Kalender</span>
+      </a>
+      <a class="nav-btn" href="settings.html">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Einstellungen</span>
+      </a>
+    </nav>
+
+  </div><!-- /app-shell -->
+
+  <script src="script.js"></script>
+</body>
+
+</html>

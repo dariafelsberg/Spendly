@@ -1,0 +1,10 @@
+{
+  "name": "Spendly",
+  "short_name": "Spendly",
+  "theme_color": "#e91e63",
+  "background_color": "#fdf6fa",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/"
+}

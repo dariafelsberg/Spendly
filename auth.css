@@ -1,0 +1,226 @@
+/* ── AUTH PAGE (login.html) — nutzt Tokens aus styles.css ── */
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-lg) var(--sp-md);
+  background: linear-gradient(180deg, #fff0f6 0%, var(--bg) 38%);
+}
+
+.auth-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: var(--sp-lg);
+}
+
+.auth-logo-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #e91e63, #ff5f9e);
+  box-shadow: var(--shadow-fab);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+.auth-logo-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  margin-top: 6px;
+  color: var(--text);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--sp-lg);
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--card-soft);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: var(--sp-lg);
+}
+
+.auth-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.auth-tab.active {
+  background: #fff;
+  color: var(--primary-dark);
+  box-shadow: 0 1px 6px rgba(233, 30, 99, .12);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap .form-input {
+  padding-right: 44px;
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 6px;
+  line-height: 1;
+  border-radius: 8px;
+}
+
+.pw-toggle:active {
+  background: var(--card-soft);
+}
+
+.pw-strength {
+  margin-top: 6px;
+  font-size: .72rem;
+  font-weight: 600;
+  min-height: 14px;
+}
+
+.pw-strength.weak { color: var(--danger); }
+.pw-strength.medium { color: #d97706; }
+.pw-strength.strong { color: var(--income); }
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: .82rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.remember-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.auth-error {
+  min-height: 18px;
+  font-size: .76rem;
+  color: var(--danger);
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.auth-submit:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.auth-reset-link {
+  margin-top: 14px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: .78rem;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: center;
+}
+
+.register-exists-notice {
+  display: none;
+  background: var(--danger-light);
+  color: #991b1b;
+  font-size: .78rem;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.auth-footnote {
+  margin-top: var(--sp-lg);
+  font-size: .72rem;
+  color: var(--muted);
+  text-align: center;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+/* ── Profil-Block in den Einstellungen ── */
+.auth-profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.auth-profile-info {
+  min-width: 0;
+}
+
+.auth-profile-name {
+  font-weight: 600;
+  font-size: .92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-profile-email {
+  font-size: .76rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-logout-btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  background: var(--danger-light);
+  color: var(--danger);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: .82rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-logout-btn:active {
+  opacity: .8;
+}
