@@ -26,6 +26,7 @@ let state = {
   balance: 0, budget: 0,
   entries: [], accounts: [],
   recurringIncome: [], recurringExpense: [],
+  appliedRecurringMonths: [],
   entryType: 'expense', editId: null,
   accountEditId: null, recurringEditId: null, recurringType: 'income',
 };
@@ -35,7 +36,53 @@ function sanitizeState() {
   if (!Array.isArray(state.accounts))         state.accounts = [];
   if (!Array.isArray(state.recurringIncome))  state.recurringIncome = [];
   if (!Array.isArray(state.recurringExpense)) state.recurringExpense = [];
+  if (!Array.isArray(state.appliedRecurringMonths)) state.appliedRecurringMonths = [];
   state.entries = state.entries.filter(e => e && typeof e.date === 'string' && typeof e.amount === 'number');
+}
+
+// ── RECURRING ENGINE ────────────────────────────────────────
+// Wandelt wiederkehrende Einnahmen/Ausgaben einmal pro Kalendermonat
+// in echte Buchungen (state.entries) um. appliedRecurringMonths
+// verhindert doppeltes Anwenden desselben Monats.
+function monthKey(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+function applyRecurringForMonth(key) {
+  if (state.appliedRecurringMonths.includes(key)) return false;
+  const [y, m] = key.split('-').map(Number);
+  const dateStr = `${y}-${String(m).padStart(2, '0')}-01`;
+  const makeEntry = (r, type) => ({
+    id: uid(), type, amount: r.amount, category: r.category,
+    note: r.name, date: dateStr, accountId: '', recurringId: r.id,
+  });
+  state.recurringIncome.forEach(r => {
+    const e = makeEntry(r, 'income');
+    state.entries.push(e);
+    applyAccountDelta(e.accountId, e.amount, e.type);
+  });
+  state.recurringExpense.forEach(r => {
+    const e = makeEntry(r, 'expense');
+    state.entries.push(e);
+    applyAccountDelta(e.accountId, e.amount, e.type);
+  });
+  state.appliedRecurringMonths.push(key);
+  return true;
+}
+// Prüft ab dem ersten des aktuellen Monats (und holt verpasste Monate
+// nach, falls die App länger nicht geöffnet wurde) und speichert bei
+// Änderungen.
+function applyDueRecurring() {
+  if (!state.recurringIncome.length && !state.recurringExpense.length) return false;
+  const now = new Date();
+  let changed = false;
+  // Nachholen: alle Monate seit dem ältesten offenen Eintrag bis heute,
+  // maximal 24 Monate zurück, damit das nicht ausufert.
+  for (let i = 23; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    if (applyRecurringForMonth(monthKey(d))) changed = true;
+  }
+  if (changed) saveState();
+  return changed;
 }
 
 // Sofort aus localStorage laden (damit die UI nicht leer flackert)
@@ -46,6 +93,7 @@ function loadState() {
     if (s) Object.assign(state, JSON.parse(s));
   } catch(e) {}
   sanitizeState();
+  applyDueRecurring();
 
   // Server-Daten nachladen (überschreibt localStorage wenn neuer)
   fetch('/api/data.php', { credentials: 'include' })
@@ -56,6 +104,7 @@ function loadState() {
       // nicht mit veralteten localStorage-Daten hängen bleibt
       Object.assign(state, res.data);
       sanitizeState();
+      applyDueRecurring();
       // localStorage als Cache aktualisieren
       _persistLocal();
       // UI neu rendern mit Server-Daten
@@ -69,19 +118,19 @@ function loadState() {
 }
 
 function _persistLocal() {
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense } = state;
-  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense }));
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths } = state;
+  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths }));
 }
 
 function saveState() {
   _persistLocal();
   // Asynchron zum Server senden — kein await, UI bleibt reaktiv
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense } = state;
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths } = state;
   fetch('/api/data.php', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense } })
+    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths } })
   }).catch(() => {}); // Offline: nur localStorage wurde gesichert
 }
 
@@ -379,7 +428,13 @@ function saveAccount() {
   saveState(); renderAccountsList(); closeAccountModal();
 }
 function deleteAccount(id) {
-  if (confirm('Konto löschen?')) { state.accounts = state.accounts.filter(a => a.id !== id); saveState(); renderAccountsList(); }
+  if (confirm('Konto löschen?')) {
+    state.accounts = state.accounts.filter(a => a.id !== id);
+    // Verwaiste Konto-Referenzen in bestehenden Buchungen entfernen,
+    // damit keine toten accountId-Verweise übrig bleiben
+    state.entries.forEach(e => { if (e.accountId === id) e.accountId = ''; });
+    saveState(); renderAccountsList();
+  }
 }
 function openRecurringModal(type, editId = null) {
   state.recurringType = type; state.recurringEditId = editId;

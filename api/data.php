@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Nur erlaubte Felder speichern (kein UI-State wie editId etc.)
-    $allowed = ['balance', 'budget', 'entries', 'accounts', 'recurringIncome', 'recurringExpense'];
+    $allowed = ['balance', 'budget', 'entries', 'accounts', 'recurringIncome', 'recurringExpense', 'appliedRecurringMonths'];
     $clean = [];
     foreach ($allowed as $key) {
         if (array_key_exists($key, $data)) {

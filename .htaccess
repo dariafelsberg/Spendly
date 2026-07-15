@@ -1,3 +1,16 @@
 <Files "database.sqlite">
     Require all denied
 </Files>
+
+# Alle .sqlite-Dateien sperren (falls DB_PATH sich mal ändert)
+<FilesMatch "\.sqlite$">
+    Require all denied
+</FilesMatch>
+
+# .git-Verzeichnis darf niemals öffentlich erreichbar sein
+RedirectMatch 404 /\.git
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^\.git/ - [F,L]
+</IfModule>

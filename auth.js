@@ -1,14 +1,14 @@
 // ══════════════════════════════════════════════════════════
-//  AUTH — lokale Anmeldung für Spendly
-//  Wichtig: Diese App hat keinen Server/Backend. Passwörter
-//  werden NICHT im Klartext gespeichert, sondern mit PBKDF2
-//  (SHA-256, 150'000 Iterationen, zufälliger Salt) gehasht.
-//  Das schützt vor "Lesen über die Schulter" / shared-device
-//  Neugier, aber NICHT vor jemandem mit vollem Zugriff auf
-//  diesen Browser (DevTools, localStorage sind immer einsehbar).
+//  AUTH — Anmeldung für Spendly
+//  Anmeldung und Passwort-Hashing laufen serverseitig über
+//  /api/*.php (PBKDF2, SHA-256, 150'000 Iterationen, zufälliger
+//  Salt, siehe api/register.php und api/login.php). Die Session
+//  läuft primär über ein httpOnly-Cookie (spendly_session).
+//  Die lokalen SESSION_KEY/SESSION_TMP-Einträge hier dienen nur
+//  als zusätzlicher Client-Hinweis (z.B. für "Angemeldet
+//  bleiben"-UI) und als Brute-Force-Bremse pro Gerät.
 // ══════════════════════════════════════════════════════════
 
-const AUTH_KEY      = 'budgetApp_auth';       // { username, email, salt, hash, iterations }
 const SESSION_KEY    = 'budgetApp_session';    // { token, expires } in localStorage (remember me)
 const SESSION_TMP    = 'budgetApp_session';    // gleiche Bezeichnung in sessionStorage (Tab/Browser zu = ausgeloggt)
 const ATTEMPTS_KEY    = 'budgetApp_authAttempts'; // { count, lockUntil }
@@ -21,23 +21,6 @@ function randomHex(len = 16) {
   const arr = new Uint8Array(len);
   crypto.getRandomValues(arr);
   return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
-}
-
-async function hashPassword(password, saltHex, iterations = 150000) {
-  const enc = new TextEncoder();
-  const saltBytes = new Uint8Array(saltHex.match(/.{2}/g).map(b => parseInt(b, 16)));
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']
-  );
-  const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: saltBytes, iterations, hash: 'SHA-256' },
-    keyMaterial, 256
-  );
-  return Array.from(new Uint8Array(bits), b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function getAuth() {
-  try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch (e) { return null; }
 }
 
 // ── LOCKOUT / BRUTE-FORCE THROTTLE ─────────────────────────
@@ -185,8 +168,18 @@ async function handleLogin(event) {
 
     event.preventDefault();
 
+    // Vor dem Request prüfen, ob aktuell eine Sperre wegen zu vieler
+    // Fehlversuche aktiv ist
+    if (lockRemainingMs() > 0) {
+        updateLockoutUI();
+        return;
+    }
+
     const identifier = document.getElementById("loginIdentifier").value;
     const password = document.getElementById("loginPassword").value;
+    const remember = document.getElementById("loginRemember")
+        ? document.getElementById("loginRemember").checked
+        : true;
 
     const response = await fetch("/api/login.php", {
         method: "POST",
@@ -195,15 +188,20 @@ async function handleLogin(event) {
         },
         body: JSON.stringify({
             identifier,
-            password
+            password,
+            remember
         })
     });
 
     const data = await response.json();
 
     if (data.success) {
+        clearAttempts();
+        startSession(remember);
         window.location.href = "index.html";
     } else {
+        registerFailedAttempt();
+        updateLockoutUI();
         document.getElementById("loginError").textContent =
             "Benutzername oder Passwort falsch";
     }
@@ -216,6 +214,16 @@ async function handleRegister(event) {
     const username = document.getElementById("regUsername").value;
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
+    const passwordConfirm = document.getElementById("regPasswordConfirm").value;
+    const errEl = document.getElementById("registerError");
+    const notice = document.getElementById('registerExistsNotice');
+    if (notice) notice.style.display = 'none';
+    errEl.textContent = '';
+
+    if (password !== passwordConfirm) {
+        errEl.textContent = "Passwörter stimmen nicht überein.";
+        return;
+    }
 
     const response = await fetch("/api/register.php", {
         method: "POST",
@@ -232,9 +240,13 @@ async function handleRegister(event) {
     const data = await response.json();
 
     if (data.success) {
+        startSession(true);
         window.location.href = "index.html";
     } else {
-        document.getElementById("registerError").textContent = data.message;
+        errEl.textContent = data.message;
+        if (notice && /bereits vergeben/i.test(data.message || '')) {
+            notice.style.display = '';
+        }
     }
 }
 

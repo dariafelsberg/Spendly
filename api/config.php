@@ -7,10 +7,17 @@ define('DB_PATH', __DIR__ . '/../database.sqlite');
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
-// Einfache CORS-Regel – bei Bedarf auf deine Domain einschränken
+// CORS auf die eigene(n) Domain(s) beschränken – Origin wird NICHT
+// blind gespiegelt, sonst könnte jede beliebige Website mit den
+// Cookies des Nutzers authentifizierte Requests schicken.
+$allowedOrigins = [
+    'https://spendly.dfelsberg.sbw.media',
+];
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
-header('Access-Control-Allow-Credentials: true');
+if (in_array($origin, $allowedOrigins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Credentials: true');
+}
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
