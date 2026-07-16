@@ -1,0 +1,7 @@
+# SQLite-Datenbank: enthält Laufzeitdaten (Accounts, Buchungen) und darf
+# NIE von Git verwaltet/überschrieben werden — sonst setzt jedes
+# "git pull" auf dem Server die Datenbank auf den Stand im Repo zurück.
+database.sqlite
+database.sqlite-journal
+database.sqlite-wal
+database.sqlite-shm
