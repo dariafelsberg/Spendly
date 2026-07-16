@@ -84,6 +84,19 @@
       <button class="settings-add-btn" onclick="openRecurringModal('expense')">＋ Ausgabe hinzufügen</button>
     </div>
 
+    <!-- EIGENE KATEGORIEN: KOMBINIERT -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <span class="settings-section-icon">🏷️</span>
+        <div>
+          <div class="settings-section-title">Eigene Kategorien</div>
+          <div class="settings-section-sub">Individuelle Kategorien verwalten</div>
+        </div>
+      </div>
+      <div id="customIncomeCatList" class="settings-list"></div>
+      <button class="settings-add-btn" onclick="openCustomCatModal(null)">＋ Kategorie hinzufügen</button>
+    </div>
+
     <!-- BUDGET -->
     <div class="settings-section">
       <div class="settings-section-header">
@@ -184,6 +197,19 @@
       <label class="form-label">Kategorie</label>
       <select class="form-input form-select" id="recurringCategory"></select>
     </div>
+    <div class="form-group" id="recurringAccountGroup">
+      <label class="form-label">Konto (optional)</label>
+      <select class="form-input form-select" id="recurringAccount">
+        <option value="">— Kein Konto —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Start ab</label>
+      <input class="form-input" type="date" id="recurringStartDate">
+      <div style="margin-top:6px; font-size:.74rem; color:var(--muted); line-height:1.4;">
+        Ab diesem Monat wird die Buchung automatisch angelegt.
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeRecurringModal()">Abbrechen</button>
       <button class="btn-save" onclick="saveRecurring()">Speichern</button>
@@ -191,6 +217,41 @@
   </div>
 </div>
 
+<!-- ══ MODAL: EIGENE KATEGORIE ══ -->
+<div class="modal-overlay" id="customCatModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Eigene Kategorie hinzufügen</div>
+    <div class="auth-tabs" style="margin-bottom: 16px;">
+      <button class="auth-tab active" id="customCatTabExpense" onclick="switchCustomCatType('expense')">📤 Ausgabe</button>
+      <button class="auth-tab" id="customCatTabIncome" onclick="switchCustomCatType('income')">📥 Einnahme</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" type="text" id="customCatName" placeholder="z.B. Hobbys, Reisen…" maxlength="30">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Emoji auswählen</label>
+      <div class="emoji-pick-grid" id="customCatEmojiPicker"></div>
+      <div style="margin-top:8px; font-size:.82rem; color:var(--muted);">Ausgewählt: <span id="customCatSelectedEmoji" style="font-size:1.1rem">🏷️</span></div>
+    </div>
+    <div class="auth-error" id="customCatError"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCustomCatModal()">Abbrechen</button>
+      <button class="btn-save" onclick="saveCustomCat()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchCustomCatType(type) {
+  const isExpense = type === 'expense';
+  document.getElementById('customCatTabExpense').classList.toggle('active', isExpense);
+  document.getElementById('customCatTabIncome').classList.toggle('active', !isExpense);
+  // expose chosen type for saveCustomCat() in script.js
+  document.getElementById('customCatModal').dataset.catType = type;
+}
+</script>
 <script src="auth.js"></script>
 <script src="script.js"></script>
 </body>

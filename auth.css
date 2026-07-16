@@ -224,3 +224,37 @@
 .auth-logout-btn:active {
   opacity: .8;
 }
+
+/* ── EMOJI PICKER (Eigene Kategorien) ── */
+.emoji-pick-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.emoji-pick-btn {
+  width: 38px;
+  height: 38px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--card-soft);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s, background .15s;
+  padding: 0;
+}
+
+.emoji-pick-btn:hover {
+  background: #fff0f6;
+  border-color: var(--primary);
+}
+
+.emoji-pick-btn.selected {
+  background: #fff0f6;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(233,30,99,.15);
+}
