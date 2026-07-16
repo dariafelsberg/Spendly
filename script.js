@@ -48,53 +48,63 @@ function sanitizeState() {
   if (!Array.isArray(state.customExpenseCats))  state.customExpenseCats = [];
   if (!Array.isArray(state.customIncomeCats))   state.customIncomeCats = [];
   state.entries = state.entries.filter(e => e && typeof e.date === 'string' && typeof e.amount === 'number');
+  // Migration: alte globale Monats-Markierung (appliedRecurringMonths) auf das
+  // neue Pro-Regel-Tracking (lastAppliedMonth) übertragen, damit Regeln aus
+  // der alten Version nicht plötzlich für längst vergangene Monate erneut
+  // Buchungen anlegen. Läuft nur einmal, solange eine Regel noch kein
+  // lastAppliedMonth hat.
+  if (state.appliedRecurringMonths.length) {
+    const lastGlobal = state.appliedRecurringMonths.slice().sort().pop();
+    [...state.recurringIncome, ...state.recurringExpense].forEach(r => {
+      if (!r.lastAppliedMonth) r.lastAppliedMonth = lastGlobal;
+    });
+  }
 }
 
 // ── RECURRING ENGINE ────────────────────────────────────────
-// Wandelt wiederkehrende Einnahmen/Ausgaben einmal pro Kalendermonat
-// in echte Buchungen (state.entries) um. appliedRecurringMonths
-// verhindert doppeltes Anwenden desselben Monats.
+// Wandelt wiederkehrende Einnahmen/Ausgaben in echte Buchungen
+// (state.entries) um — jeweils am 1. jedes fälligen Monats.
+// Pro Regel merkt sich `lastAppliedMonth`, bis wohin bereits gebucht
+// wurde. So werden auch neu angelegte Regeln mit einem in der
+// Vergangenheit liegenden Startdatum rückwirkend nachgetragen (bis
+// max. 24 Monate zurück), statt nur ab dem aktuellen Monat zu greifen.
 function monthKey(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
-function applyRecurringForMonth(key) {
-  if (state.appliedRecurringMonths.includes(key)) return false;
-  const [y, m] = key.split('-').map(Number);
-  const dateStr = `${y}-${String(m).padStart(2, '0')}-01`;
-  const makeEntry = (r, type) => ({
-    id: uid(), type, amount: r.amount, category: r.category,
-    note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
-  });
-  // Regel erst ab ihrem Startmonat anwenden (Feld "Start ab")
-  const isDue = (r) => !r.createdAt || monthKey(new Date(r.createdAt + 'T00:00:00')) <= key;
-  state.recurringIncome.forEach(r => {
-    if (!isDue(r)) return;
-    const e = makeEntry(r, 'income');
-    state.entries.push(e);
-    applyAccountDelta(e.accountId, e.amount, e.type);
-  });
-  state.recurringExpense.forEach(r => {
-    if (!isDue(r)) return;
-    const e = makeEntry(r, 'expense');
-    state.entries.push(e);
-    applyAccountDelta(e.accountId, e.amount, e.type);
-  });
-  state.appliedRecurringMonths.push(key);
-  return true;
+function addMonths(mKey, n) {
+  const [y, m] = mKey.split('-').map(Number);
+  return monthKey(new Date(y, m - 1 + n, 1));
 }
-// Prüft ab dem ersten des aktuellen Monats (und holt verpasste Monate
-// nach, falls die App länger nicht geöffnet wurde) und speichert bei
-// Änderungen.
+function applyRuleRecurring(r, type) {
+  const nowKey   = monthKey(new Date());
+  const startKey = r.createdAt ? monthKey(new Date(r.createdAt + 'T00:00:00')) : nowKey;
+  let cursor = r.lastAppliedMonth ? addMonths(r.lastAppliedMonth, 1) : startKey;
+  // Nachholen auf max. 24 Monate begrenzen, damit das nicht ausufert
+  const earliest = addMonths(nowKey, -23);
+  if (cursor < earliest) cursor = earliest;
+  let changed = false;
+  while (cursor <= nowKey) {
+    const [y, m] = cursor.split('-').map(Number);
+    const dateStr = `${y}-${String(m).padStart(2, '0')}-01`;
+    state.entries.push({
+      id: uid(), type, amount: r.amount, category: r.category,
+      note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
+    });
+    applyAccountDelta(r.accountId || '', r.amount, type);
+    r.lastAppliedMonth = cursor;
+    changed = true;
+    cursor = addMonths(cursor, 1);
+  }
+  return changed;
+}
+// Prüft alle Regeln auf fällige Monate (und holt verpasste Monate nach,
+// falls die App länger nicht geöffnet wurde oder eine Regel neu mit
+// vergangenem Startdatum angelegt wurde) und speichert bei Änderungen.
 function applyDueRecurring() {
   if (!state.recurringIncome.length && !state.recurringExpense.length) return false;
-  const now = new Date();
   let changed = false;
-  // Nachholen: alle Monate seit dem ältesten offenen Eintrag bis heute,
-  // maximal 24 Monate zurück, damit das nicht ausufert.
-  for (let i = 23; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    if (applyRecurringForMonth(monthKey(d))) changed = true;
-  }
+  state.recurringIncome.forEach(r  => { if (applyRuleRecurring(r, 'income'))  changed = true; });
+  state.recurringExpense.forEach(r => { if (applyRuleRecurring(r, 'expense')) changed = true; });
   if (changed) saveState();
   return changed;
 }
