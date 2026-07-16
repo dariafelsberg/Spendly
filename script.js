@@ -19,7 +19,13 @@ const INCOME_CATEGORIES = [
   { name: 'Sackgeld',  emoji: '🪙', color: '#84cc16' },
   { name: 'Sonstiges', emoji: '💰', color: '#4ade80' },
 ];
-const ALL_CATS = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
+// ALL_CATS ist ein dynamischer Getter (berücksichtigt eigene Kategorien)
+function allExpenseCats() { return [...EXPENSE_CATEGORIES, ...(state.customExpenseCats || [])]; }
+function allIncomeCats()  { return [...INCOME_CATEGORIES,  ...(state.customIncomeCats  || [])]; }
+function allCats()        { return [...allExpenseCats(), ...allIncomeCats()]; }
+
+// ALL_CATS bleibt als Alias für Stellen erhalten, die es referenzieren (Kalender, Buchungen)
+Object.defineProperty(window, 'ALL_CATS', { get: allCats });
 
 // ── STATE
 let state = {
@@ -27,8 +33,10 @@ let state = {
   entries: [], accounts: [],
   recurringIncome: [], recurringExpense: [],
   appliedRecurringMonths: [],
+  customExpenseCats: [], customIncomeCats: [],
   entryType: 'expense', editId: null,
   accountEditId: null, recurringEditId: null, recurringType: 'income',
+  customCatEditId: null, customCatType: 'expense',
 };
 
 function sanitizeState() {
@@ -37,6 +45,8 @@ function sanitizeState() {
   if (!Array.isArray(state.recurringIncome))  state.recurringIncome = [];
   if (!Array.isArray(state.recurringExpense)) state.recurringExpense = [];
   if (!Array.isArray(state.appliedRecurringMonths)) state.appliedRecurringMonths = [];
+  if (!Array.isArray(state.customExpenseCats))  state.customExpenseCats = [];
+  if (!Array.isArray(state.customIncomeCats))   state.customIncomeCats = [];
   state.entries = state.entries.filter(e => e && typeof e.date === 'string' && typeof e.amount === 'number');
 }
 
@@ -53,14 +63,18 @@ function applyRecurringForMonth(key) {
   const dateStr = `${y}-${String(m).padStart(2, '0')}-01`;
   const makeEntry = (r, type) => ({
     id: uid(), type, amount: r.amount, category: r.category,
-    note: r.name, date: dateStr, accountId: '', recurringId: r.id,
+    note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
   });
+  // Regel erst ab ihrem Startmonat anwenden (Feld "Start ab")
+  const isDue = (r) => !r.createdAt || monthKey(new Date(r.createdAt + 'T00:00:00')) <= key;
   state.recurringIncome.forEach(r => {
+    if (!isDue(r)) return;
     const e = makeEntry(r, 'income');
     state.entries.push(e);
     applyAccountDelta(e.accountId, e.amount, e.type);
   });
   state.recurringExpense.forEach(r => {
+    if (!isDue(r)) return;
     const e = makeEntry(r, 'expense');
     state.entries.push(e);
     applyAccountDelta(e.accountId, e.amount, e.type);
@@ -118,19 +132,19 @@ function loadState() {
 }
 
 function _persistLocal() {
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths } = state;
-  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths }));
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
+  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats }));
 }
 
 function saveState() {
   _persistLocal();
   // Asynchron zum Server senden — kein await, UI bleibt reaktiv
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths } = state;
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
   fetch('/api/data.php', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths } })
+    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats } })
   }).catch(() => {}); // Offline: nur localStorage wurde gesichert
 }
 
@@ -202,7 +216,7 @@ function renderDonut() {
   document.getElementById('donutSpent').textContent  = '−CHF ' + formatNum(spent);
   const catTotals = {};
   state.entries.filter(e => e.type === 'expense').forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
-  const activeCats = EXPENSE_CATEGORIES.filter(c => catTotals[c.name] > 0);
+  const activeCats = allExpenseCats().filter(c => catTotals[c.name] > 0);
   const r = 72, circ = 2 * Math.PI * r;
   let offset = 0;
   document.getElementById('donutArcs').innerHTML = (activeCats.length && spent > 0)
@@ -214,7 +228,7 @@ function renderDonut() {
           stroke-dashoffset="${(-offset*circ).toFixed(2)}" style="transition:all .5s ease"/>`;
         offset += frac; return arc;
       }).join('') : '';
-  document.getElementById('categoriesGrid').innerHTML = EXPENSE_CATEGORIES.map(c => {
+  document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
     const amt = catTotals[c.name] || 0;
     return `<div class="cat-chip" style="${amt ? `background:${c.color}15;border-color:${c.color}44` : ''}">
       <div class="cat-dot" style="background:${amt ? c.color : '#ddd'}"></div>
@@ -235,15 +249,17 @@ function renderTransactions() {
   entries.forEach(e => {
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
     const isInc = e.type === 'income';
+    const isAccOnly = e.type === 'account-only';
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
     const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
+    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
     const item = document.createElement('div');
     item.className = 'tx-item';
     item.innerHTML = `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
-        <div class="tx-note">${e.note ? e.note + (acc ? ' · ' : '') : ''}${accTag || formatDate(e.date)}</div>
+        <div class="tx-note">${e.note ? e.note + (acc || isAccOnly ? ' · ' : '') : ''}${accTag}${accOnlyBadge || (!accTag ? formatDate(e.date) : '')}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
       <div class="tx-actions">
@@ -272,12 +288,19 @@ function setEntryType(type) {
   state.entryType = type;
   document.getElementById('typeBtnExpense').classList.toggle('active', type === 'expense');
   document.getElementById('typeBtnIncome').classList.toggle('active', type === 'income');
-  populateCategorySelect(type);
+  // Checkbox nur bei Ausgabe anzeigen
+  const aoGroup = document.getElementById('accountOnlyGroup');
+  if (aoGroup) aoGroup.style.display = type === 'expense' ? '' : 'none';
+  // Checkbox zurücksetzen wenn nicht Ausgabe
+  const aoCheck = document.getElementById('accountOnlyCheck');
+  if (aoCheck && type !== 'expense') aoCheck.checked = false;
+  // "Nur Konto" verwendet Ausgaben-Kategorien (bleibt eine Abbuchung, zählt nur nicht ins Budget)
+  populateCategorySelect(type === 'income' ? 'income' : 'expense');
 }
 function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
   if (!sel) return;
-  sel.innerHTML = (type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES)
+  sel.innerHTML = (type === 'income' ? allIncomeCats() : allExpenseCats())
     .map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
 }
 function populateAccountSelect(selectedId = '') {
@@ -299,6 +322,10 @@ function openEntryModal(editId = null) {
     document.getElementById('entryDate').value   = e.date;
     setTimeout(() => { document.getElementById('entryCategory').value = e.category; }, 0);
     document.getElementById('typeToggle').style.display = 'none';
+    const aoCheck = document.getElementById('accountOnlyCheck');
+    const aoGroup = document.getElementById('accountOnlyGroup');
+    if (aoCheck) aoCheck.checked = (e.type === 'account-only');
+    if (aoGroup) aoGroup.style.display = (e.type === 'expense' || e.type === 'account-only') ? '' : 'none';
     populateAccountSelect(e.accountId || '');
   } else {
     setEntryType('expense');
@@ -315,6 +342,7 @@ function applyAccountDelta(accountId, amount, type) {
   if (!accountId) return;
   const acc = state.accounts.find(a => a.id === accountId);
   if (acc) acc.balance += (type === 'income' ? amount : -amount);
+  // 'account-only' wird wie eine Ausgabe behandelt (Abbuchung vom Konto)
 }
 function saveEntry() {
   const amount    = parseFloat(document.getElementById('entryAmount').value);
@@ -327,13 +355,17 @@ function saveEntry() {
   if (state.editId) {
     const e = state.entries.find(x => x.id === state.editId);
     if (e) {
-      applyAccountDelta(e.accountId, e.amount, e.type === 'income' ? 'expense' : 'income');
+      // alten Delta umkehren: income → 'expense'-Richtung; expense/account-only → 'income'-Richtung
+      const reverseType = (e.type === 'income') ? 'expense' : 'income';
+      applyAccountDelta(e.accountId, e.amount, reverseType);
       Object.assign(e, { amount, category, note, date, accountId });
       applyAccountDelta(accountId, amount, e.type);
     }
   } else {
-    state.entries.push({ id: uid(), type: state.entryType, amount, category, note, date, accountId });
-    applyAccountDelta(accountId, amount, state.entryType);
+    const aoChecked = document.getElementById('accountOnlyCheck')?.checked;
+    const finalType = (state.entryType === 'expense' && aoChecked) ? 'account-only' : state.entryType;
+    state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId });
+    applyAccountDelta(accountId, amount, finalType);
   }
   saveState(); render(); closeEntryModal();
 }
@@ -341,7 +373,10 @@ function editEntry(id) { openEntryModal(id); }
 function deleteEntry(id) {
   if (confirm('Eintrag löschen?')) {
     const e = state.entries.find(x => x.id === id);
-    if (e) applyAccountDelta(e.accountId, e.amount, e.type === 'income' ? 'expense' : 'income');
+    if (e) {
+      const reverseType = (e.type === 'income') ? 'expense' : 'income';
+      applyAccountDelta(e.accountId, e.amount, reverseType);
+    }
     state.entries = state.entries.filter(e => e.id !== id);
     saveState(); render();
   }
@@ -353,13 +388,14 @@ function toggleTxList() {
 // ── SETTINGS
 function initSettings() {
   renderSettings();
-  ['budgetModal','accountModal','recurringModal'].forEach(id => {
+  ['budgetModal','accountModal','recurringModal','customCatModal'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); });
   });
 }
 function renderSettings() {
   renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense');
+  renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
   if (sd) sd.textContent = 'CHF ' + formatNum(state.budget);
 }
@@ -386,17 +422,112 @@ function renderRecurringList(type) {
   const col  = type === 'income' ? 'var(--income)' : 'var(--danger)';
   el.innerHTML = !list.length
     ? '<div class="empty-tx">Noch keine Einträge.</div>'
-    : list.map(r => `
+    : list.map(r => {
+        const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
+        return `
       <div class="settings-item">
         <div class="settings-item-info">
           <div class="settings-item-name">${r.name}</div>
-          <div class="settings-item-val" style="color:${col}">${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}</div>
+          <div class="settings-item-val" style="color:${col}">${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · 🏦 ' + acc.name : ''}</div>
         </div>
         <div class="settings-item-actions">
           <button class="tx-btn" onclick="openRecurringModal('${type}','${r.id}')">✏️</button>
           <button class="tx-btn delete" onclick="deleteRecurring('${type}','${r.id}')">🗑️</button>
         </div>
+      </div>`;
+      }).join('');
+}
+
+// ── EIGENE KATEGORIEN
+const PRESET_EMOJIS = ['🏷️','🎯','⭐','🔖','💡','🧩','🎪','🌟','🔑','💎','🎠','🌈','🎭','🧸','🎲','🎸','🏋️','🌿','🍀','🦋','🐝','🌸','🎁','🔮','🎡'];
+
+function renderCustomCatList() {
+  const el = document.getElementById('customIncomeCatList');
+  if (!el) return;
+  const expenseList = state.customExpenseCats || [];
+  const incomeList  = state.customIncomeCats  || [];
+  const total = expenseList.length + incomeList.length;
+  if (!total) {
+    el.innerHTML = '<div class="empty-tx">Noch keine eigenen Kategorien.</div>';
+    return;
+  }
+  const renderGroup = (groupType, label, list) => {
+    if (!list.length) return '';
+    const header = `<div style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px">${label}</div>`;
+    const items = list.map(c => `
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <div class="settings-item-name">${c.emoji} ${c.name}</div>
+        </div>
+        <div class="settings-item-actions">
+          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}','${c.id}')">🗑️</button>
+        </div>
       </div>`).join('');
+    return header + items;
+  };
+  el.innerHTML = renderGroup('expense', '📤 Ausgaben', expenseList) + renderGroup('income', '📥 Einnahmen', incomeList);
+}
+
+function openCustomCatModal(type) {
+  // Standard: 'expense', falls kein Typ übergeben; Tab-UI zurücksetzen
+  const initialType = type || 'expense';
+  state.customCatType = initialType;
+  const modal = document.getElementById('customCatModal');
+  modal.dataset.catType = initialType;
+  // Tab-Buttons synchronisieren
+  const tabExp = document.getElementById('customCatTabExpense');
+  const tabInc = document.getElementById('customCatTabIncome');
+  if (tabExp) tabExp.classList.toggle('active', initialType === 'expense');
+  if (tabInc) tabInc.classList.toggle('active', initialType === 'income');
+  document.getElementById('customCatName').value = '';
+  document.getElementById('customCatError').textContent = '';
+  // Emoji-Picker rendern
+  const picker = document.getElementById('customCatEmojiPicker');
+  picker.innerHTML = PRESET_EMOJIS.map(e =>
+    `<button type="button" class="emoji-pick-btn" onclick="selectEmoji('${e}')">${e}</button>`
+  ).join('');
+  selectEmoji('🏷️');
+  modal.classList.add('show');
+}
+
+function closeCustomCatModal() {
+  document.getElementById('customCatModal').classList.remove('show');
+}
+
+function selectEmoji(emoji) {
+  document.querySelectorAll('.emoji-pick-btn').forEach(b => b.classList.toggle('selected', b.textContent === emoji));
+  document.getElementById('customCatSelectedEmoji').textContent = emoji;
+}
+
+function getSelectedEmoji() {
+  return document.getElementById('customCatSelectedEmoji').textContent || '🏷️';
+}
+
+function saveCustomCat() {
+  const name = document.getElementById('customCatName').value.trim();
+  const errEl = document.getElementById('customCatError');
+  errEl.textContent = '';
+  if (!name || name.length < 2) { errEl.textContent = 'Name muss mindestens 2 Zeichen lang sein.'; return; }
+  const emoji = getSelectedEmoji();
+  // Typ aus der Tab-Auswahl im Modal lesen
+  const modal = document.getElementById('customCatModal');
+  state.customCatType = modal.dataset.catType || state.customCatType;
+  const list = state.customCatType === 'expense' ? state.customExpenseCats : state.customIncomeCats;
+  const builtIn = state.customCatType === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+  const allNames = [...builtIn, ...list].map(c => c.name.toLowerCase());
+  if (allNames.includes(name.toLowerCase())) { errEl.textContent = 'Diese Kategorie existiert bereits.'; return; }
+  const color = `hsl(${Math.floor(Math.random()*360)},65%,55%)`;
+  list.push({ id: uid(), name, emoji, color });
+  saveState();
+  renderCustomCatList();
+  closeCustomCatModal();
+}
+
+function deleteCustomCat(type, id) {
+  if (!confirm('Kategorie löschen? Bestehende Einträge behalten ihren Kategorienamen.')) return;
+  if (type === 'expense') state.customExpenseCats = state.customExpenseCats.filter(c => c.id !== id);
+  else                    state.customIncomeCats  = state.customIncomeCats.filter(c => c.id !== id);
+  saveState(); renderCustomCatList();
 }
 function openAccountModal(editId = null) {
   state.accountEditId = editId;
@@ -441,32 +572,44 @@ function openRecurringModal(type, editId = null) {
   document.getElementById('recurringModalTitle').textContent =
     (editId ? 'Bearbeiten' : 'Hinzufügen') + ' – ' + (type === 'income' ? 'Einnahme' : 'Ausgabe');
   document.getElementById('recurringCategory').innerHTML =
-    (type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES)
+    (type === 'income' ? allIncomeCats() : allExpenseCats())
       .map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+  const accSel = document.getElementById('recurringAccount');
+  if (accSel) {
+    accSel.innerHTML = `<option value="">— Kein Konto —</option>` +
+      state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+  }
   if (editId) {
     const r = (type === 'income' ? state.recurringIncome : state.recurringExpense).find(x => x.id === editId);
     document.getElementById('recurringName').value     = r.name;
     document.getElementById('recurringAmount').value   = r.amount;
     document.getElementById('recurringCategory').value = r.category;
+    if (accSel) accSel.value = r.accountId || '';
+    document.getElementById('recurringStartDate').value = r.createdAt || dateKey(new Date());
   } else {
     document.getElementById('recurringName').value   = '';
     document.getElementById('recurringAmount').value = '';
+    if (accSel) accSel.value = '';
+    document.getElementById('recurringStartDate').value = dateKey(new Date());
   }
   document.getElementById('recurringModal').classList.add('show');
 }
 function closeRecurringModal() { document.getElementById('recurringModal').classList.remove('show'); state.recurringEditId = null; }
 function saveRecurring() {
-  const name     = document.getElementById('recurringName').value.trim();
-  const amount   = parseFloat(document.getElementById('recurringAmount').value);
-  const category = document.getElementById('recurringCategory').value;
+  const name      = document.getElementById('recurringName').value.trim();
+  const amount    = parseFloat(document.getElementById('recurringAmount').value);
+  const category  = document.getElementById('recurringCategory').value;
+  const accountId = document.getElementById('recurringAccount')?.value || '';
+  const startDate = document.getElementById('recurringStartDate').value || dateKey(new Date());
   if (!name || isNaN(amount) || amount <= 0) { document.getElementById('recurringName').focus(); return; }
   const list = state.recurringType === 'income' ? state.recurringIncome : state.recurringExpense;
   if (state.recurringEditId) {
     const r = list.find(x => x.id === state.recurringEditId);
-    if (r) Object.assign(r, { name, amount, category });
+    if (r) Object.assign(r, { name, amount, category, accountId, createdAt: startDate });
   } else {
-    list.push({ id: uid(), name, amount, category });
+    list.push({ id: uid(), name, amount, category, accountId, createdAt: startDate });
   }
+  applyDueRecurring();
   saveState(); renderRecurringList(state.recurringType); closeRecurringModal();
 }
 function deleteRecurring(type, id) {
@@ -548,7 +691,7 @@ function renderMonthGrid(year, month, byDay, todayStr, gridId) {
     const es  = byDay[key] || [];
     const dots = es.length ? `<div class="cal-day-dots">
       ${es.some(e => e.type==='income')  ? '<div class="cal-day-dot income"></div>'  : ''}
-      ${es.some(e => e.type==='expense') ? '<div class="cal-day-dot expense"></div>' : ''}
+      ${es.some(e => e.type==='expense' || e.type==='account-only') ? '<div class="cal-day-dot expense"></div>' : ''}
     </div>` : '';
     const cls = ['cal-day', key===todayStr?'today':'', calSelectedDay&&key===dateKey(calSelectedDay)?'selected':''].filter(Boolean).join(' ');
     html += `<div class="${cls}" onclick="selectCalDay(${year},${month},${d})"><span>${d}</span>${dots}</div>`;
@@ -574,13 +717,15 @@ function renderDayDetail(dateObj) {
   document.getElementById('dayDetailList').innerHTML = entries.map(e => {
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
     const isInc = e.type === 'income';
+    const isAccOnly = e.type === 'account-only';
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
     const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
+    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
     return `<div class="tx-item">
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
-        <div class="tx-note">${e.note ? e.note + (acc ? ' · ' : '') : ''}${accTag}</div>
+        <div class="tx-note">${e.note ? e.note + (acc || isAccOnly ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
     </div>`;
