@@ -63,7 +63,11 @@ function sanitizeState() {
 
 // ── RECURRING ENGINE ────────────────────────────────────────
 // Wandelt wiederkehrende Einnahmen/Ausgaben in echte Buchungen
-// (state.entries) um — jeweils am 1. jedes fälligen Monats.
+// (state.entries) um — jeweils am Tag des Monats, der beim Anlegen
+// der Regel als Startdatum gewählt wurde (z.B. 15. für Lohn ab dem
+// 15.). Existiert dieser Tag in einem kürzeren Monat nicht (z.B. 31.
+// in einem 30-Tage-Monat), wird auf den letzten Tag des Monats
+// geklemmt (day-clamping).
 // Pro Regel merkt sich `lastAppliedMonth`, bis wohin bereits gebucht
 // wurde. So werden auch neu angelegte Regeln mit einem in der
 // Vergangenheit liegenden Startdatum rückwirkend nachgetragen (bis
@@ -74,6 +78,13 @@ function monthKey(d = new Date()) {
 function addMonths(mKey, n) {
   const [y, m] = mKey.split('-').map(Number);
   return monthKey(new Date(y, m - 1 + n, 1));
+}
+// Tag des Monats, an dem eine Regel fällig ist (aus dem Startdatum),
+// geklemmt auf die tatsächliche Anzahl Tage im jeweiligen Monat.
+function recurringDayFor(r, year, month1based) {
+  const startDay = r.createdAt ? new Date(r.createdAt + 'T00:00:00').getDate() : 1;
+  const daysInMonth = new Date(year, month1based, 0).getDate();
+  return Math.min(startDay, daysInMonth);
 }
 function applyRuleRecurring(r, type) {
   const today    = new Date();
@@ -87,11 +98,16 @@ function applyRuleRecurring(r, type) {
   if (cursor < earliest) cursor = earliest;
   let changed = false;
   while (cursor <= nowKey) {
+    const [y, m] = cursor.split('-').map(Number);
+    const day = recurringDayFor(r, y, m);
+    const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     // Im Startmonat erst buchen, wenn das gewählte Startdatum tatsächlich
     // erreicht ist (z.B. Startdatum "morgen" -> heute noch nicht buchen).
     if (cursor === startKey && startDate > todayKey) break;
-    const [y, m] = cursor.split('-').map(Number);
-    const dateStr = `${y}-${String(m).padStart(2, '0')}-01`;
+    // Im aktuellen Monat erst buchen, sobald der fällige Tag wirklich
+    // erreicht ist — sonst würde z.B. der Lohn vom 15. schon am 1.
+    // des Monats als bereits erhalten erscheinen.
+    if (cursor === nowKey && dateStr > todayKey) break;
     state.entries.push({
       id: uid(), type, amount: r.amount, category: r.category,
       note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
@@ -103,14 +119,35 @@ function applyRuleRecurring(r, type) {
   }
   return changed;
 }
+// Korrigiert bereits gebuchte Einträge, die noch mit der alten Logik
+// (immer auf den 1. des Monats) angelegt wurden, auf den korrekten
+// Tag der jeweiligen Regel. Läuft einmalig beim Laden.
+function correctRecurringEntryDates() {
+  const rulesById = {};
+  [...state.recurringIncome, ...state.recurringExpense].forEach(r => { rulesById[r.id] = r; });
+  let changed = false;
+  state.entries.forEach(e => {
+    if (!e.recurringId) return;
+    const r = rulesById[e.recurringId];
+    if (!r || !r.createdAt) return;
+    const [y, m, d] = e.date.split('-').map(Number);
+    const correctDay = recurringDayFor(r, y, m);
+    if (d !== correctDay) {
+      e.date = `${y}-${String(m).padStart(2, '0')}-${String(correctDay).padStart(2, '0')}`;
+      changed = true;
+    }
+  });
+  return changed;
+}
 // Prüft alle Regeln auf fällige Monate (und holt verpasste Monate nach,
 // falls die App länger nicht geöffnet wurde oder eine Regel neu mit
 // vergangenem Startdatum angelegt wurde) und speichert bei Änderungen.
 function applyDueRecurring() {
-  if (!state.recurringIncome.length && !state.recurringExpense.length) return false;
-  let changed = false;
-  state.recurringIncome.forEach(r  => { if (applyRuleRecurring(r, 'income'))  changed = true; });
-  state.recurringExpense.forEach(r => { if (applyRuleRecurring(r, 'expense')) changed = true; });
+  let changed = correctRecurringEntryDates();
+  if (state.recurringIncome.length || state.recurringExpense.length) {
+    state.recurringIncome.forEach(r  => { if (applyRuleRecurring(r, 'income'))  changed = true; });
+    state.recurringExpense.forEach(r => { if (applyRuleRecurring(r, 'expense')) changed = true; });
+  }
   if (changed) saveState();
   return changed;
 }
@@ -636,6 +673,37 @@ function deleteRecurring(type, id) {
   }
 }
 
+// Liefert "Vorschau"-Einträge für einen Monat, der noch nicht durch die
+// Recurring-Engine gebucht wurde (also alles nach dem aktuellen Monat).
+// Diese Einträge existieren NICHT in state.entries — sie werden nur zur
+// Anzeige berechnet, wirken sich nicht auf Kontostand/Summen aus.
+function getRecurringPreviewsForMonth(year, month) {
+  const mKey     = monthKey(new Date(year, month, 1));
+  const nowKey   = monthKey(new Date());
+  const todayKey = dateKey(new Date());
+  if (mKey < nowKey) return []; // vergangene Monate sind bereits vollständig gebucht
+  const previews = [];
+  const addPreviews = (list, type) => {
+    list.forEach(r => {
+      const startKey = r.createdAt ? monthKey(new Date(r.createdAt + 'T00:00:00')) : nowKey;
+      if (mKey < startKey) return; // Regel startet erst später
+      if (r.lastAppliedMonth && r.lastAppliedMonth >= mKey) return; // für diesen Monat schon real gebucht
+      const day = recurringDayFor(r, year, month + 1);
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      // Im aktuellen Monat nur als Vorschau zeigen, solange der Tag noch nicht erreicht ist
+      if (mKey === nowKey && dateStr <= todayKey) return;
+      previews.push({
+        id: 'preview-' + r.id + '-' + mKey, type, amount: r.amount, category: r.category,
+        note: r.name, date: dateStr,
+        accountId: r.accountId || '', recurringId: r.id, isPreview: true,
+      });
+    });
+  };
+  addPreviews(state.recurringIncome, 'income');
+  addPreviews(state.recurringExpense, 'expense');
+  return previews;
+}
+
 // ── CALENDAR
 function initCalendar() {
   calViewDate = new Date(); calViewDate.setDate(1); calSelectedDay = new Date();
@@ -686,6 +754,12 @@ function renderCalendar() {
   state.entries.forEach(e => { (byDay[e.date] = byDay[e.date] || []).push(e); });
   const todayStr = dateKey(new Date());
 
+  // Geplante (noch nicht gebuchte) wiederkehrende Einträge als Vorschau einblenden
+  [
+    ...getRecurringPreviewsForMonth(year, month),
+    ...(desktop ? getRecurringPreviewsForMonth(nextMonthDate.getFullYear(), nextMonthDate.getMonth()) : []),
+  ].forEach(e => { (byDay[e.date] = byDay[e.date] || []).push(e); });
+
   renderMonthGrid(year, month, byDay, todayStr, 'calGrid');
   if (desktop) renderMonthGrid(nextMonthDate.getFullYear(), nextMonthDate.getMonth(), byDay, todayStr, 'calGrid2');
 
@@ -705,9 +779,14 @@ function renderMonthGrid(year, month, byDay, todayStr, gridId) {
   for (let d = 1; d <= daysInMonth; d++) {
     const key = dateKey(new Date(year, month, d));
     const es  = byDay[key] || [];
+    const incomeEs  = es.filter(e => e.type === 'income');
+    const expenseEs = es.filter(e => e.type === 'expense' || e.type === 'account-only');
+    // Ein Punkt gilt als "geplant", wenn ausschliesslich Vorschau-Einträge dahinterstecken
+    const incomePlanned  = incomeEs.length  && incomeEs.every(e => e.isPreview);
+    const expensePlanned = expenseEs.length && expenseEs.every(e => e.isPreview);
     const dots = es.length ? `<div class="cal-day-dots">
-      ${es.some(e => e.type==='income')  ? '<div class="cal-day-dot income"></div>'  : ''}
-      ${es.some(e => e.type==='expense' || e.type==='account-only') ? '<div class="cal-day-dot expense"></div>' : ''}
+      ${incomeEs.length  ? `<div class="cal-day-dot income${incomePlanned ? ' planned' : ''}"></div>`  : ''}
+      ${expenseEs.length ? `<div class="cal-day-dot expense${expensePlanned ? ' planned' : ''}"></div>` : ''}
     </div>` : '';
     const cls = ['cal-day', key===todayStr?'today':'', calSelectedDay&&key===dateKey(calSelectedDay)?'selected':''].filter(Boolean).join(' ');
     html += `<div class="${cls}" onclick="selectCalDay(${year},${month},${d})"><span>${d}</span>${dots}</div>`;
@@ -717,7 +796,10 @@ function renderMonthGrid(year, month, byDay, todayStr, gridId) {
 function selectCalDay(year, month, day) { calSelectedDay = new Date(year, month, day); renderCalendar(); renderDayDetail(calSelectedDay); }
 function renderDayDetail(dateObj) {
   const key = dateKey(dateObj);
-  const entries = state.entries.filter(e => e.date === key);
+  const real = state.entries.filter(e => e.date === key);
+  const [year, month] = key.split('-').map(Number);
+  const previews = getRecurringPreviewsForMonth(year, month - 1).filter(e => e.date === key);
+  const entries = [...real, ...previews];
   const detailEl = document.getElementById('dayDetail');
   document.getElementById('dayDetailTitle').textContent = dateObj.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long' });
   detailEl.style.display = '';
@@ -726,10 +808,17 @@ function renderDayDetail(dateObj) {
     document.getElementById('dayDetailList').innerHTML = '<div class="empty-tx">Keine Einträge an diesem Tag.</div>';
     return;
   }
-  const net = entries.reduce((s, e) => s + (e.type==='income' ? e.amount : -e.amount), 0);
+  // Nur echte (bereits gebuchte) Einträge fliessen in die Summe ein — geplante
+  // Vorschau-Einträge sind noch nicht real und würden den Saldo verfälschen.
   const totalEl = document.getElementById('dayDetailTotal');
-  totalEl.textContent = (net >= 0 ? '+' : '−') + 'CHF ' + formatNum(Math.abs(net));
-  totalEl.style.color = net >= 0 ? 'var(--income)' : 'var(--danger)';
+  if (real.length) {
+    const net = real.reduce((s, e) => s + (e.type==='income' ? e.amount : -e.amount), 0);
+    totalEl.textContent = (net >= 0 ? '+' : '−') + 'CHF ' + formatNum(Math.abs(net));
+    totalEl.style.color = net >= 0 ? 'var(--income)' : 'var(--danger)';
+  } else {
+    totalEl.textContent = 'geplant';
+    totalEl.style.color = 'var(--muted)';
+  }
   document.getElementById('dayDetailList').innerHTML = entries.map(e => {
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
     const isInc = e.type === 'income';
@@ -737,11 +826,12 @@ function renderDayDetail(dateObj) {
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
     const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
     const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
-    return `<div class="tx-item">
+    const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">🔮 geplant</span>` : '';
+    return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
-        <div class="tx-note">${e.note ? e.note + (acc || isAccOnly ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
+        <div class="tx-note">${e.note ? e.note + (acc || isAccOnly || e.isPreview ? ' · ' : '') : ''}${accTag}${accOnlyBadge}${plannedBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
     </div>`;
