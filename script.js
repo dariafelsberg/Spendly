@@ -76,14 +76,20 @@ function addMonths(mKey, n) {
   return monthKey(new Date(y, m - 1 + n, 1));
 }
 function applyRuleRecurring(r, type) {
-  const nowKey   = monthKey(new Date());
-  const startKey = r.createdAt ? monthKey(new Date(r.createdAt + 'T00:00:00')) : nowKey;
+  const today    = new Date();
+  const todayKey = dateKey(today);
+  const nowKey   = monthKey(today);
+  const startDate = r.createdAt || todayKey;
+  const startKey  = r.createdAt ? monthKey(new Date(r.createdAt + 'T00:00:00')) : nowKey;
   let cursor = r.lastAppliedMonth ? addMonths(r.lastAppliedMonth, 1) : startKey;
   // Nachholen auf max. 24 Monate begrenzen, damit das nicht ausufert
   const earliest = addMonths(nowKey, -23);
   if (cursor < earliest) cursor = earliest;
   let changed = false;
   while (cursor <= nowKey) {
+    // Im Startmonat erst buchen, wenn das gewählte Startdatum tatsächlich
+    // erreicht ist (z.B. Startdatum "morgen" -> heute noch nicht buchen).
+    if (cursor === startKey && startDate > todayKey) break;
     const [y, m] = cursor.split('-').map(Number);
     const dateStr = `${y}-${String(m).padStart(2, '0')}-01`;
     state.entries.push({
