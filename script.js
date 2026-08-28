@@ -961,60 +961,62 @@ function renderInsightsView() {
   renderInsightsChart();
   renderInsightsMonthList();
 }
-// Kontostand am Ende jedes Monats: Startsaldo + kumulierte Einnahmen/Ausgaben
-// bis zu diesem Monat (Überweisungen und geplante Vorschau-Einträge zählen nicht,
-// da sie das Gesamtvermögen nicht verändern bzw. noch nicht real gebucht sind).
-function computeMonthlyBalances(monthsBack, anchorDate = new Date()) {
+// Netto (Einnahmen − Ausgaben) pro Monat. Überweisungen und geplante
+// Vorschau-Einträge zählen nicht mit, da sie das Gesamtvermögen nicht
+// verändern bzw. noch nicht real gebucht sind.
+function computeMonthlyNet(monthsBack, anchorDate = new Date()) {
   const months = [];
   for (let i = monthsBack - 1; i >= 0; i--) {
     const d = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - i, 1);
     months.push({ year: d.getFullYear(), month: d.getMonth() });
   }
-  const sorted = state.entries
-    .filter(e => e.type !== 'transfer' && !e.isPreview)
-    .slice()
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-  let running = state.balance || 0;
-  let idx = 0;
+  const relevant = state.entries.filter(e => e.type !== 'transfer' && !e.isPreview);
   return months.map(({ year, month }) => {
-    const monthEndKey = dateKey(new Date(year, month + 1, 0));
-    while (idx < sorted.length && sorted[idx].date <= monthEndKey) {
-      const e = sorted[idx];
-      running += (e.type === 'income' ? e.amount : -e.amount);
-      idx++;
-    }
-    return { year, month, balance: running };
+    const mKey = monthKey(new Date(year, month, 1));
+    const net = relevant
+      .filter(e => e.date.slice(0, 7) === mKey)
+      .reduce((s, e) => s + (e.type === 'income' ? e.amount : -e.amount), 0);
+    return { year, month, net };
   });
 }
+const INSIGHTS_TRACK_HEIGHT = 150; // px, muss mit .insights-bar-track in styles.css übereinstimmen
 function renderInsightsChart() {
   const el = document.getElementById('insightsChart');
   if (!el) return;
   const monthNames = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  const data = computeMonthlyBalances(8, insightsWindowAnchor);
-  const values = data.map(d => d.balance);
+  const data = computeMonthlyNet(8, insightsWindowAnchor);
+  const values = data.map(d => d.net);
   const maxVal = Math.max(...values, 0);
   const minVal = Math.min(...values, 0);
   const range = (maxVal - minVal) || 1;
+  const zeroTop = (maxVal / range) * INSIGHTS_TRACK_HEIGHT;
   el.innerHTML = data.map(d => {
     const isSelected = d.year === insightsViewDate.getFullYear() && d.month === insightsViewDate.getMonth();
-    const heightPct = Math.max(((d.balance - minVal) / range) * 100, 4);
+    const isNeg = d.net < 0;
+    const barH = Math.max((Math.abs(d.net) / range) * INSIGHTS_TRACK_HEIGHT, d.net !== 0 ? 2 : 0);
+    const barTop = isNeg ? zeroTop : zeroTop - barH;
+    const barCls = `insights-bar${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
+    const valCls = `insights-bar-value${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
     return `
-      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" title="${monthNames[d.month]} ${d.year} · CHF ${formatNum(d.balance)}">
-        <div class="insights-bar-value${isSelected ? ' active' : ''}">${formatCompactChf(d.balance)}</div>
+      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" title="${monthNames[d.month]} ${d.year} · ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}">
+        <div class="${valCls}">${formatSignedCompactChf(d.net)}</div>
         <div class="insights-bar-track">
-          <div class="insights-bar${isSelected ? ' active' : ''}" style="height:${heightPct}%"></div>
+          <div class="insights-bar-zero-line" style="top:${zeroTop}px"></div>
+          <div class="${barCls}" style="top:${barTop}px; height:${barH}px"></div>
         </div>
         <div class="insights-bar-label${isSelected ? ' active' : ''}">${monthNames[d.month]}</div>
       </div>`;
   }).join('');
 }
-// Kompakte Beschriftung für die Balken-Zahlen (ohne Nachkommastellen, ab 100'000 mit "k").
-function formatCompactChf(n) {
+// Kompakte, vorzeichenbehaftete Beschriftung für die Balken-Zahlen
+// (ohne Nachkommastellen, ab 100'000 mit "k").
+function formatSignedCompactChf(n) {
   const abs = Math.abs(n);
+  const sign = n > 0 ? '+' : n < 0 ? '−' : '';
   if (abs >= 100000) {
-    return (n / 1000).toLocaleString('de-CH', { maximumFractionDigits: 0 }) + 'k';
+    return sign + (abs / 1000).toLocaleString('de-CH', { maximumFractionDigits: 0 }) + 'k';
   }
-  return Math.round(n).toLocaleString('de-CH');
+  return sign + Math.round(abs).toLocaleString('de-CH');
 }
 // Liste der Einträge des in der Analyse-Ansicht ausgewählten Monats.
 function renderInsightsMonthList() {

@@ -111,7 +111,7 @@ button {
 }
 
 .settings-topbar {
-  padding: calc(60px + env(safe-area-inset-top)) var(--sp-md) var(--sp-lg);
+  padding: calc(44px + env(safe-area-inset-top)) var(--sp-md) var(--sp-lg);
   margin-top: calc(-1 * env(safe-area-inset-top));
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
@@ -207,11 +207,17 @@ button {
 }
 
 .insights-bar-track {
-  flex: 1;
+  position: relative;
   width: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  height: 150px;
+}
+
+.insights-bar-zero-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
 }
 
 .insights-bar-value {
@@ -227,16 +233,32 @@ button {
   font-weight: 700;
 }
 
+.insights-bar-value.negative {
+  color: var(--danger);
+}
+
 .insights-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   width: 60%;
   min-width: 10px;
   background: var(--primary-light);
   border-radius: 6px 6px 2px 2px;
-  transition: height .4s ease;
+  transition: top .4s ease, height .4s ease, background .2s ease;
 }
 
 .insights-bar.active {
   background: var(--primary);
+}
+
+.insights-bar.negative {
+  border-radius: 2px 2px 6px 6px;
+  background: var(--danger-light);
+}
+
+.insights-bar.negative.active {
+  background: var(--danger);
 }
 
 .insights-bar-label {
