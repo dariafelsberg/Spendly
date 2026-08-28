@@ -116,11 +116,13 @@ function applyRuleRecurring(r, type) {
       });
       applyTransferDelta(r.fromAccountId, r.toAccountId, r.amount);
     } else {
+      // Bei Ausgaben-Regeln mit "Nur Konto" wird die Buchung nicht ins Budget gerechnet.
+      const entryType = (type === 'expense' && r.accountOnly) ? 'account-only' : type;
       state.entries.push({
-        id: uid(), type, amount: r.amount, category: r.category,
+        id: uid(), type: entryType, amount: r.amount, category: r.category,
         note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
       });
-      applyAccountDelta(r.accountId || '', r.amount, type);
+      applyAccountDelta(r.accountId || '', r.amount, entryType);
     }
     r.lastAppliedMonth = cursor;
     changed = true;
@@ -588,7 +590,7 @@ function renderRecurringList(type) {
           detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}`;
         } else {
           const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
-          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · 🏦 ' + acc.name : ''}`;
+          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · 🏦 ' + acc.name : ''}${r.accountOnly ? ' · 🚫 Budget' : ''}`;
         }
         return `
       <div class="settings-item">
@@ -745,6 +747,11 @@ function openRecurringModal(type, editId = null) {
   const accGroup = document.getElementById('recurringAccountGroup');
   const transferGroup = document.getElementById('recurringTransferAccountsGroup');
   const accSel = document.getElementById('recurringAccount');
+  const aoGroup = document.getElementById('recurringAccountOnlyGroup');
+  // Checkbox nur bei Ausgabe anzeigen
+  if (aoGroup) aoGroup.style.display = type === 'expense' ? '' : 'none';
+  const aoCheck = document.getElementById('recurringAccountOnlyCheck');
+  if (aoCheck && type !== 'expense') aoCheck.checked = false;
 
   if (type === 'transfer') {
     if (catGroup) catGroup.style.display = 'none';
@@ -781,11 +788,13 @@ function openRecurringModal(type, editId = null) {
     } else {
       document.getElementById('recurringCategory').value = r.category;
       if (accSel) accSel.value = r.accountId || '';
+      if (aoCheck) aoCheck.checked = !!r.accountOnly;
     }
   } else {
     document.getElementById('recurringName').value   = '';
     document.getElementById('recurringAmount').value = '';
     if (accSel) accSel.value = '';
+    if (aoCheck) aoCheck.checked = false;
     document.getElementById('recurringStartDate').value = dateKey(new Date());
   }
   document.getElementById('recurringModal').classList.add('show');
@@ -812,12 +821,13 @@ function saveRecurring() {
   } else {
     const category  = document.getElementById('recurringCategory').value;
     const accountId = document.getElementById('recurringAccount')?.value || '';
+    const accountOnly = state.recurringType === 'expense' && !!document.getElementById('recurringAccountOnlyCheck')?.checked;
     const list = state.recurringType === 'income' ? state.recurringIncome : state.recurringExpense;
     if (state.recurringEditId) {
       const r = list.find(x => x.id === state.recurringEditId);
-      if (r) Object.assign(r, { name, amount, category, accountId, createdAt: startDate });
+      if (r) Object.assign(r, { name, amount, category, accountId, accountOnly, createdAt: startDate });
     } else {
-      list.push({ id: uid(), name, amount, category, accountId, createdAt: startDate });
+      list.push({ id: uid(), name, amount, category, accountId, accountOnly, createdAt: startDate });
     }
   }
   applyDueRecurring();
