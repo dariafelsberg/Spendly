@@ -321,7 +321,7 @@ function renderTransactions() {
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
           <div class="tx-cat-label">🔄 Interne Überweisung</div>
-          <div class="tx-note">${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
+          <div class="tx-note">${formatDate(e.date)} · ${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
         </div>
         <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
         <div class="tx-actions">
@@ -341,7 +341,7 @@ function renderTransactions() {
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
-        <div class="tx-note">${e.note ? e.note + (acc || isAccOnly ? ' · ' : '') : ''}${accTag}${accOnlyBadge || (!accTag ? formatDate(e.date) : '')}</div>
+        <div class="tx-note">${formatDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? e.note + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
       <div class="tx-actions">
