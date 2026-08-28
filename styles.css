@@ -111,7 +111,7 @@ button {
 }
 
 .settings-topbar {
-  padding: calc(50px + env(safe-area-inset-top)) var(--sp-md) var(--sp-lg);
+  padding: calc(60px + env(safe-area-inset-top)) var(--sp-md) var(--sp-lg);
   margin-top: calc(-1 * env(safe-area-inset-top));
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
