@@ -927,15 +927,22 @@ function selectInsightsMonth(year, month) {
   renderInsightsView();
 }
 // Verschiebt das 8-Monats-Fenster nur dann, wenn der ausgewählte Monat aus dem
-// aktuell sichtbaren Bereich herausgewandert ist — der neu sichtbare Monat
-// landet dann ganz rechts. Solange der Monat noch im Fenster liegt, bleibt
+// aktuell sichtbaren Bereich herausgewandert ist. Beim Rückwärts-Navigieren
+// landet der neu sichtbare Monat ganz rechts im Fenster, beim Vorwärts-
+// Navigieren ganz links. Solange der Monat noch im Fenster liegt, bleibt
 // das Fenster an Ort und Stelle.
 function syncInsightsWindow() {
+  const now = new Date();
+  const nowMonthDate = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfWindow = new Date(insightsWindowAnchor.getFullYear(), insightsWindowAnchor.getMonth() - 7, 1);
   const selKey   = monthKey(insightsViewDate);
   const startKey = monthKey(startOfWindow);
   const endKey   = monthKey(insightsWindowAnchor);
-  if (selKey > endKey || selKey < startKey) {
+  if (selKey > endKey) {
+    let newAnchor = new Date(insightsViewDate.getFullYear(), insightsViewDate.getMonth() + 7, 1);
+    if (newAnchor > nowMonthDate) newAnchor = nowMonthDate;
+    insightsWindowAnchor = newAnchor;
+  } else if (selKey < startKey) {
     insightsWindowAnchor = new Date(insightsViewDate);
   }
 }
