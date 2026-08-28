@@ -214,6 +214,19 @@ button {
   justify-content: center;
 }
 
+.insights-bar-value {
+  font-size: .64rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.insights-bar-value.active {
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
 .insights-bar {
   width: 60%;
   min-width: 10px;

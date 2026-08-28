@@ -1000,12 +1000,21 @@ function renderInsightsChart() {
     const heightPct = Math.max(((d.balance - minVal) / range) * 100, 4);
     return `
       <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" title="${monthNames[d.month]} ${d.year} · CHF ${formatNum(d.balance)}">
+        <div class="insights-bar-value${isSelected ? ' active' : ''}">${formatCompactChf(d.balance)}</div>
         <div class="insights-bar-track">
           <div class="insights-bar${isSelected ? ' active' : ''}" style="height:${heightPct}%"></div>
         </div>
         <div class="insights-bar-label${isSelected ? ' active' : ''}">${monthNames[d.month]}</div>
       </div>`;
   }).join('');
+}
+// Kompakte Beschriftung für die Balken-Zahlen (ohne Nachkommastellen, ab 100'000 mit "k").
+function formatCompactChf(n) {
+  const abs = Math.abs(n);
+  if (abs >= 100000) {
+    return (n / 1000).toLocaleString('de-CH', { maximumFractionDigits: 0 }) + 'k';
+  }
+  return Math.round(n).toLocaleString('de-CH');
 }
 // Liste der Einträge des in der Analyse-Ansicht ausgewählten Monats.
 function renderInsightsMonthList() {
