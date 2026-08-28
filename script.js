@@ -376,9 +376,11 @@ function setEntryType(type) {
   const aoCheck = document.getElementById('accountOnlyCheck');
   if (aoCheck && type !== 'expense') aoCheck.checked = false;
   const catGroup = document.getElementById('entryCategoryGroup');
+  const accGroup = document.getElementById('accountSelectGroup');
   const transferGroup = document.getElementById('transferAccountsGroup');
   if (type === 'transfer') {
     if (catGroup) catGroup.style.display = 'none';
+    if (accGroup) accGroup.style.display = 'none';
     if (transferGroup) transferGroup.style.display = '';
     populateTransferAccountSelects();
   } else {
@@ -413,19 +415,17 @@ function populateTransferAccountSelects(fromId = '', toId = '') {
   if (fromId) fromSel.value = fromId; else if (state.accounts.length) fromSel.selectedIndex = 0;
   if (toId) toSel.value = toId; else if (state.accounts.length > 1) toSel.selectedIndex = 1;
 }
-// Der "Überweisung"-Typ braucht mindestens 2 Konten — Button entsprechend sperren
-function updateTransferBtnAvailability() {
-  const btn = document.getElementById('typeBtnTransfer');
-  if (!btn) return;
-  const enough = state.accounts.length >= 2;
-  btn.style.opacity = enough ? '' : '.4';
-  btn.style.pointerEvents = enough ? '' : 'none';
-  btn.title = enough ? '' : 'Mindestens 2 Konten benötigt';
+// Der "Überweisung"-Typ braucht mindestens 2 Konten
+function trySetTransferType() {
+  if (state.accounts.length < 2) {
+    alert('Für eine interne Überweisung brauchst du mindestens 2 Konten. Lege in den Einstellungen unter "Konten" ein zweites Konto an.');
+    return;
+  }
+  setEntryType('transfer');
 }
 function openEntryModal(editId = null) {
   state.editId = editId;
   document.getElementById('entryModalTitle').textContent = editId ? 'Eintrag bearbeiten' : 'Eintrag hinzufügen';
-  updateTransferBtnAvailability();
   if (editId) {
     const e = state.entries.find(x => x.id === editId);
     setEntryType(e.type || 'expense');
