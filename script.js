@@ -217,6 +217,9 @@ function saveState() {
 // ── CALENDAR STATE (muss vor BOOT deklariert sein, da initCalendar() dort aufgerufen wird)
 let calViewDate = new Date(), calSelectedDay = null;
 let insightsViewDate = new Date(); insightsViewDate.setDate(1);
+// Rechtester (jüngster) Monat im aktuell angezeigten 8-Monats-Fenster der Analyse-Ansicht.
+// Bleibt beim Blättern stabil, solange der ausgewählte Monat noch im Fenster liegt.
+let insightsWindowAnchor = new Date(insightsViewDate);
 
 // ── BOOT
 loadState();
@@ -915,11 +918,26 @@ function changeInsightsMonth(delta) {
   const monthsAhead = (next.getFullYear() - now.getFullYear()) * 12 + next.getMonth() - now.getMonth();
   if (delta > 0 && monthsAhead > 0) return; // nicht in die Zukunft navigieren
   insightsViewDate = next;
+  syncInsightsWindow();
   renderInsightsView();
 }
 function selectInsightsMonth(year, month) {
   insightsViewDate = new Date(year, month, 1);
+  // Balken ist bereits im sichtbaren Fenster, kein Nachrutschen nötig.
   renderInsightsView();
+}
+// Verschiebt das 8-Monats-Fenster nur dann, wenn der ausgewählte Monat aus dem
+// aktuell sichtbaren Bereich herausgewandert ist — der neu sichtbare Monat
+// landet dann ganz rechts. Solange der Monat noch im Fenster liegt, bleibt
+// das Fenster an Ort und Stelle.
+function syncInsightsWindow() {
+  const startOfWindow = new Date(insightsWindowAnchor.getFullYear(), insightsWindowAnchor.getMonth() - 7, 1);
+  const selKey   = monthKey(insightsViewDate);
+  const startKey = monthKey(startOfWindow);
+  const endKey   = monthKey(insightsWindowAnchor);
+  if (selKey > endKey || selKey < startKey) {
+    insightsWindowAnchor = new Date(insightsViewDate);
+  }
 }
 // Rendert Monats-Label + Chart + Eintragsliste für den aktuell gewählten Monat.
 function renderInsightsView() {
@@ -965,7 +983,7 @@ function renderInsightsChart() {
   const el = document.getElementById('insightsChart');
   if (!el) return;
   const monthNames = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  const data = computeMonthlyBalances(8, insightsViewDate);
+  const data = computeMonthlyBalances(8, insightsWindowAnchor);
   const values = data.map(d => d.balance);
   const maxVal = Math.max(...values, 0);
   const minVal = Math.min(...values, 0);
