@@ -1395,6 +1395,10 @@ button {
   background: var(--danger);
 }
 
+.cal-day-dot.transfer {
+  background: #7c93ff;
+}
+
 .cal-day.selected .cal-day-dot.income {
   background: #d7ffe6;
 }

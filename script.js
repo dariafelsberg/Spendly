@@ -31,7 +31,7 @@ Object.defineProperty(window, 'ALL_CATS', { get: allCats });
 let state = {
   balance: 0, budget: 0,
   entries: [], accounts: [],
-  recurringIncome: [], recurringExpense: [],
+  recurringIncome: [], recurringExpense: [], recurringTransfers: [],
   appliedRecurringMonths: [],
   customExpenseCats: [], customIncomeCats: [],
   entryType: 'expense', editId: null,
@@ -44,6 +44,7 @@ function sanitizeState() {
   if (!Array.isArray(state.accounts))         state.accounts = [];
   if (!Array.isArray(state.recurringIncome))  state.recurringIncome = [];
   if (!Array.isArray(state.recurringExpense)) state.recurringExpense = [];
+  if (!Array.isArray(state.recurringTransfers)) state.recurringTransfers = [];
   if (!Array.isArray(state.appliedRecurringMonths)) state.appliedRecurringMonths = [];
   if (!Array.isArray(state.customExpenseCats))  state.customExpenseCats = [];
   if (!Array.isArray(state.customIncomeCats))   state.customIncomeCats = [];
@@ -55,7 +56,7 @@ function sanitizeState() {
   // lastAppliedMonth hat.
   if (state.appliedRecurringMonths.length) {
     const lastGlobal = state.appliedRecurringMonths.slice().sort().pop();
-    [...state.recurringIncome, ...state.recurringExpense].forEach(r => {
+    [...state.recurringIncome, ...state.recurringExpense, ...state.recurringTransfers].forEach(r => {
       if (!r.lastAppliedMonth) r.lastAppliedMonth = lastGlobal;
     });
   }
@@ -108,11 +109,19 @@ function applyRuleRecurring(r, type) {
     // erreicht ist — sonst würde z.B. der Lohn vom 15. schon am 1.
     // des Monats als bereits erhalten erscheinen.
     if (cursor === nowKey && dateStr > todayKey) break;
-    state.entries.push({
-      id: uid(), type, amount: r.amount, category: r.category,
-      note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
-    });
-    applyAccountDelta(r.accountId || '', r.amount, type);
+    if (type === 'transfer') {
+      state.entries.push({
+        id: uid(), type: 'transfer', amount: r.amount, category: 'Interne Überweisung',
+        note: r.name, date: dateStr, fromAccountId: r.fromAccountId, toAccountId: r.toAccountId, recurringId: r.id,
+      });
+      applyTransferDelta(r.fromAccountId, r.toAccountId, r.amount);
+    } else {
+      state.entries.push({
+        id: uid(), type, amount: r.amount, category: r.category,
+        note: r.name, date: dateStr, accountId: r.accountId || '', recurringId: r.id,
+      });
+      applyAccountDelta(r.accountId || '', r.amount, type);
+    }
     r.lastAppliedMonth = cursor;
     changed = true;
     cursor = addMonths(cursor, 1);
@@ -124,7 +133,7 @@ function applyRuleRecurring(r, type) {
 // Tag der jeweiligen Regel. Läuft einmalig beim Laden.
 function correctRecurringEntryDates() {
   const rulesById = {};
-  [...state.recurringIncome, ...state.recurringExpense].forEach(r => { rulesById[r.id] = r; });
+  [...state.recurringIncome, ...state.recurringExpense, ...state.recurringTransfers].forEach(r => { rulesById[r.id] = r; });
   let changed = false;
   state.entries.forEach(e => {
     if (!e.recurringId) return;
@@ -144,9 +153,10 @@ function correctRecurringEntryDates() {
 // vergangenem Startdatum angelegt wurde) und speichert bei Änderungen.
 function applyDueRecurring() {
   let changed = correctRecurringEntryDates();
-  if (state.recurringIncome.length || state.recurringExpense.length) {
-    state.recurringIncome.forEach(r  => { if (applyRuleRecurring(r, 'income'))  changed = true; });
-    state.recurringExpense.forEach(r => { if (applyRuleRecurring(r, 'expense')) changed = true; });
+  if (state.recurringIncome.length || state.recurringExpense.length || state.recurringTransfers.length) {
+    state.recurringIncome.forEach(r    => { if (applyRuleRecurring(r, 'income'))    changed = true; });
+    state.recurringExpense.forEach(r   => { if (applyRuleRecurring(r, 'expense'))   changed = true; });
+    state.recurringTransfers.forEach(r => { if (applyRuleRecurring(r, 'transfer'))  changed = true; });
   }
   if (changed) saveState();
   return changed;
@@ -185,19 +195,19 @@ function loadState() {
 }
 
 function _persistLocal() {
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
-  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats }));
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
+  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats }));
 }
 
 function saveState() {
   _persistLocal();
   // Asynchron zum Server senden — kein await, UI bleibt reaktiv
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
   fetch('/api/data.php', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, appliedRecurringMonths, customExpenseCats, customIncomeCats } })
+    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } })
   }).catch(() => {}); // Offline: nur localStorage wurde gesichert
 }
 
@@ -239,7 +249,7 @@ function renderTopBar() {
   const vis = state.accounts.filter(a => a.visible);
   const total = vis.length
     ? vis.reduce((s, a) => s + a.balance, 0)
-    : state.balance + state.entries.reduce((s, e) => s + (e.type === 'income' ? e.amount : -e.amount), 0);
+    : state.balance + state.entries.reduce((s, e) => s + (e.type === 'income' ? e.amount : e.type === 'transfer' ? 0 : -e.amount), 0);
   document.getElementById('totalBalanceDisplay').textContent = formatNum(total);
   const pillsEl = document.getElementById('accountPills');
   if (vis.length) {
@@ -300,14 +310,31 @@ function renderTransactions() {
   if (!entries.length) { emptyEl.style.display = 'block'; return; }
   emptyEl.style.display = 'none';
   entries.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'tx-item';
+    if (e.type === 'transfer') {
+      const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
+      const toAcc   = state.accounts.find(a => a.id === e.toAccountId);
+      item.innerHTML = `
+        <div class="tx-cat-dot" style="background:#7c93ff"></div>
+        <div class="tx-info">
+          <div class="tx-cat-label">🔄 Interne Überweisung</div>
+          <div class="tx-note">${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
+        </div>
+        <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
+        <div class="tx-actions">
+          <button class="tx-btn" onclick="editEntry('${e.id}')">✏️</button>
+          <button class="tx-btn delete" onclick="deleteEntry('${e.id}')">🗑️</button>
+        </div>`;
+      listEl.appendChild(item);
+      return;
+    }
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
     const isInc = e.type === 'income';
     const isAccOnly = e.type === 'account-only';
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
     const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
     const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
-    const item = document.createElement('div');
-    item.className = 'tx-item';
     item.innerHTML = `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
@@ -341,14 +368,26 @@ function setEntryType(type) {
   state.entryType = type;
   document.getElementById('typeBtnExpense').classList.toggle('active', type === 'expense');
   document.getElementById('typeBtnIncome').classList.toggle('active', type === 'income');
+  document.getElementById('typeBtnTransfer').classList.toggle('active', type === 'transfer');
   // Checkbox nur bei Ausgabe anzeigen
   const aoGroup = document.getElementById('accountOnlyGroup');
   if (aoGroup) aoGroup.style.display = type === 'expense' ? '' : 'none';
   // Checkbox zurücksetzen wenn nicht Ausgabe
   const aoCheck = document.getElementById('accountOnlyCheck');
   if (aoCheck && type !== 'expense') aoCheck.checked = false;
-  // "Nur Konto" verwendet Ausgaben-Kategorien (bleibt eine Abbuchung, zählt nur nicht ins Budget)
-  populateCategorySelect(type === 'income' ? 'income' : 'expense');
+  const catGroup = document.getElementById('entryCategoryGroup');
+  const transferGroup = document.getElementById('transferAccountsGroup');
+  if (type === 'transfer') {
+    if (catGroup) catGroup.style.display = 'none';
+    if (transferGroup) transferGroup.style.display = '';
+    populateTransferAccountSelects();
+  } else {
+    if (catGroup) catGroup.style.display = '';
+    if (transferGroup) transferGroup.style.display = 'none';
+    // "Nur Konto" verwendet Ausgaben-Kategorien (bleibt eine Abbuchung, zählt nur nicht ins Budget)
+    populateCategorySelect(type === 'income' ? 'income' : 'expense');
+    populateAccountSelect(document.getElementById('entryAccount')?.value || '');
+  }
 }
 function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
@@ -364,22 +403,46 @@ function populateAccountSelect(selectedId = '') {
   const grp = document.getElementById('accountSelectGroup');
   if (grp) grp.style.display = state.accounts.length ? '' : 'none';
 }
+function populateTransferAccountSelects(fromId = '', toId = '') {
+  const fromSel = document.getElementById('entryFromAccount');
+  const toSel   = document.getElementById('entryToAccount');
+  if (!fromSel || !toSel) return;
+  const opts = state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+  fromSel.innerHTML = opts;
+  toSel.innerHTML = opts;
+  if (fromId) fromSel.value = fromId; else if (state.accounts.length) fromSel.selectedIndex = 0;
+  if (toId) toSel.value = toId; else if (state.accounts.length > 1) toSel.selectedIndex = 1;
+}
+// Der "Überweisung"-Typ braucht mindestens 2 Konten — Button entsprechend sperren
+function updateTransferBtnAvailability() {
+  const btn = document.getElementById('typeBtnTransfer');
+  if (!btn) return;
+  const enough = state.accounts.length >= 2;
+  btn.style.opacity = enough ? '' : '.4';
+  btn.style.pointerEvents = enough ? '' : 'none';
+  btn.title = enough ? '' : 'Mindestens 2 Konten benötigt';
+}
 function openEntryModal(editId = null) {
   state.editId = editId;
   document.getElementById('entryModalTitle').textContent = editId ? 'Eintrag bearbeiten' : 'Eintrag hinzufügen';
+  updateTransferBtnAvailability();
   if (editId) {
     const e = state.entries.find(x => x.id === editId);
     setEntryType(e.type || 'expense');
     document.getElementById('entryAmount').value = e.amount;
     document.getElementById('entryNote').value   = e.note || '';
     document.getElementById('entryDate').value   = e.date;
-    setTimeout(() => { document.getElementById('entryCategory').value = e.category; }, 0);
     document.getElementById('typeToggle').style.display = 'none';
-    const aoCheck = document.getElementById('accountOnlyCheck');
-    const aoGroup = document.getElementById('accountOnlyGroup');
-    if (aoCheck) aoCheck.checked = (e.type === 'account-only');
-    if (aoGroup) aoGroup.style.display = (e.type === 'expense' || e.type === 'account-only') ? '' : 'none';
-    populateAccountSelect(e.accountId || '');
+    if (e.type === 'transfer') {
+      populateTransferAccountSelects(e.fromAccountId, e.toAccountId);
+    } else {
+      setTimeout(() => { document.getElementById('entryCategory').value = e.category; }, 0);
+      const aoCheck = document.getElementById('accountOnlyCheck');
+      const aoGroup = document.getElementById('accountOnlyGroup');
+      if (aoCheck) aoCheck.checked = (e.type === 'account-only');
+      if (aoGroup) aoGroup.style.display = (e.type === 'expense' || e.type === 'account-only') ? '' : 'none';
+      populateAccountSelect(e.accountId || '');
+    }
   } else {
     setEntryType('expense');
     document.getElementById('entryAmount').value = '';
@@ -397,11 +460,42 @@ function applyAccountDelta(accountId, amount, type) {
   if (acc) acc.balance += (type === 'income' ? amount : -amount);
   // 'account-only' wird wie eine Ausgabe behandelt (Abbuchung vom Konto)
 }
+// Interne Überweisung: Betrag vom Ursprungskonto abziehen, dem Zielkonto gutschreiben.
+// Wirkt sich nicht auf Budget/Ausgaben-Summen aus, da kein 'expense'/'income'.
+function applyTransferDelta(fromAccountId, toAccountId, amount) {
+  if (!fromAccountId || !toAccountId) return;
+  const fromAcc = state.accounts.find(a => a.id === fromAccountId);
+  const toAcc   = state.accounts.find(a => a.id === toAccountId);
+  if (fromAcc) fromAcc.balance -= amount;
+  if (toAcc)   toAcc.balance += amount;
+}
 function saveEntry() {
-  const amount    = parseFloat(document.getElementById('entryAmount').value);
+  const amount = parseFloat(document.getElementById('entryAmount').value);
+  const note   = document.getElementById('entryNote').value.trim();
+  const date   = document.getElementById('entryDate').value;
+
+  if (state.entryType === 'transfer') {
+    const fromAccountId = document.getElementById('entryFromAccount').value;
+    const toAccountId   = document.getElementById('entryToAccount').value;
+    if (isNaN(amount) || amount <= 0) { document.getElementById('entryAmount').focus(); return; }
+    if (!fromAccountId || !toAccountId) { alert('Bitte beide Konten auswählen.'); return; }
+    if (fromAccountId === toAccountId) { alert('Von- und Auf-Konto müssen unterschiedlich sein.'); return; }
+    if (state.editId) {
+      const e = state.entries.find(x => x.id === state.editId);
+      if (e) {
+        applyTransferDelta(e.fromAccountId, e.toAccountId, -e.amount); // alten Transfer umkehren
+        Object.assign(e, { amount, note, date, fromAccountId, toAccountId });
+        applyTransferDelta(fromAccountId, toAccountId, amount);
+      }
+    } else {
+      state.entries.push({ id: uid(), type: 'transfer', amount, category: 'Interne Überweisung', note, date, fromAccountId, toAccountId });
+      applyTransferDelta(fromAccountId, toAccountId, amount);
+    }
+    saveState(); render(); closeEntryModal();
+    return;
+  }
+
   const category  = document.getElementById('entryCategory').value;
-  const note      = document.getElementById('entryNote').value.trim();
-  const date      = document.getElementById('entryDate').value;
   const accountId = document.getElementById('entryAccount').value;
   if (!accountId && state.accounts.length > 0) { alert('Bitte ein Konto auswählen.'); document.getElementById('entryAccount').focus(); return; }
   if (isNaN(amount) || amount <= 0 || !category) { document.getElementById('entryAmount').focus(); return; }
@@ -427,8 +521,12 @@ function deleteEntry(id) {
   if (confirm('Eintrag löschen?')) {
     const e = state.entries.find(x => x.id === id);
     if (e) {
-      const reverseType = (e.type === 'income') ? 'expense' : 'income';
-      applyAccountDelta(e.accountId, e.amount, reverseType);
+      if (e.type === 'transfer') {
+        applyTransferDelta(e.fromAccountId, e.toAccountId, -e.amount);
+      } else {
+        const reverseType = (e.type === 'income') ? 'expense' : 'income';
+        applyAccountDelta(e.accountId, e.amount, reverseType);
+      }
     }
     state.entries = state.entries.filter(e => e.id !== id);
     saveState(); render();
@@ -447,7 +545,7 @@ function initSettings() {
   });
 }
 function renderSettings() {
-  renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense');
+  renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense'); renderRecurringList('transfer');
   renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
   if (sd) sd.textContent = 'CHF ' + formatNum(state.budget);
@@ -468,20 +566,35 @@ function renderAccountsList() {
         </div>
       </div>`).join('');
 }
+function recurringListElId(type) {
+  return type === 'income' ? 'recurringIncomeList' : type === 'transfer' ? 'recurringTransferList' : 'recurringExpenseList';
+}
+function recurringListFor(type) {
+  return type === 'income' ? state.recurringIncome : type === 'transfer' ? state.recurringTransfers : state.recurringExpense;
+}
 function renderRecurringList(type) {
-  const el   = document.getElementById(type === 'income' ? 'recurringIncomeList' : 'recurringExpenseList');
-  const list = type === 'income' ? state.recurringIncome : state.recurringExpense;
-  const sign = type === 'income' ? '+' : '−';
-  const col  = type === 'income' ? 'var(--income)' : 'var(--danger)';
+  const el = document.getElementById(recurringListElId(type));
+  if (!el) return;
+  const list = recurringListFor(type);
+  const sign = type === 'income' ? '+' : type === 'transfer' ? '' : '−';
+  const col  = type === 'income' ? 'var(--income)' : type === 'transfer' ? '#7c93ff' : 'var(--danger)';
   el.innerHTML = !list.length
     ? '<div class="empty-tx">Noch keine Einträge.</div>'
     : list.map(r => {
-        const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
+        let detail;
+        if (type === 'transfer') {
+          const fromAcc = state.accounts.find(a => a.id === r.fromAccountId);
+          const toAcc   = state.accounts.find(a => a.id === r.toAccountId);
+          detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}`;
+        } else {
+          const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
+          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · 🏦 ' + acc.name : ''}`;
+        }
         return `
       <div class="settings-item">
         <div class="settings-item-info">
           <div class="settings-item-name">${r.name}</div>
-          <div class="settings-item-val" style="color:${col}">${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · 🏦 ' + acc.name : ''}</div>
+          <div class="settings-item-val" style="color:${col}">${detail}</div>
         </div>
         <div class="settings-item-actions">
           <button class="tx-btn" onclick="openRecurringModal('${type}','${r.id}')">✏️</button>
@@ -612,33 +725,63 @@ function saveAccount() {
   saveState(); renderAccountsList(); closeAccountModal();
 }
 function deleteAccount(id) {
-  if (confirm('Konto löschen?')) {
+  if (confirm('Konto löschen? Überweisungen, die dieses Konto nutzen, werden ebenfalls gelöscht.')) {
     state.accounts = state.accounts.filter(a => a.id !== id);
     // Verwaiste Konto-Referenzen in bestehenden Buchungen entfernen,
     // damit keine toten accountId-Verweise übrig bleiben
     state.entries.forEach(e => { if (e.accountId === id) e.accountId = ''; });
-    saveState(); renderAccountsList();
+    // Überweisungen ohne gültiges Konto ergeben keinen Sinn mehr — entfernen
+    state.entries = state.entries.filter(e => e.type !== 'transfer' || (e.fromAccountId !== id && e.toAccountId !== id));
+    state.recurringTransfers = state.recurringTransfers.filter(r => r.fromAccountId !== id && r.toAccountId !== id);
+    saveState(); renderAccountsList(); renderRecurringList('transfer');
   }
 }
 function openRecurringModal(type, editId = null) {
   state.recurringType = type; state.recurringEditId = editId;
   document.getElementById('recurringModalTitle').textContent =
-    (editId ? 'Bearbeiten' : 'Hinzufügen') + ' – ' + (type === 'income' ? 'Einnahme' : 'Ausgabe');
-  document.getElementById('recurringCategory').innerHTML =
-    (type === 'income' ? allIncomeCats() : allExpenseCats())
-      .map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+    (editId ? 'Bearbeiten' : 'Hinzufügen') + ' – ' + (type === 'income' ? 'Einnahme' : type === 'transfer' ? 'Überweisung' : 'Ausgabe');
+
+  const catGroup = document.getElementById('recurringCategoryGroup');
+  const accGroup = document.getElementById('recurringAccountGroup');
+  const transferGroup = document.getElementById('recurringTransferAccountsGroup');
   const accSel = document.getElementById('recurringAccount');
-  if (accSel) {
-    accSel.innerHTML = `<option value="">— Kein Konto —</option>` +
-      state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+
+  if (type === 'transfer') {
+    if (catGroup) catGroup.style.display = 'none';
+    if (accGroup) accGroup.style.display = 'none';
+    if (transferGroup) transferGroup.style.display = '';
+    const fromSel = document.getElementById('recurringFromAccount');
+    const toSel   = document.getElementById('recurringToAccount');
+    const opts = state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+    if (fromSel) fromSel.innerHTML = opts;
+    if (toSel)   toSel.innerHTML = opts;
+  } else {
+    if (catGroup) catGroup.style.display = '';
+    if (transferGroup) transferGroup.style.display = 'none';
+    document.getElementById('recurringCategory').innerHTML =
+      (type === 'income' ? allIncomeCats() : allExpenseCats())
+        .map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+    if (accSel) {
+      accSel.innerHTML = `<option value="">— Kein Konto —</option>` +
+        state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+    }
+    if (accGroup) accGroup.style.display = '';
   }
+
   if (editId) {
-    const r = (type === 'income' ? state.recurringIncome : state.recurringExpense).find(x => x.id === editId);
+    const r = recurringListFor(type).find(x => x.id === editId);
     document.getElementById('recurringName').value     = r.name;
     document.getElementById('recurringAmount').value   = r.amount;
-    document.getElementById('recurringCategory').value = r.category;
-    if (accSel) accSel.value = r.accountId || '';
     document.getElementById('recurringStartDate').value = r.createdAt || dateKey(new Date());
+    if (type === 'transfer') {
+      const fromSel = document.getElementById('recurringFromAccount');
+      const toSel   = document.getElementById('recurringToAccount');
+      if (fromSel) fromSel.value = r.fromAccountId;
+      if (toSel)   toSel.value = r.toAccountId;
+    } else {
+      document.getElementById('recurringCategory').value = r.category;
+      if (accSel) accSel.value = r.accountId || '';
+    }
   } else {
     document.getElementById('recurringName').value   = '';
     document.getElementById('recurringAmount').value = '';
@@ -651,24 +794,40 @@ function closeRecurringModal() { document.getElementById('recurringModal').class
 function saveRecurring() {
   const name      = document.getElementById('recurringName').value.trim();
   const amount    = parseFloat(document.getElementById('recurringAmount').value);
-  const category  = document.getElementById('recurringCategory').value;
-  const accountId = document.getElementById('recurringAccount')?.value || '';
   const startDate = document.getElementById('recurringStartDate').value || dateKey(new Date());
   if (!name || isNaN(amount) || amount <= 0) { document.getElementById('recurringName').focus(); return; }
-  const list = state.recurringType === 'income' ? state.recurringIncome : state.recurringExpense;
-  if (state.recurringEditId) {
-    const r = list.find(x => x.id === state.recurringEditId);
-    if (r) Object.assign(r, { name, amount, category, accountId, createdAt: startDate });
+
+  if (state.recurringType === 'transfer') {
+    const fromAccountId = document.getElementById('recurringFromAccount').value;
+    const toAccountId   = document.getElementById('recurringToAccount').value;
+    if (!fromAccountId || !toAccountId) { alert('Bitte beide Konten auswählen.'); return; }
+    if (fromAccountId === toAccountId) { alert('Von- und Auf-Konto müssen unterschiedlich sein.'); return; }
+    const list = state.recurringTransfers;
+    if (state.recurringEditId) {
+      const r = list.find(x => x.id === state.recurringEditId);
+      if (r) Object.assign(r, { name, amount, fromAccountId, toAccountId, createdAt: startDate });
+    } else {
+      list.push({ id: uid(), name, amount, fromAccountId, toAccountId, createdAt: startDate });
+    }
   } else {
-    list.push({ id: uid(), name, amount, category, accountId, createdAt: startDate });
+    const category  = document.getElementById('recurringCategory').value;
+    const accountId = document.getElementById('recurringAccount')?.value || '';
+    const list = state.recurringType === 'income' ? state.recurringIncome : state.recurringExpense;
+    if (state.recurringEditId) {
+      const r = list.find(x => x.id === state.recurringEditId);
+      if (r) Object.assign(r, { name, amount, category, accountId, createdAt: startDate });
+    } else {
+      list.push({ id: uid(), name, amount, category, accountId, createdAt: startDate });
+    }
   }
   applyDueRecurring();
   saveState(); renderRecurringList(state.recurringType); closeRecurringModal();
 }
 function deleteRecurring(type, id) {
   if (confirm('Eintrag löschen?')) {
-    if (type === 'income') state.recurringIncome  = state.recurringIncome.filter(r => r.id !== id);
-    else                   state.recurringExpense = state.recurringExpense.filter(r => r.id !== id);
+    if (type === 'income')          state.recurringIncome    = state.recurringIncome.filter(r => r.id !== id);
+    else if (type === 'transfer')   state.recurringTransfers = state.recurringTransfers.filter(r => r.id !== id);
+    else                            state.recurringExpense   = state.recurringExpense.filter(r => r.id !== id);
     saveState(); renderRecurringList(type);
   }
 }
@@ -692,7 +851,11 @@ function getRecurringPreviewsForMonth(year, month) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       // Im aktuellen Monat nur als Vorschau zeigen, solange der Tag noch nicht erreicht ist
       if (mKey === nowKey && dateStr <= todayKey) return;
-      previews.push({
+      previews.push(type === 'transfer' ? {
+        id: 'preview-' + r.id + '-' + mKey, type, amount: r.amount, category: 'Interne Überweisung',
+        note: r.name, date: dateStr,
+        fromAccountId: r.fromAccountId, toAccountId: r.toAccountId, recurringId: r.id, isPreview: true,
+      } : {
         id: 'preview-' + r.id + '-' + mKey, type, amount: r.amount, category: r.category,
         note: r.name, date: dateStr,
         accountId: r.accountId || '', recurringId: r.id, isPreview: true,
@@ -701,6 +864,7 @@ function getRecurringPreviewsForMonth(year, month) {
   };
   addPreviews(state.recurringIncome, 'income');
   addPreviews(state.recurringExpense, 'expense');
+  addPreviews(state.recurringTransfers, 'transfer');
   return previews;
 }
 
@@ -779,14 +943,17 @@ function renderMonthGrid(year, month, byDay, todayStr, gridId) {
   for (let d = 1; d <= daysInMonth; d++) {
     const key = dateKey(new Date(year, month, d));
     const es  = byDay[key] || [];
-    const incomeEs  = es.filter(e => e.type === 'income');
-    const expenseEs = es.filter(e => e.type === 'expense' || e.type === 'account-only');
+    const incomeEs   = es.filter(e => e.type === 'income');
+    const expenseEs  = es.filter(e => e.type === 'expense' || e.type === 'account-only');
+    const transferEs = es.filter(e => e.type === 'transfer');
     // Ein Punkt gilt als "geplant", wenn ausschliesslich Vorschau-Einträge dahinterstecken
-    const incomePlanned  = incomeEs.length  && incomeEs.every(e => e.isPreview);
-    const expensePlanned = expenseEs.length && expenseEs.every(e => e.isPreview);
+    const incomePlanned   = incomeEs.length   && incomeEs.every(e => e.isPreview);
+    const expensePlanned  = expenseEs.length  && expenseEs.every(e => e.isPreview);
+    const transferPlanned = transferEs.length && transferEs.every(e => e.isPreview);
     const dots = es.length ? `<div class="cal-day-dots">
-      ${incomeEs.length  ? `<div class="cal-day-dot income${incomePlanned ? ' planned' : ''}"></div>`  : ''}
-      ${expenseEs.length ? `<div class="cal-day-dot expense${expensePlanned ? ' planned' : ''}"></div>` : ''}
+      ${incomeEs.length   ? `<div class="cal-day-dot income${incomePlanned ? ' planned' : ''}"></div>`     : ''}
+      ${expenseEs.length  ? `<div class="cal-day-dot expense${expensePlanned ? ' planned' : ''}"></div>`   : ''}
+      ${transferEs.length ? `<div class="cal-day-dot transfer${transferPlanned ? ' planned' : ''}"></div>` : ''}
     </div>` : '';
     const cls = ['cal-day', key===todayStr?'today':'', calSelectedDay&&key===dateKey(calSelectedDay)?'selected':''].filter(Boolean).join(' ');
     html += `<div class="${cls}" onclick="selectCalDay(${year},${month},${d})"><span>${d}</span>${dots}</div>`;
@@ -811,15 +978,32 @@ function renderDayDetail(dateObj) {
   // Nur echte (bereits gebuchte) Einträge fliessen in die Summe ein — geplante
   // Vorschau-Einträge sind noch nicht real und würden den Saldo verfälschen.
   const totalEl = document.getElementById('dayDetailTotal');
-  if (real.length) {
-    const net = real.reduce((s, e) => s + (e.type==='income' ? e.amount : -e.amount), 0);
+  const realForNet = real.filter(e => e.type !== 'transfer');
+  if (realForNet.length) {
+    const net = realForNet.reduce((s, e) => s + (e.type==='income' ? e.amount : -e.amount), 0);
     totalEl.textContent = (net >= 0 ? '+' : '−') + 'CHF ' + formatNum(Math.abs(net));
     totalEl.style.color = net >= 0 ? 'var(--income)' : 'var(--danger)';
+  } else if (real.length) {
+    totalEl.textContent = 'Überweisung';
+    totalEl.style.color = 'var(--muted)';
   } else {
     totalEl.textContent = 'geplant';
     totalEl.style.color = 'var(--muted)';
   }
   document.getElementById('dayDetailList').innerHTML = entries.map(e => {
+    if (e.type === 'transfer') {
+      const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
+      const toAcc   = state.accounts.find(a => a.id === e.toAccountId);
+      const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">🔮 geplant</span>` : '';
+      return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
+        <div class="tx-cat-dot" style="background:#7c93ff"></div>
+        <div class="tx-info">
+          <div class="tx-cat-label">🔄 Interne Überweisung</div>
+          <div class="tx-note">${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}${plannedBadge}</div>
+        </div>
+        <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
+      </div>`;
+    }
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
     const isInc = e.type === 'income';
     const isAccOnly = e.type === 'account-only';

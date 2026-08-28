@@ -82,6 +82,8 @@
       </div>
       <div id="recurringExpenseList" class="settings-list"></div>
       <button class="settings-add-btn" onclick="openRecurringModal('expense')">＋ Ausgabe hinzufügen</button>
+      <div id="recurringTransferList" class="settings-list" style="margin-top:10px;"></div>
+      <button class="settings-add-btn" onclick="openRecurringModal('transfer')">＋ Überweisung hinzufügen</button>
     </div>
 
     <!-- EIGENE KATEGORIEN: KOMBINIERT -->
@@ -193,7 +195,7 @@
       <label class="form-label">Betrag (CHF)</label>
       <input class="form-input" type="number" id="recurringAmount" placeholder="0.00" step="0.01" min="0">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="recurringCategoryGroup">
       <label class="form-label">Kategorie</label>
       <select class="form-input form-select" id="recurringCategory"></select>
     </div>
@@ -202,6 +204,16 @@
       <select class="form-input form-select" id="recurringAccount">
         <option value="">— Kein Konto —</option>
       </select>
+    </div>
+    <div class="form-row" id="recurringTransferAccountsGroup" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Von Konto</label>
+        <select class="form-input form-select" id="recurringFromAccount"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Auf Konto</label>
+        <select class="form-input form-select" id="recurringToAccount"></select>
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label">Start ab</label>
