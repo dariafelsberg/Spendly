@@ -192,7 +192,7 @@ function loadState() {
       if (document.getElementById('donutSvg'))    render();
       if (document.getElementById('accountsList')) renderSettings();
       if (document.getElementById('calGrid'))      renderCalendar();
-      if (document.getElementById('insightsChart') && document.getElementById('analysisView')?.style.display !== 'none') renderInsightsChart();
+      if (document.getElementById('insightsChart') && document.getElementById('analysisView')?.style.display !== 'none') renderInsightsView();
     })
     .catch(() => {}); // Offline? localStorage-Daten behalten
 }
@@ -216,6 +216,7 @@ function saveState() {
 
 // ── CALENDAR STATE (muss vor BOOT deklariert sein, da initCalendar() dort aufgerufen wird)
 let calViewDate = new Date(), calSelectedDay = null;
+let insightsViewDate = new Date(); insightsViewDate.setDate(1);
 
 // ── BOOT
 loadState();
@@ -304,21 +305,13 @@ function renderDonut() {
   }).join('');
 }
 
-function renderTransactions() {
-  const entries = [...state.entries].sort((a, b) => new Date(b.date) - new Date(a.date));
-  document.getElementById('txCount').textContent = entries.length;
-  const listEl = document.getElementById('txList');
-  const emptyEl = document.getElementById('txEmpty');
-  listEl.querySelectorAll('.tx-item').forEach(el => el.remove());
-  if (!entries.length) { emptyEl.style.display = 'block'; return; }
-  emptyEl.style.display = 'none';
-  entries.forEach(e => {
-    const item = document.createElement('div');
-    item.className = 'tx-item';
-    if (e.type === 'transfer') {
-      const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
-      const toAcc   = state.accounts.find(a => a.id === e.toAccountId);
-      item.innerHTML = `
+// Baut das innere Markup eines einzelnen Eintrags (wird von der
+// Home-Liste und der Monatsliste bei "Analyse" gemeinsam genutzt).
+function entryRowInner(e) {
+  if (e.type === 'transfer') {
+    const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
+    const toAcc   = state.accounts.find(a => a.id === e.toAccountId);
+    return `
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
           <div class="tx-cat-label">🔄 Interne Überweisung</div>
@@ -329,16 +322,14 @@ function renderTransactions() {
           <button class="tx-btn" onclick="editEntry('${e.id}')">✏️</button>
           <button class="tx-btn delete" onclick="deleteEntry('${e.id}')">🗑️</button>
         </div>`;
-      listEl.appendChild(item);
-      return;
-    }
-    const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
-    const isInc = e.type === 'income';
-    const isAccOnly = e.type === 'account-only';
-    const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
-    const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
-    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
-    item.innerHTML = `
+  }
+  const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
+  const isInc = e.type === 'income';
+  const isAccOnly = e.type === 'account-only';
+  const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
+  const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
+  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
+  return `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
@@ -349,6 +340,23 @@ function renderTransactions() {
         <button class="tx-btn" onclick="editEntry('${e.id}')">✏️</button>
         <button class="tx-btn delete" onclick="deleteEntry('${e.id}')">🗑️</button>
       </div>`;
+}
+
+function renderTransactions() {
+  const nowKey = monthKey(new Date());
+  const entries = state.entries
+    .filter(e => e.date.slice(0, 7) === nowKey)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  document.getElementById('txCount').textContent = entries.length;
+  const listEl = document.getElementById('txList');
+  const emptyEl = document.getElementById('txEmpty');
+  listEl.querySelectorAll('.tx-item').forEach(el => el.remove());
+  if (!entries.length) { emptyEl.style.display = 'block'; return; }
+  emptyEl.style.display = 'none';
+  entries.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'tx-item';
+    item.innerHTML = entryRowInner(e);
     listEl.appendChild(item);
   });
 }
@@ -898,16 +906,43 @@ function setInsightsView(view) {
   if (anaView) anaView.style.display = view === 'analysis' ? '' : 'none';
   if (btnCal) btnCal.classList.toggle('active', view === 'calendar');
   if (btnAna) btnAna.classList.toggle('active', view === 'analysis');
-  if (view === 'analysis') renderInsightsChart();
+  if (view === 'analysis') renderInsightsView();
+}
+// Monat für die Analyse-Ansicht wechseln (Pfeile) bzw. per Klick auf einen Balken auswählen.
+function changeInsightsMonth(delta) {
+  const now = new Date();
+  const next = new Date(insightsViewDate.getFullYear(), insightsViewDate.getMonth() + delta, 1);
+  const monthsAhead = (next.getFullYear() - now.getFullYear()) * 12 + next.getMonth() - now.getMonth();
+  if (delta > 0 && monthsAhead > 0) return; // nicht in die Zukunft navigieren
+  insightsViewDate = next;
+  renderInsightsView();
+}
+function selectInsightsMonth(year, month) {
+  insightsViewDate = new Date(year, month, 1);
+  renderInsightsView();
+}
+// Rendert Monats-Label + Chart + Eintragsliste für den aktuell gewählten Monat.
+function renderInsightsView() {
+  const now = new Date();
+  const label = document.getElementById('insightsMonthLabel');
+  if (label) label.textContent = insightsViewDate.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  const nextBtn = document.getElementById('insightsNavNext');
+  if (nextBtn) {
+    const disabled = insightsViewDate.getFullYear() === now.getFullYear() && insightsViewDate.getMonth() === now.getMonth();
+    nextBtn.disabled = disabled;
+    nextBtn.style.opacity = disabled ? '0.3' : '';
+    nextBtn.style.cursor = disabled ? 'default' : '';
+  }
+  renderInsightsChart();
+  renderInsightsMonthList();
 }
 // Kontostand am Ende jedes Monats: Startsaldo + kumulierte Einnahmen/Ausgaben
 // bis zu diesem Monat (Überweisungen und geplante Vorschau-Einträge zählen nicht,
 // da sie das Gesamtvermögen nicht verändern bzw. noch nicht real gebucht sind).
-function computeMonthlyBalances(monthsBack) {
-  const now = new Date();
+function computeMonthlyBalances(monthsBack, anchorDate = new Date()) {
   const months = [];
   for (let i = monthsBack - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const d = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - i, 1);
     months.push({ year: d.getFullYear(), month: d.getMonth() });
   }
   const sorted = state.entries
@@ -930,23 +965,43 @@ function renderInsightsChart() {
   const el = document.getElementById('insightsChart');
   if (!el) return;
   const monthNames = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  const now = new Date();
-  const data = computeMonthlyBalances(8);
+  const data = computeMonthlyBalances(8, insightsViewDate);
   const values = data.map(d => d.balance);
   const maxVal = Math.max(...values, 0);
   const minVal = Math.min(...values, 0);
   const range = (maxVal - minVal) || 1;
   el.innerHTML = data.map(d => {
-    const isCurrent = d.year === now.getFullYear() && d.month === now.getMonth();
+    const isSelected = d.year === insightsViewDate.getFullYear() && d.month === insightsViewDate.getMonth();
     const heightPct = Math.max(((d.balance - minVal) / range) * 100, 4);
     return `
-      <div class="insights-bar-col" title="${monthNames[d.month]} ${d.year} · CHF ${formatNum(d.balance)}">
+      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" title="${monthNames[d.month]} ${d.year} · CHF ${formatNum(d.balance)}">
         <div class="insights-bar-track">
-          <div class="insights-bar${isCurrent ? ' active' : ''}" style="height:${heightPct}%"></div>
+          <div class="insights-bar${isSelected ? ' active' : ''}" style="height:${heightPct}%"></div>
         </div>
-        <div class="insights-bar-label${isCurrent ? ' active' : ''}">${monthNames[d.month]}</div>
+        <div class="insights-bar-label${isSelected ? ' active' : ''}">${monthNames[d.month]}</div>
       </div>`;
   }).join('');
+}
+// Liste der Einträge des in der Analyse-Ansicht ausgewählten Monats.
+function renderInsightsMonthList() {
+  const listEl = document.getElementById('insightsTxList');
+  const emptyEl = document.getElementById('insightsTxEmpty');
+  const countEl = document.getElementById('insightsTxCount');
+  if (!listEl) return;
+  const mKey = monthKey(insightsViewDate);
+  const entries = state.entries
+    .filter(e => e.date.slice(0, 7) === mKey)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  listEl.querySelectorAll('.tx-item').forEach(el => el.remove());
+  if (countEl) countEl.textContent = entries.length;
+  if (!entries.length) { if (emptyEl) emptyEl.style.display = 'block'; return; }
+  if (emptyEl) emptyEl.style.display = 'none';
+  entries.forEach(e => {
+    const item = document.createElement('div');
+    item.className = 'tx-item';
+    item.innerHTML = entryRowInner(e);
+    listEl.appendChild(item);
+  });
 }
 function isDesktop() { return window.matchMedia('(min-width: 768px)').matches; }
 function changeMonth(delta) {

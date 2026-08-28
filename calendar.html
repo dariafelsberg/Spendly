@@ -71,10 +71,30 @@
 
     <!-- ── MAIN: ANALYSE ── -->
     <div class="calendar-main" id="analysisView" style="display:none;">
+
+      <!-- Month navigation -->
+      <div class="card calendar-nav">
+        <button class="cal-nav-btn" onclick="changeInsightsMonth(-1)">‹</button>
+        <div class="cal-month-label" id="insightsMonthLabel">—</div>
+        <button class="cal-nav-btn" id="insightsNavNext" onclick="changeInsightsMonth(1)">›</button>
+      </div>
+
       <div class="card insights-chart-card">
         <div class="section-label">Kontostand-Entwicklung</div>
         <div class="insights-chart" id="insightsChart"></div>
       </div>
+
+      <!-- Einträge des ausgewählten Monats -->
+      <div class="card transactions-section">
+        <div class="tx-header-left">
+          <span class="tx-title">Einträge</span>
+          <span class="tx-count" id="insightsTxCount">0</span>
+        </div>
+        <div class="tx-list open" id="insightsTxList">
+          <div class="empty-tx" id="insightsTxEmpty" style="display: none;">Keine Einträge in diesem Monat.</div>
+        </div>
+      </div>
+
     </div><!-- /analysisView -->
 
     <!-- ── BOTTOM NAV ── -->
