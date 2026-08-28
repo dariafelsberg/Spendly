@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Spendly">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Budget Tracker – Kalender</title>
+  <title>Budget Tracker – Einblicke</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
     rel="stylesheet">
@@ -29,11 +29,14 @@
 
     <!-- ── SETTINGS-STYLE TOPBAR ── -->
     <div class="settings-topbar">
-      <h1 class="settings-title">Kalender</h1>
+      <div class="view-toggle" id="viewToggle">
+        <button class="view-toggle-btn active" id="viewBtnCalendar" onclick="setInsightsView('calendar')">📅 Kalender</button>
+        <button class="view-toggle-btn" id="viewBtnAnalysis" onclick="setInsightsView('analysis')">📊 Analyse</button>
+      </div>
     </div>
 
-    <!-- ── MAIN ── -->
-    <div class="calendar-main">
+    <!-- ── MAIN: KALENDER ── -->
+    <div class="calendar-main" id="calendarView">
 
       <!-- Month navigation -->
       <div class="card calendar-nav">
@@ -64,7 +67,15 @@
         <div class="day-detail-list" id="dayDetailList"></div>
       </div>
 
-    </div><!-- /main -->
+    </div><!-- /calendarView -->
+
+    <!-- ── MAIN: ANALYSE ── -->
+    <div class="calendar-main" id="analysisView" style="display:none;">
+      <div class="card insights-chart-card">
+        <div class="section-label">Kontostand-Entwicklung</div>
+        <div class="insights-chart" id="insightsChart"></div>
+      </div>
+    </div><!-- /analysisView -->
 
     <!-- ── BOTTOM NAV ── -->
     <nav class="bottom-nav">
@@ -74,7 +85,7 @@
       </a>
       <a class="nav-btn active" href="calendar.html">
         <span class="nav-icon">📅</span>
-        <span class="nav-label">Kalender</span>
+        <span class="nav-label">Einblicke</span>
       </a>
       <a class="nav-btn" href="settings.html">
         <span class="nav-icon">⚙️</span>

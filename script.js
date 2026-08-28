@@ -192,6 +192,7 @@ function loadState() {
       if (document.getElementById('donutSvg'))    render();
       if (document.getElementById('accountsList')) renderSettings();
       if (document.getElementById('calGrid'))      renderCalendar();
+      if (document.getElementById('insightsChart') && document.getElementById('analysisView')?.style.display !== 'none') renderInsightsChart();
     })
     .catch(() => {}); // Offline? localStorage-Daten behalten
 }
@@ -886,6 +887,66 @@ function initCalendar() {
   const wd2 = document.getElementById('calWeekdays2');
   if (wd2) wd2.innerHTML = weekdays;
   renderCalendar();
+}
+// ── INSIGHTS (Kalender/Analyse-Umschalter)
+function setInsightsView(view) {
+  const calView = document.getElementById('calendarView');
+  const anaView = document.getElementById('analysisView');
+  const btnCal  = document.getElementById('viewBtnCalendar');
+  const btnAna  = document.getElementById('viewBtnAnalysis');
+  if (calView) calView.style.display = view === 'calendar' ? '' : 'none';
+  if (anaView) anaView.style.display = view === 'analysis' ? '' : 'none';
+  if (btnCal) btnCal.classList.toggle('active', view === 'calendar');
+  if (btnAna) btnAna.classList.toggle('active', view === 'analysis');
+  if (view === 'analysis') renderInsightsChart();
+}
+// Kontostand am Ende jedes Monats: Startsaldo + kumulierte Einnahmen/Ausgaben
+// bis zu diesem Monat (Überweisungen und geplante Vorschau-Einträge zählen nicht,
+// da sie das Gesamtvermögen nicht verändern bzw. noch nicht real gebucht sind).
+function computeMonthlyBalances(monthsBack) {
+  const now = new Date();
+  const months = [];
+  for (let i = monthsBack - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ year: d.getFullYear(), month: d.getMonth() });
+  }
+  const sorted = state.entries
+    .filter(e => e.type !== 'transfer' && !e.isPreview)
+    .slice()
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  let running = state.balance || 0;
+  let idx = 0;
+  return months.map(({ year, month }) => {
+    const monthEndKey = dateKey(new Date(year, month + 1, 0));
+    while (idx < sorted.length && sorted[idx].date <= monthEndKey) {
+      const e = sorted[idx];
+      running += (e.type === 'income' ? e.amount : -e.amount);
+      idx++;
+    }
+    return { year, month, balance: running };
+  });
+}
+function renderInsightsChart() {
+  const el = document.getElementById('insightsChart');
+  if (!el) return;
+  const monthNames = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  const now = new Date();
+  const data = computeMonthlyBalances(8);
+  const values = data.map(d => d.balance);
+  const maxVal = Math.max(...values, 0);
+  const minVal = Math.min(...values, 0);
+  const range = (maxVal - minVal) || 1;
+  el.innerHTML = data.map(d => {
+    const isCurrent = d.year === now.getFullYear() && d.month === now.getMonth();
+    const heightPct = Math.max(((d.balance - minVal) / range) * 100, 4);
+    return `
+      <div class="insights-bar-col" title="${monthNames[d.month]} ${d.year} · CHF ${formatNum(d.balance)}">
+        <div class="insights-bar-track">
+          <div class="insights-bar${isCurrent ? ' active' : ''}" style="height:${heightPct}%"></div>
+        </div>
+        <div class="insights-bar-label${isCurrent ? ' active' : ''}">${monthNames[d.month]}</div>
+      </div>`;
+  }).join('');
 }
 function isDesktop() { return window.matchMedia('(min-width: 768px)').matches; }
 function changeMonth(delta) {
