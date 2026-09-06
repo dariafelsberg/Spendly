@@ -284,8 +284,9 @@ function renderDonut() {
   const spent = totalExpenses();
   document.getElementById('donutBudget').textContent = 'CHF ' + formatNum(state.budget);
   document.getElementById('donutSpent').textContent  = '−CHF ' + formatNum(spent);
+  const nowKey = monthKey(new Date());
   const catTotals = {};
-  state.entries.filter(e => e.type === 'expense').forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
+  state.entries.filter(e => e.type === 'expense' && e.date.slice(0, 7) === nowKey).forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
   const activeCats = allExpenseCats().filter(c => catTotals[c.name] > 0);
   const r = 72, circ = 2 * Math.PI * r;
   let offset = 0;
@@ -1188,7 +1189,10 @@ function dateKey(d) {
 }
 
 // ── HELPERS
-function totalExpenses() { return state.entries.filter(e => e.type==='expense').reduce((s,e) => s+e.amount, 0); }
+function totalExpenses() {
+  const nowKey = monthKey(new Date());
+  return state.entries.filter(e => e.type==='expense' && e.date.slice(0, 7) === nowKey).reduce((s,e) => s+e.amount, 0);
+}
 function formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function formatDate(d) { return d ? new Date(d).toLocaleDateString('de-CH') : ''; }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
