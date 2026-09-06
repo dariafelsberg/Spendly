@@ -101,7 +101,7 @@ function applyRuleRecurring(r, type) {
   while (cursor <= nowKey) {
     const [y, m] = cursor.split('-').map(Number);
     const day = recurringDayFor(r, y, m);
-    const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    let dateStr = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     // Im Startmonat erst buchen, wenn das gewählte Startdatum tatsächlich
     // erreicht ist (z.B. Startdatum "morgen" -> heute noch nicht buchen).
     if (cursor === startKey && startDate > todayKey) break;
@@ -109,6 +109,10 @@ function applyRuleRecurring(r, type) {
     // erreicht ist — sonst würde z.B. der Lohn vom 15. schon am 1.
     // des Monats als bereits erhalten erscheinen.
     if (cursor === nowKey && dateStr > todayKey) break;
+    // Nachhol-Buchungen für bereits vergangene Monate behalten ihr
+    // tatsächliches Datum (dateStr wurde oben bereits mit cursors
+    // Jahr/Monat berechnet), damit sie im jeweiligen vergangenen Monat
+    // vom Budget abgezogen werden statt immer im aktuellen Monat.
     if (type === 'transfer') {
       state.entries.push({
         id: uid(), type: 'transfer', amount: r.amount, category: 'Interne Überweisung',
@@ -146,6 +150,27 @@ function correctRecurringEntryDates() {
     if (d !== correctDay) {
       e.date = `${y}-${String(m).padStart(2, '0')}-${String(correctDay).padStart(2, '0')}`;
       changed = true;
+    }
+  });
+  // Reparatur für den alten Bug: Nachhol-Buchungen waren früher alle auf
+  // den aktuellen Monat umdatiert worden. Hier werden die bereits
+  // gebuchten Einträge pro Regel in ihrer ursprünglichen Reihenfolge
+  // wieder auf die fortlaufenden Fälligkeitsmonate ab dem Startdatum
+  // verteilt (1. Eintrag = Startmonat, 2. Eintrag = Folgemonat, usw.).
+  Object.values(rulesById).forEach(r => {
+    if (!r.createdAt) return;
+    const startKey = monthKey(new Date(r.createdAt + 'T00:00:00'));
+    const ruleEntries = state.entries.filter(e => e.recurringId === r.id);
+    ruleEntries.forEach((e, i) => {
+      const mKey = addMonths(startKey, i);
+      const [y, m] = mKey.split('-').map(Number);
+      const day = recurringDayFor(r, y, m);
+      const correctDate = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      if (e.date !== correctDate) { e.date = correctDate; changed = true; }
+    });
+    if (ruleEntries.length) {
+      const lastKey = addMonths(startKey, ruleEntries.length - 1);
+      if (r.lastAppliedMonth !== lastKey) { r.lastAppliedMonth = lastKey; changed = true; }
     }
   });
   return changed;
