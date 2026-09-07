@@ -1562,7 +1562,7 @@ button {
 
 @media (min-width:768px) {
   .calendar-main {
-    display: grid !important;
+    display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
     gap: 12px;
