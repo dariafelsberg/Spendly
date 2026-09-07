@@ -1595,6 +1595,10 @@ button {
     padding: 22px 20px 50px;
   }
 
+  #analysisView.calendar-main .card {
+    height: auto;
+  }
+
   .cal-month-label, .cal-month-label-2 {
     flex: 1;
     text-align: center;
