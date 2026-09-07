@@ -1561,7 +1561,7 @@ button {
 }
 
 @media (min-width:768px) {
-  .calendar-main {
+  #calendarView.calendar-main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
@@ -1570,24 +1570,29 @@ button {
     align-content: start;
   }
 
-  .calendar-main .calendar-nav {
+  #calendarView.calendar-main .calendar-nav {
     grid-column: 1/-1;
     grid-row: 1;
   }
 
-  .calendar-main .calendar-card {
+  #calendarView.calendar-main .calendar-card {
     grid-column: 1;
     grid-row: 2;
   }
 
-  .calendar-main .calendar-card-2 {
+  #calendarView.calendar-main .calendar-card-2 {
     grid-column: 2;
     grid-row: 2;
   }
 
-  .calendar-main .day-detail {
+  #calendarView.calendar-main .day-detail {
     grid-column: 1/-1;
     grid-row: 3;
+  }
+
+  #analysisView.calendar-main {
+    display: block;
+    padding: 22px 20px 50px;
   }
 
   .cal-month-label, .cal-month-label-2 {
