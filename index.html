@@ -29,6 +29,7 @@
 
     <!-- ── TOPBAR ── -->
     <div class="topbar">
+      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen">⚙️</button>
       <div class="topbar-inner">
         <div class="topbar-label">Gesamtguthaben</div>
         <div class="total-balance">
@@ -96,6 +97,22 @@
       <span class="fab-label">Eintrag hinzufügen</span>
     </button>
 
+    <!-- ── APP MENU OVERLAY ── -->
+    <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
+      <div class="app-menu-panel">
+        <div class="app-menu-header">
+          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen">✕</button>
+          <div class="app-menu-title">Einstellungen</div>
+        </div>
+        <div class="app-menu-quicklinks">
+          <a class="app-menu-quicklink" href="index.html">🏠 Home</a>
+          <a class="app-menu-quicklink" href="calendar.html">📅 Kalender</a>
+          <a class="app-menu-quicklink" href="analyse.html">📊 Analyse</a>
+        </div>
+        <iframe class="app-menu-settings-frame" src="settings.html?embed=1" title="Einstellungen"></iframe>
+      </div>
+    </div>
+
     <!-- ── BOTTOM NAV ── -->
     <nav class="bottom-nav">
       <a class="nav-btn active" href="index.html">
@@ -106,10 +123,10 @@
         <span class="nav-icon">📅</span>
         <span class="nav-label">Einblicke</span>
       </a>
-      <a class="nav-btn" href="settings.html">
+      <button class="nav-btn" onclick="toggleAppMenu()">
         <span class="nav-icon">⚙️</span>
         <span class="nav-label">Einstellungen</span>
-      </a>
+      </button>
     </nav>
 
   </div><!-- /app-shell -->

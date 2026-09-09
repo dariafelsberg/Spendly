@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Spendly">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Budget Tracker – Einblicke</title>
+  <title>Budget Tracker – Analyse</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
     rel="stylesheet">
@@ -29,43 +29,37 @@
 
     <!-- ── SETTINGS-STYLE TOPBAR ── -->
     <div class="settings-topbar">
-      <h1 class="settings-title">Kalender</h1>
+      <h1 class="settings-title">Analyse</h1>
       <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen">⚙️</button>
     </div>
 
-    <!-- ── MAIN: KALENDER ── -->
-    <div class="calendar-main" id="calendarView">
+    <!-- ── MAIN: ANALYSE ── -->
+    <div class="calendar-main" id="analysisView">
 
       <!-- Month navigation -->
       <div class="card calendar-nav">
-        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
-        <div class="cal-month-label" id="calMonthLabel">—</div>
-        <div class="cal-month-label cal-month-label-2" id="calMonthLabel2" style="display:none">—</div>
-        <button class="cal-nav-btn" id="calNavNext" onclick="changeMonth(1)">›</button>
+        <button class="cal-nav-btn" onclick="changeInsightsMonth(-1)">‹</button>
+        <div class="cal-month-label" id="insightsMonthLabel">—</div>
+        <button class="cal-nav-btn" id="insightsNavNext" onclick="changeInsightsMonth(1)">›</button>
       </div>
 
-      <!-- Calendar grid (current month) -->
-      <div class="card calendar-card">
-        <div class="calendar-weekdays" id="calWeekdays"></div>
-        <div class="calendar-grid" id="calGrid"></div>
+      <div class="card insights-chart-card">
+        <div class="section-label">Monatsbilanz</div>
+        <div class="insights-chart" id="insightsChart"></div>
       </div>
 
-      <!-- Calendar grid (next month, desktop only) -->
-      <div class="card calendar-card calendar-card-2" id="calCard2" style="display:none">
-        <div class="calendar-weekdays" id="calWeekdays2"></div>
-        <div class="calendar-grid" id="calGrid2"></div>
-      </div>
-
-      <!-- Day detail -->
-      <div class="card day-detail" id="dayDetail" style="display:none;">
-        <div class="day-detail-header">
-          <span class="day-detail-title" id="dayDetailTitle"></span>
-          <span class="day-detail-total" id="dayDetailTotal"></span>
+      <!-- Einträge des ausgewählten Monats -->
+      <div class="card transactions-section">
+        <div class="tx-header-left">
+          <span class="tx-title">Einträge</span>
+          <span class="tx-count" id="insightsTxCount">0</span>
         </div>
-        <div class="day-detail-list" id="dayDetailList"></div>
+        <div class="tx-list open" id="insightsTxList">
+          <div class="empty-tx" id="insightsTxEmpty" style="display: none;">Keine Einträge in diesem Monat.</div>
+        </div>
       </div>
 
-    </div><!-- /calendarView -->
+    </div><!-- /analysisView -->
 
     <!-- ── APP MENU OVERLAY ── -->
     <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
