@@ -239,6 +239,15 @@ function saveState() {
   }).catch(() => {}); // Offline: nur localStorage wurde gesichert
 }
 
+// ── APP MENU (Header-Icon-Overlay) ────────────────────────────
+function toggleAppMenu(forceState) {
+  const el = document.getElementById('appMenuOverlay');
+  if (!el) return;
+  const open = typeof forceState === 'boolean' ? forceState : !el.classList.contains('open');
+  el.classList.toggle('open', open);
+}
+function closeAppMenu() { toggleAppMenu(false); }
+
 // ── CALENDAR STATE (muss vor BOOT deklariert sein, da initCalendar() dort aufgerufen wird)
 let calViewDate = new Date(), calSelectedDay = null;
 let insightsViewDate = new Date(); insightsViewDate.setDate(1);
@@ -251,10 +260,12 @@ loadState();
 const IS_HOME     = !!document.getElementById('donutSvg');
 const IS_SETTINGS = !!document.getElementById('accountsList');
 const IS_CALENDAR = !!document.getElementById('calGrid');
+const IS_ANALYSIS = !!document.getElementById('insightsChart');
 
 if (IS_HOME) initHome();
 else if (IS_SETTINGS) initSettings();
 if (IS_CALENDAR) initCalendar();
+if (IS_ANALYSIS) renderInsightsView();
 
 // Re-render calendar on resize (desktop <-> mobile toggle)
 if (IS_CALENDAR) {
