@@ -311,46 +311,13 @@ button {
   }
 }
 
-/* ── APP MENU QUICKLINKS (oberhalb der eingebetteten Einstellungen) ── */
-.app-menu-quicklinks {
-  display: flex;
-  gap: 8px;
-  margin-bottom: var(--sp-md);
-  flex-shrink: 0;
-}
-
-.app-menu-quicklink {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  background: var(--card-soft);
-  font-size: .82rem;
-  font-weight: 600;
-  color: var(--text);
-  transition: background .15s;
-}
-
-.app-menu-quicklink:active,
-.app-menu-quicklink.active {
-  background: var(--primary-light);
-}
-
+/* ── APP MENU SETTINGS FRAME ── */
 .app-menu-settings-frame {
   flex: 1;
   width: 100%;
   border: 0;
   border-radius: var(--radius-lg);
   background: var(--bg);
-}
-
-@media (min-width: 768px) {
-  .app-menu-quicklink:hover {
-    background: var(--primary-light);
-  }
 }
 
 /* ── EMBED MODE: settings.html wird im Menü-Overlay per iframe eingebettet
