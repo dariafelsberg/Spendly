@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Spendly">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Budget Tracker – Kalender</title>
+  <title>Budget Tracker – Einblicke</title>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
     rel="stylesheet">
@@ -30,6 +30,7 @@
     <!-- ── SETTINGS-STYLE TOPBAR ── -->
     <div class="settings-topbar">
       <h1 class="settings-title">Kalender</h1>
+      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen">⚙️</button>
     </div>
 
     <!-- ── MAIN: KALENDER ── -->
@@ -66,6 +67,17 @@
 
     </div><!-- /calendarView -->
 
+    <!-- ── APP MENU OVERLAY ── -->
+    <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
+      <div class="app-menu-panel">
+        <div class="app-menu-header">
+          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen">✕</button>
+          <div class="app-menu-title">Einstellungen</div>
+        </div>
+        <iframe class="app-menu-settings-frame" src="settings.html?embed=1" title="Einstellungen"></iframe>
+      </div>
+    </div>
+
     <!-- ── BOTTOM NAV ── -->
     <nav class="bottom-nav">
       <a class="nav-btn" href="index.html">
@@ -80,10 +92,10 @@
         <span class="nav-icon">📊</span>
         <span class="nav-label">Analyse</span>
       </a>
-      <a class="nav-btn" href="settings.html">
+      <button class="nav-btn" onclick="toggleAppMenu()">
         <span class="nav-icon">⚙️</span>
         <span class="nav-label">Einstellungen</span>
-      </a>
+      </button>
     </nav>
 
   </div><!-- /app-shell -->

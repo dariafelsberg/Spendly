@@ -101,7 +101,7 @@ function applyRuleRecurring(r, type) {
   while (cursor <= nowKey) {
     const [y, m] = cursor.split('-').map(Number);
     const day = recurringDayFor(r, y, m);
-    const dateStr = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    let dateStr = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     // Im Startmonat erst buchen, wenn das gewählte Startdatum tatsächlich
     // erreicht ist (z.B. Startdatum "morgen" -> heute noch nicht buchen).
     if (cursor === startKey && startDate > todayKey) break;
@@ -109,6 +109,10 @@ function applyRuleRecurring(r, type) {
     // erreicht ist — sonst würde z.B. der Lohn vom 15. schon am 1.
     // des Monats als bereits erhalten erscheinen.
     if (cursor === nowKey && dateStr > todayKey) break;
+    // Nachhol-Buchungen für bereits vergangene Monate behalten ihr
+    // tatsächliches Datum (dateStr wurde oben bereits mit cursors
+    // Jahr/Monat berechnet), damit sie im jeweiligen vergangenen Monat
+    // vom Budget abgezogen werden statt immer im aktuellen Monat.
     if (type === 'transfer') {
       state.entries.push({
         id: uid(), type: 'transfer', amount: r.amount, category: 'Interne Überweisung',
@@ -146,6 +150,27 @@ function correctRecurringEntryDates() {
     if (d !== correctDay) {
       e.date = `${y}-${String(m).padStart(2, '0')}-${String(correctDay).padStart(2, '0')}`;
       changed = true;
+    }
+  });
+  // Reparatur für den alten Bug: Nachhol-Buchungen waren früher alle auf
+  // den aktuellen Monat umdatiert worden. Hier werden die bereits
+  // gebuchten Einträge pro Regel in ihrer ursprünglichen Reihenfolge
+  // wieder auf die fortlaufenden Fälligkeitsmonate ab dem Startdatum
+  // verteilt (1. Eintrag = Startmonat, 2. Eintrag = Folgemonat, usw.).
+  Object.values(rulesById).forEach(r => {
+    if (!r.createdAt) return;
+    const startKey = monthKey(new Date(r.createdAt + 'T00:00:00'));
+    const ruleEntries = state.entries.filter(e => e.recurringId === r.id);
+    ruleEntries.forEach((e, i) => {
+      const mKey = addMonths(startKey, i);
+      const [y, m] = mKey.split('-').map(Number);
+      const day = recurringDayFor(r, y, m);
+      const correctDate = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      if (e.date !== correctDate) { e.date = correctDate; changed = true; }
+    });
+    if (ruleEntries.length) {
+      const lastKey = addMonths(startKey, ruleEntries.length - 1);
+      if (r.lastAppliedMonth !== lastKey) { r.lastAppliedMonth = lastKey; changed = true; }
     }
   });
   return changed;
@@ -213,6 +238,15 @@ function saveState() {
     body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } })
   }).catch(() => {}); // Offline: nur localStorage wurde gesichert
 }
+
+// ── APP MENU (Header-Icon-Overlay) ────────────────────────────
+function toggleAppMenu(forceState) {
+  const el = document.getElementById('appMenuOverlay');
+  if (!el) return;
+  const open = typeof forceState === 'boolean' ? forceState : !el.classList.contains('open');
+  el.classList.toggle('open', open);
+}
+function closeAppMenu() { toggleAppMenu(false); }
 
 // ── CALENDAR STATE (muss vor BOOT deklariert sein, da initCalendar() dort aufgerufen wird)
 let calViewDate = new Date(), calSelectedDay = null;
@@ -286,8 +320,9 @@ function renderDonut() {
   const spent = totalExpenses();
   document.getElementById('donutBudget').textContent = 'CHF ' + formatNum(state.budget);
   document.getElementById('donutSpent').textContent  = '−CHF ' + formatNum(spent);
+  const nowKey = monthKey(new Date());
   const catTotals = {};
-  state.entries.filter(e => e.type === 'expense').forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
+  state.entries.filter(e => e.type === 'expense' && e.date.slice(0, 7) === nowKey).forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
   const activeCats = allExpenseCats().filter(c => catTotals[c.name] > 0);
   const r = 72, circ = 2 * Math.PI * r;
   let offset = 0;
@@ -1190,7 +1225,10 @@ function dateKey(d) {
 }
 
 // ── HELPERS
-function totalExpenses() { return state.entries.filter(e => e.type==='expense').reduce((s,e) => s+e.amount, 0); }
+function totalExpenses() {
+  const nowKey = monthKey(new Date());
+  return state.entries.filter(e => e.type==='expense' && e.date.slice(0, 7) === nowKey).reduce((s,e) => s+e.amount, 0);
+}
 function formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function formatDate(d) { return d ? new Date(d).toLocaleDateString('de-CH') : ''; }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
