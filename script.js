@@ -8,11 +8,12 @@ const EXPENSE_CATEGORIES = [
   { name: 'Geschenke',       emoji: '🎁', color: '#f472b6' },
   { name: 'Gesundheit',      emoji: '💊', color: '#60a5fa' },
   { name: 'Wohnen',          emoji: '🏠', color: '#fb923c' },
-  { name: 'Online Shopping', emoji: '🛍️', color: '#c084fc' },
+  { name: 'Online Shopping', emoji: '📦', color: '#c084fc' },
   { name: 'Haustiere',       emoji: '🐾', color: '#4ade80' },
   { name: 'Sport',           emoji: '⚽', color: '#38bdf8' },
   { name: 'ÖV',              emoji: '🚋', color: '#f87171' },
   { name: 'Hygieneartikel',  emoji: '🧴', color: '#a3e635' },
+  { name: 'Shopping',         emoji: '🛍️', color: '#f472b6' },
 ];
 const INCOME_CATEGORIES = [
   { name: 'Lohn',      emoji: '💼', color: '#16a34a' },
