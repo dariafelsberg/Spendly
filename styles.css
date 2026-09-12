@@ -760,10 +760,14 @@ html.embed-mode .settings-main {
 .tx-note {
   font-size: .7rem;
   color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: break-word;
   margin-top: 1px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 3px;
+  column-gap: 4px;
 }
 
 .tx-amount {
