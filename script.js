@@ -254,6 +254,8 @@ let insightsViewDate = new Date(); insightsViewDate.setDate(1);
 // Rechtester (jüngster) Monat im aktuell angezeigten 8-Monats-Fenster der Analyse-Ansicht.
 // Bleibt beim Blättern stabil, solange der ausgewählte Monat noch im Fenster liegt.
 let insightsWindowAnchor = new Date(insightsViewDate);
+// px, muss mit .insights-bar-track in styles.css übereinstimmen
+const INSIGHTS_TRACK_HEIGHT = 150;
 
 // ── BOOT
 loadState();
@@ -1016,7 +1018,6 @@ function computeMonthlyNet(monthsBack, anchorDate = new Date()) {
     return { year, month, net };
   });
 }
-const INSIGHTS_TRACK_HEIGHT = 150; // px, muss mit .insights-bar-track in styles.css übereinstimmen
 function renderInsightsChart() {
   const el = document.getElementById('insightsChart');
   if (!el) return;
