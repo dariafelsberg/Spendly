@@ -184,19 +184,24 @@ button {
 }
 
 /* ── HEADER MENU ICON ── */
-.menu-toggle-btn {
+/* Doppelter Klassen-Selektor, damit .icon-btn (weiter unten) den transparenten Hintergrund nicht überschreibt */
+.icon-btn.menu-toggle-btn {
   position: absolute;
   top: calc(44px + env(safe-area-inset-top) + 6px);
   right: var(--sp-md);
   z-index: 2;
-  background: rgba(255, 255, 255, .18);
+  background: transparent;
   color: #fff;
-  backdrop-filter: blur(8px);
   font-size: 1.05rem;
 }
 
-.menu-toggle-btn:active {
-  background: rgba(255, 255, 255, .3);
+.icon-btn.menu-toggle-btn:hover,
+.icon-btn.menu-toggle-btn:active {
+  background: transparent;
+}
+
+.icon-btn.menu-toggle-btn:active {
+  opacity: .6;
 }
 
 /* ── APP MENU OVERLAY ── */
