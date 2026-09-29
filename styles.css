@@ -192,7 +192,9 @@ button {
   z-index: 2;
   background: transparent;
   color: #fff;
-  font-size: 1.05rem;
+  font-size: 2rem; /* Zahnrad so gross wie der frühere 38px-Button */
+  line-height: 1;
+  padding: 0;
 }
 
 .icon-btn.menu-toggle-btn:hover,
