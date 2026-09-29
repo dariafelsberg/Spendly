@@ -206,14 +206,6 @@ button {
   opacity: .6;
 }
 
-/* ≥768px: Zahnrad am oberen Rand der Topbar (.topbar bzw. .settings-topbar) */
-@media (min-width: 768px) {
-  .icon-btn.menu-toggle-btn {
-    top: 0;
-    transform: none;
-  }
-}
-
 /* ── APP MENU OVERLAY ── */
 .app-menu-overlay {
   position: fixed;
