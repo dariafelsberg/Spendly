@@ -153,27 +153,9 @@ function correctRecurringEntryDates() {
       changed = true;
     }
   });
-  // Reparatur für den alten Bug: Nachhol-Buchungen waren früher alle auf
-  // den aktuellen Monat umdatiert worden. Hier werden die bereits
-  // gebuchten Einträge pro Regel in ihrer ursprünglichen Reihenfolge
-  // wieder auf die fortlaufenden Fälligkeitsmonate ab dem Startdatum
-  // verteilt (1. Eintrag = Startmonat, 2. Eintrag = Folgemonat, usw.).
-  Object.values(rulesById).forEach(r => {
-    if (!r.createdAt) return;
-    const startKey = monthKey(new Date(r.createdAt + 'T00:00:00'));
-    const ruleEntries = state.entries.filter(e => e.recurringId === r.id);
-    ruleEntries.forEach((e, i) => {
-      const mKey = addMonths(startKey, i);
-      const [y, m] = mKey.split('-').map(Number);
-      const day = recurringDayFor(r, y, m);
-      const correctDate = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      if (e.date !== correctDate) { e.date = correctDate; changed = true; }
-    });
-    if (ruleEntries.length) {
-      const lastKey = addMonths(startKey, ruleEntries.length - 1);
-      if (r.lastAppliedMonth !== lastKey) { r.lastAppliedMonth = lastKey; changed = true; }
-    }
-  });
+  // Hinweis: Die frühere Neuverteilung der Buchungen auf fortlaufende Monate
+  // (inkl. Zurücksetzen von lastAppliedMonth) wurde entfernt. Sie machte manuell
+  // gelöschte automatische Buchungen beim nächsten Laden wieder rückgängig.
   return changed;
 }
 // Prüft alle Regeln auf fällige Monate (und holt verpasste Monate nach,
