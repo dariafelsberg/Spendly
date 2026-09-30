@@ -227,7 +227,9 @@ button {
 .app-menu-overlay {
   position: fixed;
   inset: 0;
-  background: var(--card);
+  background: rgba(0, 0, 0, .45); /* abgedunkelter Bereich über dem Menü; Tippen darauf schliesst das Menü */
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   z-index: 300;
   display: none;
   padding: 0;
@@ -235,16 +237,32 @@ button {
 
 .app-menu-overlay.open {
   display: flex;
+  align-items: flex-end; /* Menü klebt am unteren Bildschirmrand */
+  animation: appMenuFade .25s ease-out;
+}
+
+.app-menu-overlay.open .app-menu-panel {
+  animation: appMenuSlideUp .3s cubic-bezier(.22, 1, .36, 1); /* von unten nach oben einfahren */
+}
+
+@keyframes appMenuFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes appMenuSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .app-menu-panel {
   width: 100%;
-  height: 100%;
-  height: 100dvh;
+  height: 80%;
+  height: 80dvh;
   background: var(--card);
-  border-radius: 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: none;
-  padding: calc(var(--sp-lg) + env(safe-area-inset-top)) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom));
+  padding: var(--sp-lg) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -254,8 +272,8 @@ button {
   display: flex;
   align-items: center;
   gap: var(--sp-sm);
-  margin: calc(-1 * (var(--sp-lg) + env(safe-area-inset-top))) calc(-1 * var(--sp-lg)) var(--sp-lg);
-  padding: calc(var(--sp-lg) + env(safe-area-inset-top)) var(--sp-lg) var(--sp-md);
+  margin: calc(-1 * var(--sp-lg)) calc(-1 * var(--sp-lg)) var(--sp-lg);
+  padding: var(--sp-lg) var(--sp-lg) var(--sp-md);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
