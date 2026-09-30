@@ -262,6 +262,8 @@ button {
 
 .app-menu-close-btn {
   border-radius: 50%;
+  order: 2;          /* im HTML steht der Button vor dem Titel, hier nach rechts */
+  margin-left: auto;
 }
 
 .app-menu-title {
