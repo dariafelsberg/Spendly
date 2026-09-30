@@ -223,11 +223,20 @@ function saveState() {
 }
 
 // ── APP MENU (Header-Icon-Overlay) ────────────────────────────
+let _appMenuCloseTimer = null;
 function toggleAppMenu(forceState) {
   const el = document.getElementById('appMenuOverlay');
   if (!el) return;
-  const open = typeof forceState === 'boolean' ? forceState : !el.classList.contains('open');
-  el.classList.toggle('open', open);
+  const open = typeof forceState === 'boolean' ? forceState : !el.classList.contains('show');
+  clearTimeout(_appMenuCloseTimer);
+  if (open) {
+    el.classList.add('open');        // im Layout einblenden (noch unsichtbar, Panel unten ausserhalb)
+    void el.offsetWidth;             // Reflow erzwingen, damit die Transition vom Startzustand aus läuft
+    el.classList.add('show');        // Panel fährt hoch, Hintergrund blendet ein
+  } else {
+    el.classList.remove('show');     // Panel fährt runter, Hintergrund blendet aus
+    _appMenuCloseTimer = setTimeout(() => el.classList.remove('open'), 320); // erst nach der Animation ausblenden
+  }
 }
 function closeAppMenu() { toggleAppMenu(false); }
 

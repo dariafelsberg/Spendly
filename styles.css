@@ -233,32 +233,33 @@ button {
   z-index: 300;
   display: none;
   padding: 0;
+  opacity: 0;
+  transition: opacity .25s ease;
 }
 
+/* .open = im Layout vorhanden, .show = sichtbar (beides setzt toggleAppMenu() in script.js, damit auch das Schliessen animiert wird) */
 .app-menu-overlay.open {
   display: flex;
   align-items: flex-end; /* Menü klebt am unteren Bildschirmrand */
-  animation: appMenuFade .25s ease-out;
 }
 
-.app-menu-overlay.open .app-menu-panel {
-  animation: appMenuSlideUp .3s cubic-bezier(.22, 1, .36, 1); /* von unten nach oben einfahren */
+.app-menu-overlay.show {
+  opacity: 1;
 }
 
-@keyframes appMenuFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.app-menu-overlay .app-menu-panel {
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
 }
 
-@keyframes appMenuSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+.app-menu-overlay.show .app-menu-panel {
+  transform: translateY(0);
 }
 
 .app-menu-panel {
   width: 100%;
-  height: 80%;
-  height: 80dvh;
+  height: 90%;
+  height: 90dvh;
   background: var(--card);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: none;
