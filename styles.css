@@ -206,6 +206,23 @@ button {
   opacity: .6;
 }
 
+/* ≥768px: Oberkante des Zahnrads auf Höhe der Oberkante des Topbar-Inhalts (= oberer Innenabstand 30px von .topbar/.settings-topbar) */
+@media (min-width: 768px) {
+  .icon-btn.menu-toggle-btn {
+    top: 30px;
+    transform: none;
+  }
+
+  /* index.html: Zahnrad als eigene dritte Spalte im Topbar-Grid, oben rechts */
+  .topbar > .icon-btn.menu-toggle-btn {
+    position: static;
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    justify-self: end;
+  }
+}
+
 /* ── APP MENU OVERLAY ── */
 .app-menu-overlay {
   position: fixed;
@@ -1299,7 +1316,7 @@ html.embed-mode .settings-main {
 
   .topbar {
     display: grid;
-    grid-template-columns: .8fr 1.1fr;
+    grid-template-columns: .8fr 1.1fr auto;
     align-items: start;
     gap: 32px;
   }
