@@ -1,0 +1,176 @@
+/* pages/settings.css – Einstellungen (Konten, Wiederkehrendes, eigene Kategorien, Toggle) */
+
+/* ── EMBED MODE: settings.html wird im Menü-Overlay per iframe eingebettet
+   und zeigt dort keinen eigenen Header/Bottom-Nav ── */
+html.embed-mode .settings-topbar,
+html.embed-mode .bottom-nav {
+  display: none !important;
+}
+html.embed-mode .app-shell {
+  padding-bottom: 0;
+}
+html.embed-mode .settings-main {
+  padding-top: var(--sp-lg);
+}
+
+/* ── SETTINGS PAGE */
+.settings-section {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-md);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-card);
+}
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.settings-section-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 1.3rem;
+  background: var(--primary-light);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.settings-section-title {
+  font-weight: 700;
+  font-size: .9rem;
+}
+.settings-section-sub {
+  font-size: .72rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  background: var(--card-soft);
+  border-radius: var(--radius);
+}
+.settings-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.settings-item-name {
+  font-weight: 600;
+  font-size: .82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.settings-item-val {
+  font-size: .72rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.settings-item-actions {
+  display: flex;
+  gap: 3px;
+}
+.settings-add-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.settings-add-btn:active {
+  background: var(--primary-light);
+}
+.budget-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.budget-setting-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+/* ── BREAKPOINT ≥768px */
+@media (min-width:768px) {
+  .settings-section {
+      padding: var(--sp-lg);
+    }
+  .settings-add-btn:hover {
+      background: var(--primary-light);
+    }
+}
+
+/* ── BREAKPOINT 768–1023px (Tablet settings) */
+@media (min-width:768px) and (max-width:1023px) {
+  .settings-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+  .settings-main>.settings-section {
+      margin-bottom: 0;
+    }
+  .settings-main>.settings-section:nth-of-type(1),
+    .settings-main>.settings-section:nth-of-type(4) {
+      grid-column: 1/span 2;
+    }
+  .settings-main>.settings-section:nth-of-type(2) {
+      grid-column: 1;
+    }
+  .settings-main>.settings-section:nth-of-type(3) {
+      grid-column: 2;
+    }
+}
+
+/* ── BREAKPOINT ≥1024px */
+@media (min-width:1024px) {
+  .settings-main {
+      grid-column: 1/span 8;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: var(--sp-md);
+    }
+  .settings-main>.settings-section {
+      margin-bottom: 0;
+    }
+  .settings-main>.settings-section:nth-of-type(1) {
+      grid-column: span 2;
+      grid-row: span 4;
+      grid-column-start: 1;
+    }
+  .settings-main>.settings-section:nth-of-type(2) {
+      grid-column: span 2;
+      grid-row: span 3;
+      grid-column-start: 2;
+    }
+  .settings-main>.settings-section:nth-of-type(3) {
+      grid-column: span 2;
+      grid-row: span 3;
+      grid-column-start: 3;
+    }
+  .settings-main>.settings-section:nth-of-type(4) {
+      grid-column: span 2;
+      grid-row: span 2;
+      grid-column-start: 4;
+    }
+}

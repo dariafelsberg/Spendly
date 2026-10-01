@@ -1,0 +1,86 @@
+/* pages/analyse.css – Analyse (Monatschart) */
+
+/* ── INSIGHTS CHART ── */
+.insights-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  height: 200px;
+  margin-top: var(--sp-md);
+}
+.insights-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+}
+.insights-bar-track {
+  position: relative;
+  width: 100%;
+  height: 150px;
+}
+.insights-bar-zero-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+.insights-bar-value {
+  font-size: .64rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+.insights-bar-value.active {
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+.insights-bar-value.negative {
+  color: var(--danger);
+}
+.insights-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  min-width: 10px;
+  background: var(--primary-light);
+  border-radius: 6px 6px 2px 2px;
+  transition: top .4s ease, height .4s ease, background .2s ease;
+}
+.insights-bar.active {
+  background: var(--primary);
+}
+.insights-bar.negative {
+  border-radius: 2px 2px 6px 6px;
+  background: var(--danger-light);
+}
+.insights-bar.negative.active {
+  background: var(--danger);
+}
+.insights-bar-label {
+  margin-top: 8px;
+  font-size: .68rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.insights-bar-label.active {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ── CALENDAR */
+@media (min-width:768px) {
+  #analysisView.calendar-main {
+      display: block;
+      padding: 22px 20px 50px;
+    }
+  #analysisView.calendar-main .card {
+      height: auto;
+    }
+}

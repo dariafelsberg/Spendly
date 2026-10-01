@@ -18,11 +18,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Spendly">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <title>Budget Tracker – Einstellungen</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/pages/settings.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -292,11 +293,12 @@ function switchCustomCatType(type) {
   const isExpense = type === 'expense';
   document.getElementById('customCatTabExpense').classList.toggle('active', isExpense);
   document.getElementById('customCatTabIncome').classList.toggle('active', !isExpense);
-  // expose chosen type for saveCustomCat() in script.js
+  // expose chosen type for saveCustomCat() in assets/js/pages/settings.js
   document.getElementById('customCatModal').dataset.catType = type;
 }
 </script>
-<script src="auth.js"></script>
-<script src="script.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/pages/settings.js"></script>
 </body>
 </html>
