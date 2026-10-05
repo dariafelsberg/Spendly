@@ -72,16 +72,16 @@ function renderInsightsView() {
   renderInsightsChart();
   renderInsightsMonthList();
 }
-// Netto (Einnahmen − Ausgaben) pro Monat. Überweisungen und geplante
-// Vorschau-Einträge zählen nicht mit, da sie das Gesamtvermögen nicht
-// verändern bzw. noch nicht real gebucht sind.
+// Netto (Einnahmen − Ausgaben − interne Überweisungen, z. B. Sparen) pro
+// Monat. Geplante Vorschau-Einträge zählen nicht mit, da sie noch nicht
+// real gebucht sind.
 function computeMonthlyNet(monthsBack, anchorDate = new Date()) {
   const months = [];
   for (let i = monthsBack - 1; i >= 0; i--) {
     const d = new Date(anchorDate.getFullYear(), anchorDate.getMonth() - i, 1);
     months.push({ year: d.getFullYear(), month: d.getMonth() });
   }
-  const relevant = state.entries.filter(e => e.type !== 'transfer' && !e.isPreview);
+  const relevant = state.entries.filter(e => !e.isPreview);
   return months.map(({ year, month }) => {
     const mKey = monthKey(new Date(year, month, 1));
     const net = relevant
