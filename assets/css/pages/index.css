@@ -113,7 +113,7 @@
   width: 200px;
   height: 200px;
   /* Platz oben/unten für die Kategorie-Labels */
-  margin: 28px auto;
+  margin: 24px auto;
 }
 .donut-center {
   position: absolute;

@@ -107,8 +107,8 @@ function renderDonut() {
       labelsEl.appendChild(lbl);
     }
     lbl.querySelector('.donut-label-dot').style.background = c.color;
-    lbl.style.left = `${(50 + 54 * sin).toFixed(2)}%`;
-    lbl.style.top  = `${(50 - 54 * cos).toFixed(2)}%`;
+    lbl.style.left = `${(50 + 51 * sin).toFixed(2)}%`;
+    lbl.style.top  = `${(50 - 51 * cos).toFixed(2)}%`;
     lbl.style.transform = `translate(${(-50 + 50 * sin).toFixed(1)}%, ${(-50 - 50 * cos).toFixed(1)}%)`;
     lbl.getBoundingClientRect(); // Reflow, damit neue Labels einblenden
     lbl.classList.add('show');
