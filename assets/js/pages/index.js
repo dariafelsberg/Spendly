@@ -256,28 +256,8 @@ function saveEntry() {
     const finalType = (state.entryType === 'expense' && aoChecked) ? 'account-only' : state.entryType;
     state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId });
     applyAccountDelta(accountId, amount, finalType);
-    if (finalType === 'expense' && date.slice(0, 7) === monthKey(new Date())) {
-      saveState(); render(); closeEntryModal();
-      popDonut(category);
-      return;
-    }
   }
   saveState(); render(); closeEntryModal();
-}
-
-// Kurzer "Pop" des Donuts und Hervorhebung des betroffenen Bogens,
-// wenn eine neue Ausgabe im aktuellen Monat hinzugefügt wurde.
-function popDonut(category) {
-  const container = document.querySelector('.donut-container');
-  const spentEl = document.getElementById('donutSpent');
-  const arc = [...document.querySelectorAll('#donutArcs circle[data-cat]')].find(el => el.dataset.cat === category);
-  [[container, 'donut-pop'], [spentEl, 'donut-spent-pop'], [arc, 'donut-arc-pop']].forEach(([el, cls]) => {
-    if (!el) return;
-    el.classList.remove(cls);
-    el.getBoundingClientRect(); // Animation neu starten
-    el.classList.add(cls);
-    el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
-  });
 }
 
 function toggleTxList() {

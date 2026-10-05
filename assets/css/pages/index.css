@@ -139,31 +139,8 @@
               stroke-dashoffset .7s cubic-bezier(.34, 1.2, .64, 1),
               stroke .3s ease;
 }
-.donut-pop {
-  animation: donutPop .6s cubic-bezier(.34, 1.56, .64, 1);
-}
-.donut-arc-pop {
-  animation: donutArcPop .8s ease;
-}
-.donut-spent-pop {
-  animation: donutSpentPop .6s ease;
-}
-@keyframes donutPop {
-  0%   { transform: scale(1); }
-  35%  { transform: scale(1.06); }
-  100% { transform: scale(1); }
-}
-@keyframes donutArcPop {
-  0%, 100% { stroke-width: 28; }
-  40%      { stroke-width: 36; }
-}
-@keyframes donutSpentPop {
-  0%, 100% { transform: scale(1); }
-  40%      { transform: scale(1.15); }
-}
 @media (prefers-reduced-motion: reduce) {
   .donut-arc { transition: none; }
-  .donut-pop, .donut-arc-pop, .donut-spent-pop { animation: none; }
 }
 .donut-center-label {
   font-size: clamp(.62rem, 2.5vw, .8rem);
