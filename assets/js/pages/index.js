@@ -54,17 +54,43 @@ function renderDonut() {
   const catTotals = {};
   state.entries.filter(e => e.type === 'expense' && e.date.slice(0, 7) === nowKey).forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
   const activeCats = allExpenseCats().filter(c => catTotals[c.name] > 0);
+  // Bögen pro Kategorie wiederverwenden statt neu zu zeichnen, damit die
+  // CSS-Transitions greifen und Änderungen weich animiert werden.
   const r = 72, circ = 2 * Math.PI * r;
+  const arcsEl = document.getElementById('donutArcs');
+  const existing = {};
+  arcsEl.querySelectorAll('circle[data-cat]').forEach(el => { existing[el.dataset.cat] = el; });
   let offset = 0;
-  document.getElementById('donutArcs').innerHTML = (activeCats.length && spent > 0)
-    ? activeCats.map(c => {
-        const frac = catTotals[c.name] / Math.max(spent, state.budget, 0.01);
-        const dLen = Math.min(frac, 1) * circ;
-        const arc = `<circle cx="100" cy="100" r="${r}" fill="none" stroke="${c.color}" stroke-width="28"
-          stroke-dasharray="${dLen.toFixed(2)} ${(circ-dLen).toFixed(2)}"
-          stroke-dashoffset="${(-offset*circ).toFixed(2)}" style="transition:all .5s ease"/>`;
-        offset += frac; return arc;
-      }).join('') : '';
+  (spent > 0 ? activeCats : []).forEach(c => {
+    const frac = catTotals[c.name] / Math.max(spent, state.budget, 0.01);
+    const dLen = Math.min(frac, 1) * circ;
+    const dashOffset = (-offset * circ).toFixed(2);
+    let el = existing[c.name];
+    delete existing[c.name];
+    if (!el) {
+      el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      el.dataset.cat = c.name;
+      el.setAttribute('class', 'donut-arc');
+      ['cx', 'cy'].forEach(a => el.setAttribute(a, '100'));
+      el.setAttribute('r', r);
+      el.setAttribute('fill', 'none');
+      el.setAttribute('stroke-width', '28');
+      // Neuer Bogen startet mit Länge 0 an seiner Position und wächst dann.
+      el.style.strokeDasharray = `0 ${circ.toFixed(2)}`;
+      el.style.strokeDashoffset = dashOffset;
+      arcsEl.appendChild(el);
+      el.getBoundingClientRect(); // Reflow erzwingen, damit die Transition startet
+    }
+    el.setAttribute('stroke', c.color);
+    el.style.strokeDasharray = `${dLen.toFixed(2)} ${(circ - dLen).toFixed(2)}`;
+    el.style.strokeDashoffset = dashOffset;
+    offset += frac;
+  });
+  // Nicht mehr aktive Kategorien zusammenschrumpfen lassen und dann entfernen.
+  Object.values(existing).forEach(el => {
+    el.style.strokeDasharray = `0 ${circ.toFixed(2)}`;
+    setTimeout(() => el.remove(), 600);
+  });
   document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
     const amt = catTotals[c.name] || 0;
     return `<div class="cat-chip" style="${amt ? `background:${c.color}15;border-color:${c.color}44` : ''}">
@@ -230,8 +256,28 @@ function saveEntry() {
     const finalType = (state.entryType === 'expense' && aoChecked) ? 'account-only' : state.entryType;
     state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId });
     applyAccountDelta(accountId, amount, finalType);
+    if (finalType === 'expense' && date.slice(0, 7) === monthKey(new Date())) {
+      saveState(); render(); closeEntryModal();
+      popDonut(category);
+      return;
+    }
   }
   saveState(); render(); closeEntryModal();
+}
+
+// Kurzer "Pop" des Donuts und Hervorhebung des betroffenen Bogens,
+// wenn eine neue Ausgabe im aktuellen Monat hinzugefügt wurde.
+function popDonut(category) {
+  const container = document.querySelector('.donut-container');
+  const spentEl = document.getElementById('donutSpent');
+  const arc = [...document.querySelectorAll('#donutArcs circle[data-cat]')].find(el => el.dataset.cat === category);
+  [[container, 'donut-pop'], [spentEl, 'donut-spent-pop'], [arc, 'donut-arc-pop']].forEach(([el, cls]) => {
+    if (!el) return;
+    el.classList.remove(cls);
+    el.getBoundingClientRect(); // Animation neu starten
+    el.classList.add(cls);
+    el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
+  });
 }
 
 function toggleTxList() {
