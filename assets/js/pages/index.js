@@ -58,8 +58,10 @@ function renderDonut() {
   // CSS-Transitions greifen und Änderungen weich animiert werden.
   const r = 72, circ = 2 * Math.PI * r;
   const arcsEl = document.getElementById('donutArcs');
-  const existing = {};
+  const labelsEl = document.getElementById('donutLabels');
+  const existing = {}, existingLabels = {};
   arcsEl.querySelectorAll('circle[data-cat]').forEach(el => { existing[el.dataset.cat] = el; });
+  labelsEl.querySelectorAll('.donut-label').forEach(el => { existingLabels[el.dataset.cat] = el; });
   let offset = 0;
   (spent > 0 ? activeCats : []).forEach(c => {
     const frac = catTotals[c.name] / Math.max(spent, state.budget, 0.01);
@@ -84,11 +86,41 @@ function renderDonut() {
     el.setAttribute('stroke', c.color);
     el.style.strokeDasharray = `${dLen.toFixed(2)} ${(circ - dLen).toFixed(2)}`;
     el.style.strokeDashoffset = dashOffset;
+
+    // Label aussen auf Höhe der Bogenmitte. Winkel im Uhrzeigersinn ab 12 Uhr
+    // (das SVG ist um −90° gedreht). Die Verschiebung richtet den Text je nach
+    // Seite so aus, dass er vom Ring weg zeigt.
+    const theta = (offset + Math.min(frac, 1) / 2) * 2 * Math.PI;
+    const sin = Math.sin(theta), cos = Math.cos(theta);
+    let lbl = existingLabels[c.name];
+    delete existingLabels[c.name];
+    if (!lbl) {
+      lbl = document.createElement('div');
+      lbl.className = 'donut-label';
+      lbl.dataset.cat = c.name;
+      const dot = document.createElement('span');
+      dot.className = 'donut-label-dot';
+      const name = document.createElement('span');
+      name.className = 'donut-label-name';
+      name.textContent = c.name;
+      lbl.append(dot, name);
+      labelsEl.appendChild(lbl);
+    }
+    lbl.querySelector('.donut-label-dot').style.background = c.color;
+    lbl.style.left = `${(50 + 47 * sin).toFixed(2)}%`;
+    lbl.style.top  = `${(50 - 47 * cos).toFixed(2)}%`;
+    lbl.style.transform = `translate(${(-50 + 50 * sin).toFixed(1)}%, ${(-50 - 50 * cos).toFixed(1)}%)`;
+    lbl.getBoundingClientRect(); // Reflow, damit neue Labels einblenden
+    lbl.classList.add('show');
     offset += frac;
   });
   // Nicht mehr aktive Kategorien zusammenschrumpfen lassen und dann entfernen.
   Object.values(existing).forEach(el => {
     el.style.strokeDasharray = `0 ${circ.toFixed(2)}`;
+    setTimeout(() => el.remove(), 600);
+  });
+  Object.values(existingLabels).forEach(el => {
+    el.classList.remove('show');
     setTimeout(() => el.remove(), 600);
   });
   document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
