@@ -174,7 +174,9 @@ function applyDueRecurring() {
     state.recurringExpense.forEach(r   => { if (applyRuleRecurring(r, 'expense'))   changed = true; });
     state.recurringTransfers.forEach(r => { if (applyRuleRecurring(r, 'transfer'))  changed = true; });
   }
-  if (changed) saveState();
+  // Vor dem Server-Abgleich nicht speichern: sonst würde der (evtl. veraltete)
+  // localStorage-Stand zum Server geschickt und neuere Server-Daten überschreiben.
+  if (changed && serverLoaded) saveState();
   return changed;
 }
 
@@ -194,15 +196,26 @@ function loadState() {
   sanitizeState();
   applyDueRecurring();
 
-  // Server-Daten nachladen (überschreibt localStorage wenn neuer)
+  // Server-Daten nachladen (überschreibt localStorage, ausser es gibt lokale
+  // Änderungen, die der Server noch nicht bestätigt hat)
   fetch('/api/data.php', { credentials: 'include' })
     .then(r => r.ok ? r.json() : null)
     .then(res => {
+      serverLoaded = true;
       if (!res || !res.success || !res.data) return;
+      if (_hasUnsynced()) {
+        // Letztes Speichern kam nicht beim Server an (z.B. Seite zu schnell
+        // gewechselt oder offline) → lokalen Stand behalten und nur das
+        // nachsenden, was sich vom Server-Stand unterscheidet.
+        _markSynced(res.data);
+        _pushToServer();
+        return;
+      }
       // Auch leere Serverdaten ({}) übernehmen, damit ein frisches Gerät
       // nicht mit veralteten localStorage-Daten hängen bleibt
       Object.assign(state, res.data);
       sanitizeState();
+      _markSynced(_payload());
       applyDueRecurring();
       // localStorage als Cache aktualisieren
       _persistLocal();
@@ -210,24 +223,77 @@ function loadState() {
       // per registerPageRender() an (siehe assets/js/pages/*.js)
       pageRender();
     })
-    .catch(() => {}); // Offline? localStorage-Daten behalten
+    .catch(() => { serverLoaded = true; }); // Offline? localStorage-Daten behalten
+}
+
+// true, sobald der erste Server-Abgleich in loadState() durch ist.
+let serverLoaded = false;
+// Unsichtbare Markierung (nur im localStorage) für lokale Änderungen,
+// die der Server noch nicht bestätigt hat.
+const UNSYNCED_KEY = 'budgetApp_unsynced';
+let _saveSeq = 0;
+function _hasUnsynced() {
+  try { return !!localStorage.getItem(UNSYNCED_KEY); } catch(e) { return false; }
+}
+
+function _payload() {
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
+  return { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats };
 }
 
 function _persistLocal() {
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
-  localStorage.setItem('budgetApp_v2', JSON.stringify({ balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats }));
+  localStorage.setItem('budgetApp_v2', JSON.stringify(_payload()));
+}
+
+// Zuletzt vom Server bestätigter Stand, pro Bereich (budget, accounts, …) als
+// JSON-String. Daran wird erkannt, welche Bereiche sich geändert haben.
+let _synced = {};
+function _markSynced(data) {
+  Object.keys(_payload()).forEach(k => { _synced[k] = JSON.stringify(data[k]); });
 }
 
 function saveState() {
   _persistLocal();
-  // Asynchron zum Server senden — kein await, UI bleibt reaktiv
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
+  try { localStorage.setItem(UNSYNCED_KEY, '1'); } catch(e) {}
+  // Vor dem ersten Server-Abgleich ist unbekannt, was sich geändert hat;
+  // loadState() sendet die Änderungen dann nach (Markierung ist gesetzt).
+  if (serverLoaded) _pushToServer();
+}
+
+// Sendet nur die Bereiche, die sich seit dem letzten bestätigten Stand
+// geändert haben — asynchron, kein await, UI bleibt reaktiv.
+function _pushToServer() {
+  const current = _payload();
+  const changed = {}, sentJson = {};
+  Object.keys(current).forEach(k => {
+    const json = JSON.stringify(current[k]);
+    if (json !== _synced[k]) { changed[k] = current[k]; sentJson[k] = json; }
+  });
+  const seq = ++_saveSeq;
+  if (!Object.keys(changed).length) {
+    try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {}
+    return;
+  }
+  const body = JSON.stringify({ data: changed });
   fetch('/api/data.php', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ data: { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } })
-  }).catch(() => {}); // Offline: nur localStorage wurde gesichert
+    // keepalive: Request läuft weiter, auch wenn direkt die Seite gewechselt
+    // wird (Browser erlauben das nur bis ca. 64 KB)
+    keepalive: body.length < 60000,
+    body
+  })
+    .then(r => r.ok ? r.json() : null)
+    .then(res => {
+      if (!res || !res.success) return;
+      Object.assign(_synced, sentJson);
+      // Nur der zuletzt gesendete Stand darf die Markierung entfernen
+      if (seq === _saveSeq) {
+        try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {}
+      }
+    })
+    .catch(() => {}); // Offline: bleibt markiert und wird beim nächsten Laden nachgesendet
 }
 
 // ── APP MENU (Header-Icon-Overlay) ────────────────────────────
