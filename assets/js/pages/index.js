@@ -132,7 +132,7 @@ function renderDonut() {
 // weitergeschoben, bis es frei ist (Labels kommen in Bogen-Reihenfolge).
 function placeDonutLabels(items, labelsEl) {
   const W = labelsEl.clientWidth, H = labelsEl.clientHeight;
-  const R = 0.51, GAP = 3, STEP = Math.PI / 180, MAX_STEPS = 120;
+  const R = 0.51, GAP = 2, STEP = Math.PI / 180, MAX_STEPS = 120;
   // Box eines Labels bei Winkel theta. Die Verschiebung richtet den Text je
   // nach Seite so aus, dass er vom Ring weg zeigt.
   const boxAt = (theta, w, h) => {
