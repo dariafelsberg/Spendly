@@ -151,9 +151,8 @@
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-  font-size: .68rem;
-  font-weight: 600;
-  color: var(--text);
+  font-size: .8rem;
+  font-weight: 700;
   opacity: 0;
   transition: left .7s cubic-bezier(.34, 1.2, .64, 1),
               top .7s cubic-bezier(.34, 1.2, .64, 1),
@@ -165,15 +164,9 @@
 }
 .donut-label-name {
   /* lange Namen auf schmalen Screens abschneiden statt überlaufen */
-  max-width: 76px;
+  max-width: 90px;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.donut-label-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
 }
 @media (prefers-reduced-motion: reduce) {
   .donut-arc, .donut-label { transition: none; }

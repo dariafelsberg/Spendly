@@ -98,15 +98,13 @@ function renderDonut() {
       lbl = document.createElement('div');
       lbl.className = 'donut-label';
       lbl.dataset.cat = c.name;
-      const dot = document.createElement('span');
-      dot.className = 'donut-label-dot';
       const name = document.createElement('span');
       name.className = 'donut-label-name';
       name.textContent = c.name;
-      lbl.append(dot, name);
+      lbl.append(name);
       labelsEl.appendChild(lbl);
     }
-    lbl.querySelector('.donut-label-dot').style.background = c.color;
+    lbl.style.color = c.color;
     lbl.style.left = `${(50 + 51 * sin).toFixed(2)}%`;
     lbl.style.top  = `${(50 - 51 * cos).toFixed(2)}%`;
     lbl.style.transform = `translate(${(-50 + 50 * sin).toFixed(1)}%, ${(-50 - 50 * cos).toFixed(1)}%)`;
