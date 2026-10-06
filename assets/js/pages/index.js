@@ -63,6 +63,7 @@ function renderDonut() {
   arcsEl.querySelectorAll('circle[data-cat]').forEach(el => { existing[el.dataset.cat] = el; });
   labelsEl.querySelectorAll('.donut-label').forEach(el => { existingLabels[el.dataset.cat] = el; });
   let offset = 0;
+  const labelItems = [];
   (spent > 0 ? activeCats : []).forEach(c => {
     const frac = catTotals[c.name] / Math.max(spent, state.budget, 0.01);
     const dLen = Math.min(frac, 1) * circ;
@@ -88,10 +89,8 @@ function renderDonut() {
     el.style.strokeDashoffset = dashOffset;
 
     // Label aussen auf Höhe der Bogenmitte. Winkel im Uhrzeigersinn ab 12 Uhr
-    // (das SVG ist um −90° gedreht). Die Verschiebung richtet den Text je nach
-    // Seite so aus, dass er vom Ring weg zeigt.
+    // (das SVG ist um −90° gedreht).
     const theta = (offset + Math.min(frac, 1) / 2) * 2 * Math.PI;
-    const sin = Math.sin(theta), cos = Math.cos(theta);
     let lbl = existingLabels[c.name];
     delete existingLabels[c.name];
     if (!lbl) {
@@ -105,15 +104,10 @@ function renderDonut() {
       labelsEl.appendChild(lbl);
     }
     lbl.style.color = c.color;
-    // Umgebrochene Zeilen zum Ring hin ausrichten (rechts: linksbündig, links: rechtsbündig)
-    lbl.style.textAlign = sin > 0.3 ? 'left' : sin < -0.3 ? 'right' : 'center';
-    lbl.style.left = `${(50 + 51 * sin).toFixed(2)}%`;
-    lbl.style.top  = `${(50 - 51 * cos).toFixed(2)}%`;
-    lbl.style.transform = `translate(${(-50 + 50 * sin).toFixed(1)}%, ${(-50 - 50 * cos).toFixed(1)}%)`;
-    lbl.getBoundingClientRect(); // Reflow, damit neue Labels einblenden
-    lbl.classList.add('show');
+    labelItems.push({ lbl, theta });
     offset += frac;
   });
+  placeDonutLabels(labelItems, labelsEl);
   // Nicht mehr aktive Kategorien zusammenschrumpfen lassen und dann entfernen.
   Object.values(existing).forEach(el => {
     el.style.strokeDasharray = `0 ${circ.toFixed(2)}`;
@@ -131,6 +125,43 @@ function renderDonut() {
       ${amt ? `<span class="cat-amount expense">−${formatNum(amt)}</span>` : ''}
     </div>`;
   }).join('');
+}
+
+// Positioniert die Donut-Labels aussen am Ring. Überlagert ein Label ein
+// bereits platziertes, wird es im Uhrzeigersinn entlang des Rings
+// weitergeschoben, bis es frei ist (Labels kommen in Bogen-Reihenfolge).
+function placeDonutLabels(items, labelsEl) {
+  const W = labelsEl.clientWidth, H = labelsEl.clientHeight;
+  const R = 0.51, GAP = 3, STEP = Math.PI / 180, MAX_STEPS = 120;
+  // Box eines Labels bei Winkel theta. Die Verschiebung richtet den Text je
+  // nach Seite so aus, dass er vom Ring weg zeigt.
+  const boxAt = (theta, w, h) => {
+    const sin = Math.sin(theta), cos = Math.cos(theta);
+    const x = W * (0.5 + R * sin) + w * (-0.5 + 0.5 * sin);
+    const y = H * (0.5 - R * cos) + h * (-0.5 - 0.5 * cos);
+    return { x, y, w, h };
+  };
+  const overlaps = (a, b) =>
+    a.x < b.x + b.w + GAP && b.x < a.x + a.w + GAP &&
+    a.y < b.y + b.h + GAP && b.y < a.y + a.h + GAP;
+  const placed = [];
+  items.forEach(({ lbl, theta }) => {
+    const w = lbl.offsetWidth, h = lbl.offsetHeight;
+    let t = theta, box = boxAt(t, w, h);
+    for (let i = 0; i < MAX_STEPS && placed.some(p => overlaps(box, p)); i++) {
+      t += STEP;
+      box = boxAt(t, w, h);
+    }
+    placed.push(box);
+    const sin = Math.sin(t), cos = Math.cos(t);
+    // Umgebrochene Zeilen zum Ring hin ausrichten (rechts: linksbündig, links: rechtsbündig)
+    lbl.style.textAlign = sin > 0.3 ? 'left' : sin < -0.3 ? 'right' : 'center';
+    lbl.style.left = `${(50 + R * 100 * sin).toFixed(2)}%`;
+    lbl.style.top  = `${(50 - R * 100 * cos).toFixed(2)}%`;
+    lbl.style.transform = `translate(${(-50 + 50 * sin).toFixed(1)}%, ${(-50 - 50 * cos).toFixed(1)}%)`;
+    lbl.getBoundingClientRect(); // Reflow, damit neue Labels einblenden
+    lbl.classList.add('show');
+  });
 }
 
 function renderTransactions() {
