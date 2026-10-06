@@ -141,7 +141,7 @@
               stroke .3s ease;
 }
 .donut-arc-pulse {
-  animation: donutArcPulse .5s ease-in-out 2;
+  animation: donutArcPulse .9s ease-in-out;
 }
 @keyframes donutArcPulse {
   0%, 100% { stroke-width: 28; }
