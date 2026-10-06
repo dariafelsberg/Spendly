@@ -151,6 +151,9 @@
   align-items: center;
   gap: 4px;
   white-space: nowrap;
+  /* Breite unabhängig vom Platz bis zum Containerrand, sonst bricht
+     rechts aussen jedes Wort um */
+  width: max-content;
   font-size: .8rem;
   font-weight: 700;
   opacity: 0;
@@ -163,10 +166,12 @@
   opacity: 1;
 }
 .donut-label-name {
-  /* lange Namen auf schmalen Screens abschneiden statt überlaufen */
+  /* lange Namen ab 90px auf zwei Zeilen umbrechen statt überlaufen */
   max-width: 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.15;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 @media (prefers-reduced-motion: reduce) {
   .donut-arc, .donut-label { transition: none; }
