@@ -119,13 +119,25 @@ function renderDonut() {
   });
   document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
     const amt = catTotals[c.name] || 0;
-    return `<div class="cat-chip" style="${amt ? `background:${c.color}15;border-color:${c.color}44` : ''}">
+    return `<div class="cat-chip" data-cat="${c.name.replace(/"/g, '&quot;')}" style="${amt ? `background:${c.color}15;border-color:${c.color}44` : ''}">
       <div class="cat-dot" style="background:${amt ? c.color : '#ddd'}"></div>
       <span class="cat-name">${c.emoji} ${c.name}</span>
       ${amt ? `<span class="cat-amount expense">−${formatNum(amt)}</span>` : ''}
     </div>`;
   }).join('');
 }
+
+// Klick auf eine Kategorie lässt ihren Bogen im Donut pulsieren.
+document.getElementById('categoriesGrid').addEventListener('click', e => {
+  const chip = e.target.closest('.cat-chip');
+  if (!chip) return;
+  const arc = [...document.querySelectorAll('#donutArcs circle[data-cat]')].find(el => el.dataset.cat === chip.dataset.cat);
+  if (!arc) return; // Kategorie ohne Ausgaben hat keinen Bogen
+  arc.classList.remove('donut-arc-pulse');
+  arc.getBoundingClientRect(); // Animation bei erneutem Klick neu starten
+  arc.classList.add('donut-arc-pulse');
+  arc.addEventListener('animationend', () => arc.classList.remove('donut-arc-pulse'), { once: true });
+});
 
 // Positioniert die Donut-Labels aussen am Ring. Überlagert ein Label ein
 // bereits platziertes, wird es im Uhrzeigersinn entlang des Rings

@@ -140,6 +140,13 @@
               stroke-dashoffset .7s cubic-bezier(.34, 1.2, .64, 1),
               stroke .3s ease;
 }
+.donut-arc-pulse {
+  animation: donutArcPulse .5s ease-in-out 2;
+}
+@keyframes donutArcPulse {
+  0%, 100% { stroke-width: 28; }
+  50%      { stroke-width: 36; }
+}
 .donut-labels {
   position: absolute;
   inset: 0;
@@ -175,6 +182,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .donut-arc, .donut-label { transition: none; }
+  .donut-arc-pulse { animation: none; }
 }
 .donut-center-label {
   font-size: clamp(.62rem, 2.5vw, .8rem);
