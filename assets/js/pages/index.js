@@ -337,6 +337,10 @@ function saveEntry() {
 
 function toggleTxList() {
   ['txList','txHeader','txChevron'].forEach(id => document.getElementById(id).classList.toggle('open'));
+  // Beim Aufklappen eine halbe Bildschirmhöhe nach unten scrollen, damit die Einträge sichtbar werden
+  if (document.getElementById('txList').classList.contains('open')) {
+    window.scrollBy({ top: window.innerHeight * 0.5, behavior: 'smooth' });
+  }
 }
 
 // ── HELPERS (nur Home)
