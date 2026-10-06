@@ -128,7 +128,15 @@ function formatSignedCompactChf(n) {
   }
   return sign + Math.round(abs).toLocaleString('de-CH');
 }
-// Liste der Einträge des in der Analyse-Ansicht ausgewählten Monats.
+// Aufgeklappte Kategorien bleiben beim Neuzeichnen und Monatswechsel offen.
+const openInsightsCats = new Set();
+function toggleInsightsCat(headerEl) {
+  const group = headerEl.parentElement;
+  const open = group.classList.toggle('open');
+  if (open) openInsightsCats.add(group.dataset.cat); else openInsightsCats.delete(group.dataset.cat);
+}
+// Einträge des in der Analyse-Ansicht ausgewählten Monats, gruppiert nach
+// Kategorie als aufklappbare Gruppen mit Gesamtbetrag.
 function renderInsightsMonthList() {
   const listEl = document.getElementById('insightsTxList');
   const emptyEl = document.getElementById('insightsTxEmpty');
@@ -138,16 +146,44 @@ function renderInsightsMonthList() {
   const entries = state.entries
     .filter(e => e.date.slice(0, 7) === mKey)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
-  listEl.querySelectorAll('.tx-item').forEach(el => el.remove());
+  listEl.querySelectorAll('.insights-cat-group').forEach(el => el.remove());
   if (countEl) countEl.textContent = entries.length;
   if (!entries.length) { if (emptyEl) emptyEl.style.display = 'block'; return; }
   if (emptyEl) emptyEl.style.display = 'none';
+
+  const groups = {};
   entries.forEach(e => {
-    const item = document.createElement('div');
-    item.className = 'tx-item';
-    item.innerHTML = entryRowInner(e);
-    listEl.appendChild(item);
+    const key = e.type === 'transfer' ? 'Interne Überweisung' : e.category;
+    if (!groups[key]) groups[key] = { name: key, entries: [], total: 0, isTransfer: e.type === 'transfer' };
+    groups[key].entries.push(e);
+    // Einnahmen positiv, Ausgaben negativ; Überweisungen ohne Vorzeichen
+    groups[key].total += e.type === 'income' || e.type === 'transfer' ? e.amount : -e.amount;
   });
+  Object.values(groups)
+    .sort((a, b) => Math.abs(b.total) - Math.abs(a.total))
+    .forEach(g => {
+      const cat = g.isTransfer
+        ? { color: '#7c93ff', emoji: '🔄' }
+        : ALL_CATS.find(c => c.name === g.name) || { color: '#ccc', emoji: '?' };
+      const totalHtml = g.isTransfer
+        ? `<div class="insights-cat-total" style="color:#7c93ff">${formatNum(g.total)}</div>`
+        : `<div class="insights-cat-total tx-amount ${g.total >= 0 ? 'income' : 'expense'}">${g.total >= 0 ? '+' : '−'}${formatNum(Math.abs(g.total))}</div>`;
+      const group = document.createElement('div');
+      group.className = 'insights-cat-group' + (openInsightsCats.has(g.name) ? ' open' : '');
+      group.dataset.cat = g.name;
+      group.innerHTML = `
+        <div class="insights-cat-header" onclick="toggleInsightsCat(this)">
+          <div class="tx-cat-dot" style="background:${cat.color}"></div>
+          <div class="insights-cat-name">${cat.emoji} ${g.name}</div>
+          <span class="insights-cat-count">${g.entries.length}</span>
+          ${totalHtml}
+          <span class="insights-cat-chevron">▾</span>
+        </div>
+        <div class="insights-cat-body">
+          ${g.entries.map(e => `<div class="tx-item">${entryRowInner(e)}</div>`).join('')}
+        </div>`;
+      listEl.appendChild(group);
+    });
 }
 
 // ── START

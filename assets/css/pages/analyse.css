@@ -74,6 +74,66 @@
   font-weight: 700;
 }
 
+/* ── EINTRÄGE NACH KATEGORIE (aufklappbar) */
+.insights-cat-group {
+  border-radius: var(--radius);
+  background: var(--card-soft);
+  margin-bottom: 7px;
+}
+.insights-cat-group:last-child {
+  margin-bottom: 0;
+}
+.insights-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.insights-cat-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: clamp(.84rem, 2.5vw, .9rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.insights-cat-count {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: .68rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.insights-cat-total {
+  font-weight: 700;
+  font-size: clamp(.84rem, 2.5vw, .9rem);
+  flex-shrink: 0;
+}
+.insights-cat-chevron {
+  color: var(--muted);
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: transform .25s;
+}
+.insights-cat-group.open .insights-cat-chevron {
+  transform: rotate(180deg);
+}
+.insights-cat-body {
+  display: none;
+  padding: 0 8px 8px;
+}
+.insights-cat-group.open .insights-cat-body {
+  display: block;
+}
+.insights-cat-body .tx-item {
+  background: var(--card);
+}
+
 /* ── CALENDAR */
 @media (min-width:768px) {
   #analysisView.calendar-main {
