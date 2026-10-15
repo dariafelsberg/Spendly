@@ -118,59 +118,21 @@ html.embed-mode .settings-main {
     }
 }
 
-/* ── BREAKPOINT 768–1023px (Tablet settings) */
-@media (min-width:768px) and (max-width:1023px) {
+/* ── BREAKPOINT ≥768px: zweispaltig, Monatliche Einnahmen und Ausgaben
+   nebeneinander, alle anderen Bereiche über die volle Breite */
+@media (min-width:768px) {
   .settings-main {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-  .settings-main>.settings-section {
-      margin-bottom: 0;
-    }
-  .settings-main>.settings-section:nth-of-type(1),
-    .settings-main>.settings-section:nth-of-type(4) {
-      grid-column: 1/span 2;
-    }
-  .settings-main>.settings-section:nth-of-type(2) {
-      grid-column: 1;
-    }
-  .settings-main>.settings-section:nth-of-type(3) {
-      grid-column: 2;
-    }
-}
-
-/* ── BREAKPOINT ≥1024px */
-@media (min-width:1024px) {
-  .settings-main {
-      grid-column: 1/span 8;
-      grid-row: 2;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(5, 1fr);
+      align-items: start;
       gap: var(--sp-md);
     }
   .settings-main>.settings-section {
+      grid-column: 1/span 2;
       margin-bottom: 0;
     }
-  .settings-main>.settings-section:nth-of-type(1) {
-      grid-column: span 2;
-      grid-row: span 4;
-      grid-column-start: 1;
-    }
-  .settings-main>.settings-section:nth-of-type(2) {
-      grid-column: span 2;
-      grid-row: span 3;
-      grid-column-start: 2;
-    }
-  .settings-main>.settings-section:nth-of-type(3) {
-      grid-column: span 2;
-      grid-row: span 3;
-      grid-column-start: 3;
-    }
-  .settings-main>.settings-section:nth-of-type(4) {
-      grid-column: span 2;
-      grid-row: span 2;
-      grid-column-start: 4;
+  .settings-main>.settings-section.settings-section-half {
+      grid-column: auto;
+      height: 100%;
     }
 }
