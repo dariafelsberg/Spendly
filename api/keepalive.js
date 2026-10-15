@@ -15,7 +15,10 @@ module.exports = async (req, res) => {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/user_data?select=user_id&limit=1`, {
       headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` },
     });
-    res.status(r.ok ? 200 : 502).json({ ok: r.ok, supabase: r.status, at: new Date().toISOString() });
+    const body = await r.json().catch(() => null);
+    // anon hat kein SELECT-Recht auf user_data – "permission denied" (42501) ist die erwartete Antwort und heisst: Postgres wurde erreicht.
+    const ok = r.ok || ((r.status === 401 || r.status === 403) && body?.code === '42501');
+    res.status(ok ? 200 : 502).json({ ok, supabase: r.status, at: new Date().toISOString() });
   } catch (e) {
     res.status(502).json({ ok: false, error: String(e) });
   }
