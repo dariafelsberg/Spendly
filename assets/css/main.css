@@ -289,6 +289,23 @@ button {
       grid-template-columns: repeat(2, 1fr);
       align-content: start;
     }
+  /* Desktop: Einstellungen als Seitenpanel rechts, volle Höhe, 80% Breite */
+  .app-menu-overlay.open {
+      align-items: stretch;
+      justify-content: flex-end;
+    }
+  .app-menu-panel {
+      width: 80%;
+      height: 100%;
+      height: 100dvh;
+      border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+    }
+  .app-menu-overlay .app-menu-panel {
+      transform: translateX(100%);
+    }
+  .app-menu-overlay.show .app-menu-panel {
+      transform: translateX(0);
+    }
 }
 
 /* ── APP MENU SETTINGS FRAME ── */
