@@ -203,7 +203,14 @@ function loadState() {
       if (!session) return { error: true };
       sbAccessToken = session.access_token;
       _claimLocalData(session.user.id);
-      return sb.from('user_data').select('payload').maybeSingle();
+      // Einmalig: Daten vom alten PHP-Server übernehmen, falls für diese
+      // E-Mail-Adresse welche importiert wurden (siehe supabase/schema.sql)
+      return sb.rpc('claim_legacy_data')
+        .then(({ data: claimed }) => {
+          // Übernommene Server-Daten gehen vor ungesendeten lokalen Änderungen
+          if (claimed) { try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {} }
+        }, () => {})
+        .then(() => sb.from('user_data').select('payload').maybeSingle());
     })
     .then(({ data: row, error }) => {
       serverLoaded = true;

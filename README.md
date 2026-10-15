@@ -48,3 +48,4 @@ Die Seitendatei meldet ihre Render-Funktion mit `registerPageRender(...)` an, da
 1. `supabase/schema.sql` im Supabase-Dashboard unter **SQL Editor** ausführen.
 2. In `assets/js/supabase.js` `SUPABASE_URL` und `SUPABASE_ANON_KEY` eintragen (Project Settings → API).
 3. **Authentication → URL Configuration**: Site URL `https://app.spendly.ch`, Redirect URLs `https://app.spendly.ch/**` und die `*.vercel.app`-URL.
+4. Alte Daten vom PHP-Server: Import-Skript (aus der alten `database.sqlite` erzeugt, nicht im Repo) im SQL Editor ausführen. Beim ersten Login mit bestätigter, gleicher E-Mail-Adresse übernimmt `claim_legacy_data()` die Daten ins neue Konto.

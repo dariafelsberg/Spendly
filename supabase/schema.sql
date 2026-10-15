@@ -73,3 +73,75 @@ $$;
 
 revoke all on function public.save_user_data(jsonb) from public, anon;
 grant execute on function public.save_user_data(jsonb) to authenticated;
+
+-- ══════════════════════════════════════════════════════════
+--  Übernahme der Daten vom alten PHP-Server
+--  legacy_data wird einmalig mit einem separaten Import-Skript
+--  befüllt (enthält Personendaten, liegt NICHT im Repo).
+--  Beim ersten Login mit bestätigter E-Mail holt sich jedes Konto
+--  seine alten Daten über claim_legacy_data(); danach wird der
+--  Eintrag in legacy_data gelöscht.
+-- ══════════════════════════════════════════════════════════
+create table if not exists public.legacy_data (
+  email       text primary key,           -- immer klein geschrieben
+  username    text,
+  payload     jsonb       not null,
+  imported_at timestamptz not null default now()
+);
+
+-- Kein Zugriff für die App: nur die Funktion unten liest die Tabelle
+alter table public.legacy_data enable row level security;
+revoke all on public.legacy_data from anon, authenticated;
+
+create or replace function public.claim_legacy_data()
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  uid    uuid := auth.uid();
+  mail   text;
+  legacy jsonb;
+begin
+  if uid is null then
+    return false;
+  end if;
+
+  -- Nur bestätigte E-Mail-Adressen, damit niemand fremde Daten übernimmt
+  select lower(email) into mail
+    from auth.users
+   where id = uid and email_confirmed_at is not null;
+  if mail is null then
+    return false;
+  end if;
+
+  delete from public.legacy_data
+   where email = mail
+  returning payload into legacy;
+  if legacy is null then
+    return false;
+  end if;
+
+  select coalesce(jsonb_object_agg(key, value), '{}'::jsonb)
+    into legacy
+    from jsonb_each(legacy)
+   where key = any (array[
+     'balance', 'budget', 'entries', 'accounts',
+     'recurringIncome', 'recurringExpense', 'recurringTransfers',
+     'appliedRecurringMonths', 'customExpenseCats', 'customIncomeCats'
+   ]);
+
+  -- Server-Stand vom alten System gewinnt über eine evtl. schon
+  -- hochgeladene lokale Kopie
+  insert into public.user_data (user_id, payload, updated_at)
+  values (uid, legacy, now())
+  on conflict (user_id) do update
+    set payload    = excluded.payload,
+        updated_at = now();
+  return true;
+end;
+$$;
+
+revoke all on function public.claim_legacy_data() from public, anon;
+grant execute on function public.claim_legacy_data() to authenticated;
