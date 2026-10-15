@@ -118,8 +118,10 @@ html.embed-mode .settings-main {
     }
 }
 
-/* ── BREAKPOINT ≥768px: zweispaltig, Monatliche Einnahmen und Ausgaben
-   nebeneinander, alle anderen Bereiche über die volle Breite */
+/* ── ZWEISPALTIG: Monatliche Einnahmen und Ausgaben nebeneinander, alle
+   anderen Bereiche über die volle Breite. Eigenständige Seite ab 768px;
+   im Einstellungs-Panel (iframe, 65% Breite minus 2×20px Padding) ab 573px
+   iframe-Breite, das entspricht einem 944px breiten Fenster. */
 @media (min-width:768px) {
   .settings-main {
       display: grid;
@@ -132,6 +134,22 @@ html.embed-mode .settings-main {
       margin-bottom: 0;
     }
   .settings-main>.settings-section.settings-section-half {
+      grid-column: auto;
+      height: 100%;
+    }
+}
+@media (min-width:573px) {
+  html.embed-mode .settings-main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      gap: var(--sp-md);
+    }
+  html.embed-mode .settings-main>.settings-section {
+      grid-column: 1/span 2;
+      margin-bottom: 0;
+    }
+  html.embed-mode .settings-main>.settings-section.settings-section-half {
       grid-column: auto;
       height: 100%;
     }
