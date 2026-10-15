@@ -1,0 +1,48 @@
+/* pages/legal.css – Impressum, Datenschutz, Nutzungsbedingungen */
+body {
+  background: var(--bg);
+}
+.legal-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: calc(var(--sp-lg) + env(safe-area-inset-top)) var(--sp-md) var(--sp-xl);
+}
+.legal-back {
+  display: inline-block;
+  margin-bottom: var(--sp-md);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+.legal-title {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 400;
+  font-size: 1.8rem;
+  color: var(--text);
+  margin: 0 0 var(--sp-md);
+}
+.legal-body {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--sp-lg);
+  font-size: .88rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+.legal-body p {
+  margin: 0 0 12px;
+}
+.legal-body ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+.legal-body a {
+  color: var(--primary);
+}
+.legal-date {
+  color: var(--muted);
+  font-size: .75rem;
+  margin-bottom: 0 !important;
+}

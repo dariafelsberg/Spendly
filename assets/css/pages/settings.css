@@ -154,3 +154,21 @@ html.embed-mode .settings-main {
       height: 100%;
     }
 }
+
+/* ── RECHTLICHES: kleine Links ganz unten */
+.legal-links {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: var(--sp-md) 0 var(--sp-sm);
+}
+.legal-links a {
+  font-size: .72rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+.legal-links a:hover {
+  text-decoration: underline;
+}
