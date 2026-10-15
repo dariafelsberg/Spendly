@@ -1,0 +1,15 @@
+<!-- Supabase → Authentication → Emails → Templates → "Confirm signup"
+     Betreff: Willkommen bei Spendly – bitte E-Mail bestätigen -->
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #222;">
+  <h2 style="color: #e91e63;">Willkommen bei Spendly 💸</h2>
+  <p>Hallo {{ .Data.username }},</p>
+  <p>schön, dass du da bist! Bitte bestätige deine E-Mail-Adresse, damit du dich anmelden kannst:</p>
+  <p style="margin: 28px 0;">
+    <a href="{{ .ConfirmationURL }}"
+       style="background: #e91e63; color: #fff; padding: 12px 22px; border-radius: 10px; text-decoration: none; font-weight: bold;">
+      E-Mail bestätigen
+    </a>
+  </p>
+  <p style="font-size: 13px; color: #666;">Falls du dich nicht bei Spendly registriert hast, kannst du diese E-Mail ignorieren.</p>
+  <p>Dein Spendly-Team</p>
+</div>
