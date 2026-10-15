@@ -8,8 +8,8 @@
 // Werte aus Supabase-Dashboard → Project Settings → API.
 // Der anon-Key ist öffentlich (steckt in jeder Web-App), der Schutz
 // der Daten läuft über Row Level Security in der Datenbank.
-const SUPABASE_URL      = 'https://YOUR-PROJECT.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+const SUPABASE_URL      = 'https://pniabxirdrrfxyymzynh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuaWFieGlyZHJyZnh5eW16eW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNDI4NTcsImV4cCI6MjEwNzYxODg1N30.28oVu_462OuTnKUOTBPXuf4o6DdQmWAC_w-CZXkPpAM';
 
 // ── SPEICHER FÜR DIE SITZUNG ────────────────────────────────
 // "Angemeldet bleiben" an → localStorage (bleibt nach Browser-Neustart),
