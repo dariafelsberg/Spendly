@@ -23,15 +23,19 @@
     <p><strong>Welche Daten gespeichert werden</strong></p>
     <ul>
       <li><strong>Konto:</strong> Benutzername, E-Mail-Adresse und das Passwort als
-        gesalzener, mehrfach gehashter Wert (PBKDF2). Das Passwort selbst wird nie gespeichert.</li>
+        gesalzener bcrypt-Hash. Das Passwort selbst wird nie gespeichert.</li>
       <li><strong>Anmeldung:</strong> ein Sitzungs-Token, damit du angemeldet bleibst.</li>
       <li><strong>Finanzdaten:</strong> Einträge, Konten und Kontostände, Monatsbudget,
         wiederkehrende Buchungen und eigene Kategorien, so wie du sie erfasst.</li>
     </ul>
     <p><strong>Wo die Daten gespeichert werden</strong></p>
     <ul>
-      <li><strong>Server:</strong> in einer Datenbank auf dem Webserver von
-        spendly.dfelsberg.sbw.media (Hosting: Metanet AG, Serverstandort Schweiz).</li>
+      <li><strong>Server:</strong> Konto und Finanzdaten liegen in einer Datenbank bei Supabase
+        (Supabase Inc., USA; Rechenzentrum in der EU, Frankfurt). Supabase bearbeitet die
+        Daten als Auftragsbearbeiter nur zur Bereitstellung der App.</li>
+      <li><strong>Hosting:</strong> Die App-Dateien von app.spendly.ch werden über Vercel
+        (Vercel Inc., USA) ausgeliefert. Dabei fallen technische Zugriffsdaten wie die
+        IP-Adresse an.</li>
       <li><strong>Dein Gerät:</strong> eine Kopie im lokalen Speicher deines Browsers
         (localStorage), damit die App schnell lädt und auch offline funktioniert.</li>
     </ul>
@@ -45,6 +49,10 @@
     <p><strong>Google Fonts</strong><br>
       Die Schriftarten werden von Google Fonts geladen. Dabei wird deine IP-Adresse an
       Google übermittelt, auch an Server ausserhalb der Schweiz.</p>
+    <p><strong>jsDelivr</strong><br>
+      Die Programmbibliothek für die Anmeldung (supabase-js) wird über das Content Delivery
+      Network jsDelivr geladen. Dabei wird deine IP-Adresse an dessen Server übermittelt,
+      auch ausserhalb der Schweiz.</p>
     <p><strong>Aufbewahrung und Löschung</strong><br>
       Die Daten bleiben gespeichert, solange dein Konto besteht. Auf Anfrage per E-Mail wird
       dein Konto mit allen Daten gelöscht. Die lokale Kopie kannst du jederzeit über die

@@ -196,13 +196,26 @@ function loadState() {
   sanitizeState();
   applyDueRecurring();
 
-  // Server-Daten nachladen (überschreibt localStorage, ausser es gibt lokale
-  // Änderungen, die der Server noch nicht bestätigt hat)
-  fetch('/api/data.php', { credentials: 'include' })
-    .then(r => r.ok ? r.json() : null)
-    .then(res => {
+  // Server-Daten aus Supabase nachladen (überschreibt localStorage, ausser es
+  // gibt lokale Änderungen, die der Server noch nicht bestätigt hat)
+  sb.auth.getSession()
+    .then(({ data: { session } }) => {
+      if (!session) return { error: true };
+      sbAccessToken = session.access_token;
+      _claimLocalData(session.user.id);
+      return sb.from('user_data').select('payload').maybeSingle();
+    })
+    .then(({ data: row, error }) => {
       serverLoaded = true;
-      if (!res || !res.success || !res.data) return;
+      if (error) return;
+      if (!row) {
+        // Noch kein Datensatz (neues Konto oder Umzug vom alten Server):
+        // vorhandene lokale Daten als ersten Stand hochladen
+        _synced = {};
+        _pushToServer();
+        return;
+      }
+      const res = { data: row.payload || {} };
       if (_hasUnsynced()) {
         // Letztes Speichern kam nicht beim Server an (z.B. Seite zu schnell
         // gewechselt oder offline) → lokalen Stand behalten und nur das
@@ -234,6 +247,28 @@ const UNSYNCED_KEY = 'budgetApp_unsynced';
 let _saveSeq = 0;
 function _hasUnsynced() {
   try { return !!localStorage.getItem(UNSYNCED_KEY); } catch(e) { return false; }
+}
+
+// Merkt sich, welchem Konto die lokale Kopie gehört. Meldet sich auf dem
+// Gerät ein anderes Konto an, wird die fremde lokale Kopie verworfen, damit
+// sie nicht in dessen Konto hochgeladen wird.
+const OWNER_KEY = 'budgetApp_owner';
+function _claimLocalData(userId) {
+  let owner = null;
+  try { owner = localStorage.getItem(OWNER_KEY); } catch(e) {}
+  if (owner && owner !== userId) {
+    Object.assign(state, {
+      balance: 0, budget: 0, entries: [], accounts: [],
+      recurringIncome: [], recurringExpense: [], recurringTransfers: [],
+      appliedRecurringMonths: [], customExpenseCats: [], customIncomeCats: [],
+    });
+    try {
+      localStorage.removeItem('budgetApp_v2');
+      localStorage.removeItem(UNSYNCED_KEY);
+    } catch(e) {}
+    pageRender();
+  }
+  try { localStorage.setItem(OWNER_KEY, userId); } catch(e) {}
 }
 
 function _payload() {
@@ -274,19 +309,25 @@ function _pushToServer() {
     try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {}
     return;
   }
-  const body = JSON.stringify({ data: changed });
-  fetch('/api/data.php', {
+  // Ohne Token (abgemeldet/abgelaufen) bleibt die Markierung gesetzt und
+  // wird beim nächsten Laden nachgesendet
+  if (!sbAccessToken) return;
+  const body = JSON.stringify({ patch: changed });
+  // Direkt per fetch statt supabase-js, damit keepalive möglich ist:
+  // Request läuft weiter, auch wenn direkt die Seite gewechselt wird
+  // (Browser erlauben das nur bis ca. 64 KB)
+  fetch(SUPABASE_URL + '/rest/v1/rpc/save_user_data', {
     method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    // keepalive: Request läuft weiter, auch wenn direkt die Seite gewechselt
-    // wird (Browser erlauben das nur bis ca. 64 KB)
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + sbAccessToken
+    },
     keepalive: body.length < 60000,
     body
   })
-    .then(r => r.ok ? r.json() : null)
-    .then(res => {
-      if (!res || !res.success) return;
+    .then(r => {
+      if (!r.ok) return;
       Object.assign(_synced, sentJson);
       // Nur der zuletzt gesendete Stand darf die Markierung entfernen
       if (seq === _saveSeq) {

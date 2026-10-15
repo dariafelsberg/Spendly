@@ -37,8 +37,8 @@
       <!-- ══ LOGIN ══ -->
       <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
         <div class="form-group">
-          <label class="form-label">E-Mail oder Benutzername</label>
-          <input class="form-input" type="text" id="loginIdentifier" autocomplete="username" required>
+          <label class="form-label">E-Mail</label>
+          <input class="form-input" type="email" id="loginIdentifier" autocomplete="email" required>
         </div>
         <div class="form-group">
           <label class="form-label">Passwort</label>
@@ -60,7 +60,7 @@
       <!-- ══ REGISTRIEREN ══ -->
       <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
         <div class="register-exists-notice" id="registerExistsNotice">
-          Es existiert bereits ein Konto auf diesem Gerät. Bitte melde dich stattdessen an.
+          Mit dieser E-Mail-Adresse existiert bereits ein Konto. Bitte melde dich stattdessen an.
         </div>
         <div class="form-group">
           <label class="form-label">Benutzername</label>
@@ -97,7 +97,7 @@
 
     <div class="auth-footnote">
       🔒 Dein Passwort wird verschlüsselt (HTTPS) übertragen und ausschliesslich als gesalzener
-      PBKDF2-Hash gespeichert – nie im Klartext.
+      bcrypt-Hash gespeichert – nie im Klartext.
     </div>
 
   </div><!-- /auth-shell -->
@@ -136,6 +136,8 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="assets/js/supabase.js"></script>
   <script src="assets/js/auth.js"></script>
 </body>
 
