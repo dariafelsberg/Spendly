@@ -23,7 +23,6 @@
   height: 56px;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, #e91e63, #ff5f9e);
-  box-shadow: var(--shadow-fab);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +68,7 @@
 .auth-tab.active {
   background: #fff;
   color: var(--primary-dark);
-  box-shadow: 0 1px 6px rgba(233, 30, 99, .12);
+  box-shadow: var(--shadow-raised);
 }
 
 .auth-form {
