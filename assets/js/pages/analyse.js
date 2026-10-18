@@ -177,7 +177,7 @@ function renderInsightsMonthList() {
           <div class="insights-cat-name">${catIcon(cat)} ${g.name}</div>
           <span class="insights-cat-count">${g.entries.length}</span>
           ${totalHtml}
-          <span class="insights-cat-chevron">▾</span>
+          <span class="insights-cat-chevron ico ico-arrow-down"></span>
         </div>
         <div class="insights-cat-body">
           ${g.entries.map(e => `<div class="tx-item">${entryRowInner(e)}</div>`).join('')}

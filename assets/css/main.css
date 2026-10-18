@@ -929,7 +929,7 @@ button {
   width: 1.25em;
   height: 1.25em;
   flex-shrink: 0;
-  vertical-align: -.25em;
+  vertical-align: -.275em;
   background-color: currentColor;
   -webkit-mask: var(--ico) center / contain no-repeat;
   mask: var(--ico) center / contain no-repeat;
@@ -992,6 +992,16 @@ button {
 }
 .nav-icon .ico {
   display: block;
+}
+/* Pfeile ersetzen die früheren Text-Glyphen ‹ › ▾ – feste Grösse, unabhängig von der Schriftgrösse des Containers */
+.cal-nav-btn .ico {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.tx-chevron.ico,
+.insights-cat-chevron.ico {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 .pw-toggle {
   color: var(--muted);
