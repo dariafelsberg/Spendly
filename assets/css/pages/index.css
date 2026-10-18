@@ -24,18 +24,6 @@
   font-weight: 400;
 }
 
-/* ── HEADER MENU ICON ── */
-@media (min-width: 768px) {
-  /* index.html: Zahnrad als eigene dritte Spalte im Topbar-Grid, oben rechts */
-  .topbar > .icon-btn.menu-toggle-btn {
-      position: static;
-      grid-column: 3;
-      grid-row: 1;
-      align-self: start;
-      justify-self: end;
-    }
-}
-
 /* ── INSIGHTS CHART ── */
 /* account pills */
 .account-pills {
@@ -326,7 +314,7 @@
 @media (min-width:768px) {
   .topbar {
       display: grid;
-      grid-template-columns: .8fr 1.1fr auto;
+      grid-template-columns: .8fr 1.1fr 2rem; /* 3. Spalte hält rechts Platz frei für das Zahnrad (absolut positioniert wie auf allen Seiten, siehe main.css) */
       align-items: start;
       gap: 32px;
     }
