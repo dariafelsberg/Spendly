@@ -68,7 +68,7 @@
 .budget-icon {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   background: var(--primary-light);
   display: flex;
   align-items: center;
@@ -248,7 +248,7 @@
   width: calc(100% - 32px);
   max-width: 360px;
   justify-content: center;
-  background: linear-gradient(135deg, #e91e63, #ff5f9e);
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 999px;

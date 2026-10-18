@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--sp-lg) var(--sp-md);
-  background: linear-gradient(180deg, #fff0f6 0%, var(--bg) 38%);
+  background: var(--bg);
 }
 
 .auth-logo {
@@ -22,7 +22,7 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #e91e63, #ff5f9e);
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;

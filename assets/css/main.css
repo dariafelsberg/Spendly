@@ -16,9 +16,9 @@
   --muted: #8a6b78;
   --border: #f5d7e3;
   --radius-sm: 10px;
-  --radius: 16px;
-  --radius-lg: 22px;
-  --radius-xl: 28px;
+  --radius: 12px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --nav-h: 64px;
   /* Elevation: Schatten nur, wo etwas über etwas anderem liegt. Flächen (Karten, Chips, Buttons) bleiben flach. */
   --shadow-raised: 0 1px 3px rgba(45, 27, 36, .12);  /* aktives Segment / Toggle-Knopf auf seiner Spur */
@@ -71,7 +71,7 @@ button {
 /* ── TOPBAR */
 .topbar,
 .settings-topbar {
-  background: linear-gradient(135deg, #e91e63 0%, #ff5f9e 100%);
+  background: var(--primary);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -717,7 +717,7 @@ button {
   border: none;
   border-radius: var(--radius-sm);
   padding: 13px;
-  background: linear-gradient(135deg, #e91e63, #ff5f9e);
+  background: var(--primary);
   color: #fff;
   font-family: inherit;
   font-weight: 700;
@@ -975,6 +975,28 @@ button {
 .tx-btn .ico {
   width: 1.4em;
   height: 1.4em;
+}
+/* Bearbeiten/Löschen: beim Drücken (Handy/Tablet) und Hover (Desktop) gefülltes Icon */
+.tx-btn:active .ico-pencil {
+  --ico: url(../icons/ui/pencil-fill.svg);
+  color: var(--muted);
+}
+.tx-btn:active .ico-trash {
+  --ico: url(../icons/ui/trash-fill.svg);
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .tx-btn:hover .ico-pencil {
+    --ico: url(../icons/ui/pencil-fill.svg);
+    color: var(--muted);
+  }
+  .tx-btn:hover .ico-trash {
+    --ico: url(../icons/ui/trash-fill.svg);
+    color: var(--muted);
+  }
+}
+.app-menu-close-btn:active .ico-close {
+  color: var(--primary);
 }
 .budget-icon,
 .settings-section-icon {

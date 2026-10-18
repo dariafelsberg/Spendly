@@ -233,7 +233,7 @@ function populateCategorySelect(type) {
 function populateAccountSelect(selectedId = '') {
   const sel = document.getElementById('entryAccount');
   if (!sel) return;
-  sel.innerHTML = `<option value="" ${!selectedId ? 'selected' : ''}>— Kein Konto —</option>` +
+  sel.innerHTML = `<option value="" ${!selectedId ? 'selected' : ''}>Kein Konto</option>` +
     state.accounts.map(a => `<option value="${a.id}" ${a.id === selectedId ? 'selected' : ''}>${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
   const grp = document.getElementById('accountSelectGroup');
   if (grp) grp.style.display = state.accounts.length ? '' : 'none';
@@ -284,7 +284,13 @@ function openEntryModal(editId = null) {
     document.getElementById('typeToggle').style.display = '';
     populateAccountSelect();
   }
-  document.getElementById('entryModal').classList.add('show');
+  const modal = document.getElementById('entryModal');
+  const sheet = modal.querySelector('.modal');
+  sheet.style.minHeight = '';
+  modal.classList.add('show');
+  // Höhe einfrieren, damit das Fenster beim Wechsel Ausgabe/Einnahme/Überweisung nicht springt
+  // (Ausgabe ist die höchste Variante: Kategorie, Konto und "Nur Konto")
+  if (!editId) sheet.style.minHeight = sheet.offsetHeight + 'px';
 }
 function closeEntryModal() { document.getElementById('entryModal').classList.remove('show'); state.editId = null; }
 function saveEntry() {

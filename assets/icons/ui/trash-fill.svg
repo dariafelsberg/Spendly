@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6.28 -6.23 60.56 60.56">
+  <!-- Gefüllte Variante von trash.svg (Hover/Press); die zwei Linien bleiben als Aussparung sichtbar -->
+  <defs>
+    <mask id="cut">
+      <rect x="-10" y="-10" width="70" height="70" fill="#fff"/>
+      <g stroke="#000" stroke-width="2.52" stroke-linecap="round">
+        <line x1="17.7" y1="19.5" x2="17.7" y2="39.6"/>
+        <line x1="30.5" y1="19.5" x2="30.5" y2="39.6"/>
+      </g>
+    </mask>
+  </defs>
+  <path d="M9,13.3v27.9c0,2.4,1.9,4.3,4.3,4.3h21.4c2.4,0,4.3-1.9,4.3-4.3V13.3H9Z" fill="#000" stroke="#000" stroke-width="2.52" mask="url(#cut)"/>
+  <g fill="none" stroke="#000" stroke-width="2.52" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="9" y1="6.8" x2="39" y2="6.8"/>
+    <polyline points="16.5 6.8 20.7 2.6 27.2 2.6 31.4 6.8"/>
+  </g>
+</svg>

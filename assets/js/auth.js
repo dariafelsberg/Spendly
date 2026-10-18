@@ -54,8 +54,8 @@ function renderAuthProfile() {
     .then(({ data }) => {
       const user = data.session && data.session.user;
       if (!user) return;
-      nameEl.textContent  = (user.user_metadata && user.user_metadata.username) || '—';
-      emailEl.textContent = user.email || '—';
+      nameEl.textContent  = (user.user_metadata && user.user_metadata.username) || '…';
+      emailEl.textContent = user.email || '…';
     })
     .catch(() => {});
 }

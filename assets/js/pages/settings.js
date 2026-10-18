@@ -234,7 +234,7 @@ function openRecurringModal(type, editId = null) {
       (type === 'income' ? allIncomeCats() : allExpenseCats())
         .map(c => `<option value="${c.name}">${catOptionLabel(c)}</option>`).join('');
     if (accSel) {
-      accSel.innerHTML = `<option value="">— Kein Konto —</option>` +
+      accSel.innerHTML = `<option value="">Kein Konto</option>` +
         state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
     }
     if (accGroup) accGroup.style.display = '';
