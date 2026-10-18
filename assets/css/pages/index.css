@@ -299,35 +299,13 @@
   box-shadow: var(--shadow-raised);
 }
 .type-btn.expense.active {
-  background: var(--danger-light);
   color: var(--danger);
 }
 .type-btn.income.active {
-  background: var(--income-light);
   color: var(--income);
 }
 .type-btn.transfer.active {
-  background: var(--transfer-light);
   color: var(--transfer);
-}
-/* Betragsfeld in der Farbe der Eintragsart (bleibt auch beim Bearbeiten sichtbar, wo der Umschalter fehlt) */
-#entryAmount {
-  font-weight: 700;
-}
-#entryModal[data-type="expense"] #entryAmount {
-  color: var(--danger);
-  border-color: var(--danger);
-  background: var(--danger-light);
-}
-#entryModal[data-type="income"] #entryAmount {
-  color: var(--income);
-  border-color: var(--income);
-  background: var(--income-light);
-}
-#entryModal[data-type="transfer"] #entryAmount {
-  color: var(--transfer);
-  border-color: var(--transfer);
-  background: var(--transfer-light);
 }
 
 /* ── BREAKPOINT ≥480px */

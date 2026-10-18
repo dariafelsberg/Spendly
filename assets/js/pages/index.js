@@ -199,7 +199,6 @@ function renderTransactions() {
 // ── ENTRY MODAL
 function setEntryType(type) {
   state.entryType = type;
-  document.getElementById('entryModal').dataset.type = type;
   document.getElementById('typeBtnExpense').classList.toggle('active', type === 'expense');
   document.getElementById('typeBtnIncome').classList.toggle('active', type === 'income');
   document.getElementById('typeBtnTransfer').classList.toggle('active', type === 'transfer');
