@@ -121,7 +121,7 @@ function renderDonut() {
     const amt = catTotals[c.name] || 0;
     return `<div class="cat-chip" data-cat="${c.name.replace(/"/g, '&quot;')}" style="${amt ? `background:${c.color}15;border-color:${c.color}44` : ''}">
       <div class="cat-dot" style="background:${amt ? c.color : '#ddd'}"></div>
-      <span class="cat-name">${c.emoji} ${c.name}</span>
+      <span class="cat-name">${catIcon(c)} ${c.name}</span>
       ${amt ? `<span class="cat-amount expense">−${formatNum(amt)}</span>` : ''}
     </div>`;
   }).join('');
@@ -228,7 +228,7 @@ function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
   if (!sel) return;
   sel.innerHTML = (type === 'income' ? allIncomeCats() : allExpenseCats())
-    .map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+    .map(c => `<option value="${c.name}">${catOptionLabel(c)}</option>`).join('');
 }
 function populateAccountSelect(selectedId = '') {
   const sel = document.getElementById('entryAccount');

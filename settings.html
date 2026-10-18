@@ -30,7 +30,7 @@
   <!-- ── SETTINGS TOPBAR ── -->
   <div class="settings-topbar">
     <h1 class="settings-title">Einstellungen</h1>
-    <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen">⚙️</button>
+    <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen"><span class="ico ico-settings"></span></button>
   </div>
 
   <!-- ── MAIN ── -->
@@ -39,7 +39,7 @@
     <!-- ANMELDUNG -->
     <div class="settings-section" id="authProfile">
       <div class="settings-section-header">
-        <span class="settings-section-icon">👤</span>
+        <span class="settings-section-icon"><span class="ico ico-user"></span></span>
         <div>
           <div class="settings-section-title">Anmeldung</div>
           <div class="settings-section-sub">Dein Login für dieses Gerät</div>
@@ -57,7 +57,7 @@
     <!-- KONTEN -->
     <div class="settings-section">
       <div class="settings-section-header">
-        <span class="settings-section-icon">🏦</span>
+        <span class="settings-section-icon"><span class="ico ico-bank"></span></span>
         <div>
           <div class="settings-section-title">Konten</div>
           <div class="settings-section-sub">Konten verwalten &amp; im Guthaben anzeigen</div>
@@ -70,7 +70,7 @@
     <!-- MONATLICHE EINNAHMEN -->
     <div class="settings-section settings-section-half">
       <div class="settings-section-header">
-        <span class="settings-section-icon">📥</span>
+        <span class="settings-section-icon"><span class="ico ico-coin"></span></span>
         <div>
           <div class="settings-section-title">Monatliche Einnahmen</div>
           <div class="settings-section-sub">Wiederkehrende Einnahmen verwalten</div>
@@ -83,7 +83,7 @@
     <!-- MONATLICHE AUSGABEN -->
     <div class="settings-section settings-section-half">
       <div class="settings-section-header">
-        <span class="settings-section-icon">📤</span>
+        <span class="settings-section-icon"><span class="ico ico-shoppingcart"></span></span>
         <div>
           <div class="settings-section-title">Monatliche Ausgaben</div>
           <div class="settings-section-sub">Wiederkehrende Ausgaben verwalten</div>
@@ -98,7 +98,7 @@
     <!-- EIGENE KATEGORIEN: KOMBINIERT -->
     <div class="settings-section">
       <div class="settings-section-header">
-        <span class="settings-section-icon">🏷️</span>
+        <span class="settings-section-icon"><span class="ico ico-tag"></span></span>
         <div>
           <div class="settings-section-title">Eigene Kategorien</div>
           <div class="settings-section-sub">Individuelle Kategorien verwalten</div>
@@ -111,7 +111,7 @@
     <!-- BUDGET -->
     <div class="settings-section">
       <div class="settings-section-header">
-        <span class="settings-section-icon">💰</span>
+        <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
         <div>
           <div class="settings-section-title">Monatsbudget</div>
           <div class="settings-section-sub">Wird jeden Monat automatisch wiederholt</div>
@@ -119,7 +119,7 @@
       </div>
       <div class="budget-setting-row">
         <div class="budget-setting-val" id="budgetSettingDisplay">CHF 0.00</div>
-        <button class="icon-btn" onclick="openBudgetModal()">✏️</button>
+        <button class="icon-btn" onclick="openBudgetModal()"><span class="ico ico-pencil"></span></button>
       </div>
     </div>
 
@@ -136,7 +136,7 @@
   <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
       <div class="app-menu-panel">
         <div class="app-menu-header">
-          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen">✕</button>
+          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen"><span class="ico ico-close"></span></button>
           <div class="app-menu-title">Einstellungen</div>
         </div>
         <iframe class="app-menu-settings-frame" src="settings.html?embed=1" title="Einstellungen"></iframe>
@@ -146,15 +146,15 @@
   <!-- ── BOTTOM NAV ── -->
   <nav class="bottom-nav">
     <a class="nav-btn" href="index.html">
-      <span class="nav-icon">🏠</span>
+      <span class="nav-icon"><span class="ico ico-home"></span></span>
       <span class="nav-label">Home</span>
     </a>
     <a class="nav-btn" href="calendar.html">
-    <span class="nav-icon">📅</span>
+    <span class="nav-icon"><span class="ico ico-calendar"></span></span>
     <span class="nav-label">Kalender</span>
   </a>
   <a class="nav-btn" href="analyse.html">
-    <span class="nav-icon">📊</span>
+    <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
     <span class="nav-label">Analyse</span>
   </a>
   </nav>
@@ -272,8 +272,8 @@
     <div class="modal-handle"></div>
     <div class="modal-title">Eigene Kategorie hinzufügen</div>
     <div class="auth-tabs" style="margin-bottom: 16px;">
-      <button class="auth-tab active" id="customCatTabExpense" onclick="switchCustomCatType('expense')">📤 Ausgabe</button>
-      <button class="auth-tab" id="customCatTabIncome" onclick="switchCustomCatType('income')">📥 Einnahme</button>
+      <button class="auth-tab active" id="customCatTabExpense" onclick="switchCustomCatType('expense')"><span class="ico ico-shoppingcart"></span> Ausgabe</button>
+      <button class="auth-tab" id="customCatTabIncome" onclick="switchCustomCatType('income')"><span class="ico ico-coin"></span> Einnahme</button>
     </div>
     <div class="form-group">
       <label class="form-label">Name</label>

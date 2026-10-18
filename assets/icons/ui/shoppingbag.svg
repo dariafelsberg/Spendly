@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+      }
+
+      .st0, .st1 {
+        stroke: currentColor;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        fill: currentColor;
+      }
+    </style>
+  </defs>
+  <polygon class="st0" points="13.2 16.7 34.6 16.7 37.3 39 10.7 39 13.2 16.7"/>
+  <path class="st0" d="M18.2,20v-5.2c0-4,3.4-5.8,5.8-5.8s5.8,1.1,5.8,5.5v5.5"/>
+  <circle class="st1" cx="18.2" cy="20" r=".9"/>
+  <circle class="st1" cx="29.8" cy="20" r=".9"/>
+</svg>

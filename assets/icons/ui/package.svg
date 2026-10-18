@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        fill: currentColor;
+      }
+
+      .st0, .st1 {
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <polygon class="st1" points="9 14.7 24.1 9 39 14.7 39 33.8 24.1 39 9 33.8 9 14.7"/>
+  <polyline class="st1" points="39 14.7 24.1 19.8 24.1 39"/>
+  <polygon class="st0" points="29.3 11 14.7 16.4 14.7 20.9 17.6 21.9 17.6 17.8 32.7 12.3 29.3 11"/>
+</svg>

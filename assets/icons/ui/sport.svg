@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        fill: currentColor;
+      }
+
+      .st0, .st1 {
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <circle class="st1" cx="24" cy="24" r="15"/>
+  <polygon class="st0" points="14.7 12.6 14.7 14.6 20 15.8 23.3 10.9 21.4 9.3 18.2 10.2 14.7 12.6"/>
+  <polygon class="st0" points="37.9 20 35.4 22.5 30.3 20.3 30.3 13.6 34.4 13.6 36.6 15.8 37.9 20"/>
+  <polygon class="st0" points="10.1 29.9 13.3 24.7 10.1 20.3 9 24 10.1 29.9"/>
+  <polygon class="st0" points="23.3 38.3 19.5 33.3 14.1 34.7 18.7 38 23.3 38.3"/>
+  <polygon class="st0" points="21.3 20.3 26.9 22 26.9 27.8 21.3 29.9 17.4 24.7 21.3 20.3"/>
+  <polygon class="st0" points="29.7 37.3 29.7 31.7 35.4 29.9 37.6 29.9 34.4 34.9 29.7 37.3"/>
+</svg>

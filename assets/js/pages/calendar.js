@@ -169,11 +169,11 @@ function renderDayDetail(dateObj) {
     if (e.type === 'transfer') {
       const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
       const toAcc   = state.accounts.find(a => a.id === e.toAccountId);
-      const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">🔮 geplant</span>` : '';
+      const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} geplant</span>` : '';
       return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
-          <div class="tx-cat-label">🔄 Interne Überweisung</div>
+          <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
           <div class="tx-note">${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}${plannedBadge}</div>
         </div>
         <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
@@ -183,13 +183,13 @@ function renderDayDetail(dateObj) {
     const isInc = e.type === 'income';
     const isAccOnly = e.type === 'account-only';
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
-    const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
+    const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${acc.name}</span>` : '';
     const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
-    const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">🔮 geplant</span>` : '';
+    const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} geplant</span>` : '';
     return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
-        <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
+        <div class="tx-cat-label">${catIcon(cat)} ${e.category}</div>
         <div class="tx-note">${e.note ? e.note + (acc || isAccOnly || e.isPreview ? ' · ' : '') : ''}${accTag}${accOnlyBadge}${plannedBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0, .st1 {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        stroke-dasharray: 2.8 2.8;
+      }
+    </style>
+  </defs>
+  <g>
+    <line class="st0" x1="24" y1="16.4" x2="24" y2="17.9"/>
+    <line class="st1" x1="24" y1="20.7" x2="24" y2="36.1"/>
+    <line class="st0" x1="24" y1="37.5" x2="24" y2="39"/>
+  </g>
+  <polygon class="st0" points="9 16.4 9 21.4 10.4 21.4 10.4 39 37.6 39 37.6 21.4 39 21.4 39 16.4 9 16.4"/>
+  <path class="st0" d="M16.8,16.4c-7.3-3.2-.3-10.9,3.5-5.4l3.8,5.4s1.8-3,4.7-6.1,10.5-.4,5.2,6.1"/>
+</svg>

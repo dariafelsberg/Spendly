@@ -7,25 +7,25 @@
 
 // ── CONSTANTS
 const EXPENSE_CATEGORIES = [
-  { name: 'Rechnungen',      emoji: '📄', color: '#e8533a' },
-  { name: 'Auto',            emoji: '🚗', color: '#4e8cf5' },
-  { name: 'Telefon',         emoji: '📱', color: '#a78bfa' },
-  { name: 'Restaurants',     emoji: '🍽️', color: '#f59e42' },
-  { name: 'Lebensmittel',    emoji: '🛒', color: '#34d399' },
-  { name: 'Geschenke',       emoji: '🎁', color: '#f472b6' },
-  { name: 'Gesundheit',      emoji: '💊', color: '#60a5fa' },
-  { name: 'Wohnen',          emoji: '🏠', color: '#fb923c' },
-  { name: 'Online Shopping', emoji: '📦', color: '#c084fc' },
-  { name: 'Haustiere',       emoji: '🐾', color: '#4ade80' },
-  { name: 'Sport',           emoji: '⚽', color: '#38bdf8' },
-  { name: 'ÖV',              emoji: '🚋', color: '#f87171' },
-  { name: 'Hygieneartikel',  emoji: '🧴', color: '#a3e635' },
-  { name: 'Shopping',         emoji: '🛍️', color: '#f472b6' },
+  { name: 'Rechnungen',      icon: 'bill', color: '#e8533a' },
+  { name: 'Auto',            icon: 'car', color: '#4e8cf5' },
+  { name: 'Telefon',         icon: 'phone', color: '#a78bfa' },
+  { name: 'Restaurants',     icon: 'restaurant', color: '#f59e42' },
+  { name: 'Lebensmittel',    icon: 'shoppingbasket', color: '#34d399' },
+  { name: 'Geschenke',       icon: 'gift', color: '#f472b6' },
+  { name: 'Gesundheit',      icon: 'pill', color: '#60a5fa' },
+  { name: 'Wohnen',          icon: 'house', color: '#fb923c' },
+  { name: 'Online Shopping', icon: 'package', color: '#c084fc' },
+  { name: 'Haustiere',       icon: 'paw', color: '#4ade80' },
+  { name: 'Sport',           icon: 'sport', color: '#38bdf8' },
+  { name: 'ÖV',              icon: 'oev', color: '#f87171' },
+  { name: 'Hygieneartikel',  icon: 'hygiene', color: '#a3e635' },
+  { name: 'Shopping',         icon: 'shoppingbag', color: '#f472b6' },
 ];
 const INCOME_CATEGORIES = [
-  { name: 'Lohn',      emoji: '💼', color: '#16a34a' },
-  { name: 'Sackgeld',  emoji: '🪙', color: '#84cc16' },
-  { name: 'Sonstiges', emoji: '💰', color: '#4ade80' },
+  { name: 'Lohn',      icon: 'wallet', color: '#16a34a' },
+  { name: 'Sackgeld',  icon: 'coin', color: '#84cc16' },
+  { name: 'Sonstiges', icon: 'tag', color: '#4ade80' },
 ];
 // ALL_CATS ist ein dynamischer Getter (berücksichtigt eigene Kategorien)
 function allExpenseCats() { return [...EXPENSE_CATEGORIES, ...(state.customExpenseCats || [])]; }
@@ -33,6 +33,19 @@ function allIncomeCats()  { return [...INCOME_CATEGORIES,  ...(state.customIncom
 function allCats()        { return [...allExpenseCats(), ...allIncomeCats()]; }
 // ALL_CATS bleibt als Alias für Stellen erhalten, die es referenzieren (Kalender, Buchungen)
 Object.defineProperty(window, 'ALL_CATS', { get: allCats });
+
+// Icon einer Kategorie: Standard-Kategorien haben ein SVG-Icon (assets/icons/ui),
+// eigene Kategorien behalten ihr gewähltes Emoji.
+function iconHtml(name, color) {
+  return `<span class="ico ico-${name}"${color ? ` style="color:${color}"` : ''}></span>`;
+}
+function catIcon(cat) {
+  return cat.icon ? iconHtml(cat.icon, cat.color) : (cat.emoji || '');
+}
+// Für <option>-Texte (dort ist kein HTML möglich): nur eigene Kategorien zeigen ihr Emoji.
+function catOptionLabel(cat) {
+  return cat.icon ? cat.name : `${cat.emoji} ${cat.name}`;
+}
 
 // ── STATE
 let state = {
@@ -390,31 +403,31 @@ function entryRowInner(e) {
     return `
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
-          <div class="tx-cat-label">🔄 Interne Überweisung</div>
+          <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
           <div class="tx-note">${formatDate(e.date)} · ${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
         </div>
         <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
         <div class="tx-actions">
-          <button class="tx-btn" onclick="editEntry('${e.id}')">✏️</button>
-          <button class="tx-btn delete" onclick="deleteEntry('${e.id}')">🗑️</button>
+          <button class="tx-btn" onclick="editEntry('${e.id}')"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteEntry('${e.id}')"><span class="ico ico-trash"></span></button>
         </div>`;
   }
   const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
   const isInc = e.type === 'income';
   const isAccOnly = e.type === 'account-only';
   const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
-  const accTag = acc ? `<span class="tx-account-tag">🏦 ${acc.name}</span>` : '';
+  const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${acc.name}</span>` : '';
   const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
   return `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
-        <div class="tx-cat-label">${cat.emoji} ${e.category}</div>
+        <div class="tx-cat-label">${catIcon(cat)} ${e.category}</div>
         <div class="tx-note">${formatDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? e.note + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
       <div class="tx-actions">
-        <button class="tx-btn" onclick="editEntry('${e.id}')">✏️</button>
-        <button class="tx-btn delete" onclick="deleteEntry('${e.id}')">🗑️</button>
+        <button class="tx-btn" onclick="editEntry('${e.id}')"><span class="ico ico-pencil"></span></button>
+        <button class="tx-btn delete" onclick="deleteEntry('${e.id}')"><span class="ico ico-trash"></span></button>
       </div>`;
 }
 

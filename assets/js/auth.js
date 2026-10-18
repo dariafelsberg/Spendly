@@ -100,7 +100,7 @@ function togglePw(inputId, btn) {
   const input = document.getElementById(inputId);
   const show = input.type === 'password';
   input.type = show ? 'text' : 'password';
-  btn.textContent = show ? '🙈' : '👁️';
+  btn.innerHTML = `<span class="ico ico-${show ? 'eye_closed' : 'eye_open'}"></span>`;
 }
 
 function updatePwStrength() {

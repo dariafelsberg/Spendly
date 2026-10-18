@@ -27,7 +27,7 @@
 
     <!-- ── TOPBAR ── -->
     <div class="topbar">
-      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen">⚙️</button>
+      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen"><span class="ico ico-settings"></span></button>
       <div class="topbar-inner">
         <div class="topbar-label">Gesamtguthaben</div>
         <div class="total-balance">
@@ -48,7 +48,7 @@
 
       <!-- Budget card -->
       <div class="card budget-section">
-        <div class="budget-icon">💰</div>
+        <div class="budget-icon"><span class="ico ico-wallet"></span></div>
         <div class="budget-info">
           <div class="section-label">Monatsbudget</div>
           <div class="budget-amount" id="budgetDisplay">CHF 0.00</div>
@@ -99,7 +99,7 @@
     <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
       <div class="app-menu-panel">
         <div class="app-menu-header">
-          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen">✕</button>
+          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen"><span class="ico ico-close"></span></button>
           <div class="app-menu-title">Einstellungen</div>
         </div>
         <iframe class="app-menu-settings-frame" src="settings.html?embed=1" title="Einstellungen"></iframe>
@@ -109,15 +109,15 @@
     <!-- ── BOTTOM NAV ── -->
     <nav class="bottom-nav">
       <a class="nav-btn active" href="index.html">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon"><span class="ico ico-home"></span></span>
         <span class="nav-label">Home</span>
       </a>
       <a class="nav-btn" href="calendar.html">
-        <span class="nav-icon">📅</span>
+        <span class="nav-icon"><span class="ico ico-calendar"></span></span>
         <span class="nav-label">Kalender</span>
       </a>
       <a class="nav-btn" href="analyse.html">
-        <span class="nav-icon">📊</span>
+        <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
         <span class="nav-label">Analyse</span>
       </a>
     </nav>
@@ -131,9 +131,9 @@
       <div class="modal-handle"></div>
       <div class="modal-title" id="entryModalTitle">Eintrag hinzufügen</div>
       <div class="type-toggle" id="typeToggle">
-        <button class="type-btn active" id="typeBtnExpense" onclick="setEntryType('expense')">📤 Ausgabe</button>
-        <button class="type-btn" id="typeBtnIncome" onclick="setEntryType('income')">📥 Einnahme</button>
-        <button class="type-btn" id="typeBtnTransfer" onclick="trySetTransferType()">🔄 Überweisung</button>
+        <button class="type-btn active" id="typeBtnExpense" onclick="setEntryType('expense')"><span class="ico ico-shoppingcart"></span> Ausgabe</button>
+        <button class="type-btn" id="typeBtnIncome" onclick="setEntryType('income')"><span class="ico ico-coin"></span> Einnahme</button>
+        <button class="type-btn" id="typeBtnTransfer" onclick="trySetTransferType()"><span class="ico ico-transfer"></span> Überweisung</button>
       </div>
       <div class="form-row">
         <div class="form-group">

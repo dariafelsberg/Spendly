@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        fill: currentColor;
+      }
+
+      .st1 {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <polyline class="st1" points="13.7 11.1 39.5 11.1 32.3 23.8 20.5 23.8 13.6 11.1 12.1 8.2 8.5 8.2"/>
+  <path class="st1" d="M19.7,22.2s-2.3,3.2-3.4,4.6-.6,3.2,1.7,3.2h18.1"/>
+  <circle class="st0" cx="17.6" cy="36.7" r="3.2"/>
+  <circle class="st0" cx="34" cy="36.7" r="3.2"/>
+</svg>

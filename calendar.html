@@ -28,7 +28,7 @@
     <!-- ── SETTINGS-STYLE TOPBAR ── -->
     <div class="settings-topbar">
       <h1 class="settings-title">Kalender</h1>
-      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen">⚙️</button>
+      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen"><span class="ico ico-settings"></span></button>
     </div>
 
     <!-- ── MAIN: KALENDER ── -->
@@ -69,7 +69,7 @@
     <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
       <div class="app-menu-panel">
         <div class="app-menu-header">
-          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen">✕</button>
+          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen"><span class="ico ico-close"></span></button>
           <div class="app-menu-title">Einstellungen</div>
         </div>
         <iframe class="app-menu-settings-frame" src="settings.html?embed=1" title="Einstellungen"></iframe>
@@ -79,15 +79,15 @@
     <!-- ── BOTTOM NAV ── -->
     <nav class="bottom-nav">
       <a class="nav-btn" href="index.html">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon"><span class="ico ico-home"></span></span>
         <span class="nav-label">Home</span>
       </a>
       <a class="nav-btn active" href="calendar.html">
-        <span class="nav-icon">📅</span>
+        <span class="nav-icon"><span class="ico ico-calendar"></span></span>
         <span class="nav-label">Kalender</span>
       </a>
       <a class="nav-btn" href="analyse.html">
-        <span class="nav-icon">📊</span>
+        <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
         <span class="nav-label">Analyse</span>
       </a>
     </nav>

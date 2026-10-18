@@ -163,7 +163,7 @@ function renderInsightsMonthList() {
     .sort((a, b) => Math.abs(b.total) - Math.abs(a.total))
     .forEach(g => {
       const cat = g.isTransfer
-        ? { color: '#7c93ff', emoji: '🔄' }
+        ? { color: '#7c93ff', icon: 'transfer' }
         : ALL_CATS.find(c => c.name === g.name) || { color: '#ccc', emoji: '?' };
       const totalHtml = g.isTransfer
         ? `<div class="insights-cat-total" style="color:#7c93ff">${formatNum(g.total)}</div>`
@@ -174,7 +174,7 @@ function renderInsightsMonthList() {
       group.innerHTML = `
         <div class="insights-cat-header" onclick="toggleInsightsCat(this)">
           <div class="tx-cat-dot" style="background:${cat.color}"></div>
-          <div class="insights-cat-name">${cat.emoji} ${g.name}</div>
+          <div class="insights-cat-name">${catIcon(cat)} ${g.name}</div>
           <span class="insights-cat-count">${g.entries.length}</span>
           ${totalHtml}
           <span class="insights-cat-chevron">▾</span>

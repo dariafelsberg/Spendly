@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        stroke-miterlimit: 10;
+      }
+
+      .st0, .st1 {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        stroke-linejoin: round;
+      }
+    </style>
+  </defs>
+  <path class="st0" d="M9,13.3v27.9c0,2.4,1.9,4.3,4.3,4.3h21.4c2.4,0,4.3-1.9,4.3-4.3V13.3H9Z"/>
+  <line class="st1" x1="17.7" y1="19.5" x2="17.7" y2="39.6"/>
+  <line class="st1" x1="30.5" y1="19.5" x2="30.5" y2="39.6"/>
+  <line class="st1" x1="9" y1="6.8" x2="39" y2="6.8"/>
+  <polyline class="st1" points="16.5 6.8 20.7 2.6 27.2 2.6 31.4 6.8"/>
+</svg>

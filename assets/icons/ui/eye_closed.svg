@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <line class="st0" x1="30" y1="34" x2="30" y2="36.9"/>
+  <line class="st0" x1="38" y1="32" x2="40.3" y2="34.4"/>
+  <path class="st0" d="M15,23.1c.9,4.3,6.8,11,15,11s13.8-7.2,15-11"/>
+  <line class="st0" x1="20.7" y1="30.9" x2="19" y2="33.4"/>
+</svg>

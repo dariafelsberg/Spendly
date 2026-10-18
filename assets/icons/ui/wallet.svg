@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .st0, .st1 {
+        fill: none;
+        stroke-width: 2px;
+      }
+
+      .st1 {
+        stroke: currentColor;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <path class="st1" d="M20.1,14.4c-5.2,3.7-11.1,10.6-11.1,17.7s7.4,9.1,15.1,9.1,14.9-1.9,14.9-8.7-3.5-13.1-10.7-18.1"/>
+  <path class="st1" d="M17.6,8.6c2.9-1.8,4.3-1.8,6.5-1.8s4.5.4,6.3,1.8c0,0-.9,3.9-2.1,5.8s-6.9,1.4-8.2,0c-1-1.4-2.5-5.8-2.5-5.8Z"/>
+  <path class="st0" d="M27,23.9c0-1.7-1.6-1.7-2.8-1.7-1.9,0-3,.9-3,2.3s.7,1.9,1.2,2.3,2.4,1.1,3.3,1.8,1.2,1.5,1.2,2.4c0,1.6-2.1,2.5-3,2.5s-2.7,0-2.7-1.8"/>
+  <line class="st0" x1="24" y1="20.1" x2="24" y2="22.2"/>
+  <line class="st0" x1="24" y1="33.5" x2="24" y2="35.5"/>
+</svg>

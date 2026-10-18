@@ -25,11 +25,11 @@ function renderAccountsList() {
       <div class="settings-item">
         <div class="settings-item-info">
           <div class="settings-item-name">${a.name}</div>
-          <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${a.visible ? '👁 sichtbar' : 'versteckt'}</span></div>
+          <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt'}</span></div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openAccountModal('${a.id}')">✏️</button>
-          <button class="tx-btn delete" onclick="deleteAccount('${a.id}')">🗑️</button>
+          <button class="tx-btn" onclick="openAccountModal('${a.id}')"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteAccount('${a.id}')"><span class="ico ico-trash"></span></button>
         </div>
       </div>`).join('');
 }
@@ -55,7 +55,7 @@ function renderRecurringList(type) {
           detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}`;
         } else {
           const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
-          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · 🏦 ' + acc.name : ''}${r.accountOnly ? ' · 🚫 Budget' : ''}`;
+          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · ' + iconHtml('bank') + ' ' + acc.name : ''}${r.accountOnly ? ' · ' + iconHtml('banned') + ' Budget' : ''}`;
         }
         return `
       <div class="settings-item">
@@ -64,8 +64,8 @@ function renderRecurringList(type) {
           <div class="settings-item-val" style="color:${col}">${detail}</div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openRecurringModal('${type}','${r.id}')">✏️</button>
-          <button class="tx-btn delete" onclick="deleteRecurring('${type}','${r.id}')">🗑️</button>
+          <button class="tx-btn" onclick="openRecurringModal('${type}','${r.id}')"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteRecurring('${type}','${r.id}')"><span class="ico ico-trash"></span></button>
         </div>
       </div>`;
       }).join('');
@@ -90,15 +90,15 @@ function renderCustomCatList() {
     const items = list.map(c => `
       <div class="settings-item">
         <div class="settings-item-info">
-          <div class="settings-item-name">${c.emoji} ${c.name}</div>
+          <div class="settings-item-name">${catIcon(c)} ${c.name}</div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}','${c.id}')">🗑️</button>
+          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}','${c.id}')"><span class="ico ico-trash"></span></button>
         </div>
       </div>`).join('');
     return header + items;
   };
-  el.innerHTML = renderGroup('expense', '📤 Ausgaben', expenseList) + renderGroup('income', '📥 Einnahmen', incomeList);
+  el.innerHTML = renderGroup('expense', iconHtml('shoppingcart') + ' Ausgaben', expenseList) + renderGroup('income', iconHtml('coin') + ' Einnahmen', incomeList);
 }
 
 function openCustomCatModal(type) {
@@ -232,7 +232,7 @@ function openRecurringModal(type, editId = null) {
     if (transferGroup) transferGroup.style.display = 'none';
     document.getElementById('recurringCategory').innerHTML =
       (type === 'income' ? allIncomeCats() : allExpenseCats())
-        .map(c => `<option value="${c.name}">${c.emoji} ${c.name}</option>`).join('');
+        .map(c => `<option value="${c.name}">${catOptionLabel(c)}</option>`).join('');
     if (accSel) {
       accSel.innerHTML = `<option value="">— Kein Konto —</option>` +
         state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');

@@ -921,3 +921,89 @@ button {
       height: var(--nav-h);
     }
 }
+
+/* ── ICONS (assets/icons/ui) */
+/* Die SVGs dienen als Maske, die Farbe kommt aus `color` (currentColor) – so lassen sich alle Icons per CSS einfärben. */
+.ico {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  vertical-align: -.25em;
+  background-color: currentColor;
+  -webkit-mask: var(--ico) center / contain no-repeat;
+  mask: var(--ico) center / contain no-repeat;
+}
+.ico-arrow-down    { --ico: url(../icons/ui/arrow-down.svg); }
+.ico-arrow-left    { --ico: url(../icons/ui/arrow-left.svg); }
+.ico-arrow-right   { --ico: url(../icons/ui/arrow-right.svg); }
+.ico-bank          { --ico: url(../icons/ui/bank.svg); }
+.ico-banned        { --ico: url(../icons/ui/banned.svg); }
+.ico-bill          { --ico: url(../icons/ui/bill.svg); }
+.ico-calendar      { --ico: url(../icons/ui/calendar.svg); }
+.ico-car           { --ico: url(../icons/ui/car.svg); }
+.ico-clock         { --ico: url(../icons/ui/clock.svg); }
+.ico-close         { --ico: url(../icons/ui/close.svg); }
+.ico-coin          { --ico: url(../icons/ui/coin.svg); }
+.ico-combo-chart   { --ico: url(../icons/ui/combo-chart.svg); }
+.ico-eye_closed    { --ico: url(../icons/ui/eye_closed.svg); }
+.ico-eye_open      { --ico: url(../icons/ui/eye_open.svg); }
+.ico-gift          { --ico: url(../icons/ui/gift.svg); }
+.ico-home          { --ico: url(../icons/ui/home.svg); }
+.ico-house         { --ico: url(../icons/ui/house.svg); }
+.ico-hygiene       { --ico: url(../icons/ui/hygiene.svg); }
+.ico-oev           { --ico: url(../icons/ui/oev.svg); }
+.ico-package       { --ico: url(../icons/ui/package.svg); }
+.ico-paw           { --ico: url(../icons/ui/paw.svg); }
+.ico-pencil        { --ico: url(../icons/ui/pencil.svg); }
+.ico-phone         { --ico: url(../icons/ui/phone.svg); }
+.ico-pill          { --ico: url(../icons/ui/pill.svg); }
+.ico-restaurant    { --ico: url(../icons/ui/restaurant.svg); }
+.ico-settings      { --ico: url(../icons/ui/settings.svg); }
+.ico-shoppingbag   { --ico: url(../icons/ui/shoppingbag.svg); }
+.ico-shoppingbasket { --ico: url(../icons/ui/shoppingbasket.svg); }
+.ico-shoppingcart  { --ico: url(../icons/ui/shoppingcart.svg); }
+.ico-sport         { --ico: url(../icons/ui/sport.svg); }
+.ico-tag           { --ico: url(../icons/ui/tag.svg); }
+.ico-transfer      { --ico: url(../icons/ui/transfer.svg); }
+.ico-trash         { --ico: url(../icons/ui/trash.svg); }
+.ico-user          { --ico: url(../icons/ui/user.svg); }
+.ico-wallet        { --ico: url(../icons/ui/wallet.svg); }
+.tx-btn .ico {
+  width: 1.4em;
+  height: 1.4em;
+}
+.budget-icon,
+.settings-section-icon {
+  color: var(--primary);
+}
+.budget-icon .ico,
+.settings-section-icon .ico {
+  width: 1.15em;
+  height: 1.15em;
+}
+.icon-btn .ico {
+  width: 1.4em;
+  height: 1.4em;
+}
+.icon-btn.menu-toggle-btn .ico {
+  width: 1em;
+  height: 1em;
+}
+.nav-icon .ico {
+  display: block;
+}
+.pw-toggle {
+  color: var(--muted);
+}
+.auth-logo-mark {
+  color: #fff;
+}
+.type-btn,
+.auth-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3em;
+  white-space: nowrap;
+}

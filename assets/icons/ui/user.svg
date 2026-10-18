@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+        stroke: currentColor;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <path class="st0" d="M30.1,14.7c6.8,0,7.8,6.3,7.8,8.9s-2.6,8.3-7.8,8.3-8.1-4.8-8.1-8.6,1.5-8.6,8.1-8.6Z"/>
+  <path class="st0" d="M16.9,45.3h26.3s1.9.1,1.9-1.6c0-2.4-6.4-7.4-14.9-7.4s-15.1,4.5-15.1,7.4,1.9,1.6,1.9,1.6Z"/>
+</svg>
