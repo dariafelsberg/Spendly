@@ -298,13 +298,13 @@
   color: var(--text);
   box-shadow: var(--shadow-raised);
 }
-.type-btn.expense.active {
+.type-btn.expense {
   color: var(--danger);
 }
-.type-btn.income.active {
+.type-btn.income {
   color: var(--income);
 }
-.type-btn.transfer.active {
+.type-btn.transfer {
   color: var(--transfer);
 }
 
