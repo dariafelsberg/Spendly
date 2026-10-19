@@ -43,18 +43,6 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
-/* Seiten mit pinkem Header: Safari auf dem iPhone färbt die Statusleiste oben nach der
-   Hintergrundfarbe von body (theme-color wird ignoriert) – darum body in Pink,
-   der helle Seitenhintergrund kommt von .app-shell */
-@media (max-width: 767px) {
-  html:has(.topbar, .settings-topbar),
-  body:has(.topbar, .settings-topbar) {
-    background: var(--primary);
-  }
-  body:has(.topbar, .settings-topbar) .app-shell {
-    background: var(--bg);
-  }
-}
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
