@@ -222,15 +222,15 @@ button {
 .app-menu-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--sp-sm);
   margin: 0;
-  padding: var(--sp-lg) 0 var(--sp-md);
+  padding: 0 0 var(--sp-md);  /* oben reicht das Padding des Panels */
   flex-shrink: 0;
 }
 .app-menu-close-btn {
   border-radius: 50%;
   order: 2;          /* im HTML steht der Button vor dem Titel, hier nach rechts */
-  margin-left: auto;
 }
 .app-menu-title {
   font-family: 'DM Serif Display', serif;
