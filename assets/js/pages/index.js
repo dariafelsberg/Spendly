@@ -23,7 +23,7 @@ function renderTopBar() {
   const total = vis.length
     ? vis.reduce((s, a) => s + a.balance, 0)
     : state.balance + state.entries.reduce((s, e) => s + (e.type === 'income' ? e.amount : e.type === 'transfer' ? 0 : -e.amount), 0);
-  document.getElementById('totalBalanceDisplay').textContent = formatNum(total);
+  animateNumber(document.getElementById('totalBalanceDisplay'), total);
   const pillsEl = document.getElementById('accountPills');
   if (vis.length) {
     pillsEl.innerHTML = vis.map(a =>
@@ -182,7 +182,7 @@ function renderTransactions() {
     .filter(e => e.date.slice(0, 7) === nowKey)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
   document.getElementById('txCount').textContent = entries.length;
-  const listEl = document.getElementById('txList');
+  const listEl = document.getElementById('txListInner');
   const emptyEl = document.getElementById('txEmpty');
   listEl.querySelectorAll('.tx-item').forEach(el => el.remove());
   if (!entries.length) { emptyEl.style.display = 'block'; return; }
@@ -199,6 +199,7 @@ function renderTransactions() {
 // ── ENTRY MODAL
 function setEntryType(type) {
   state.entryType = type;
+  moveTypeIndicator(type);
   document.getElementById('typeBtnExpense').classList.toggle('active', type === 'expense');
   document.getElementById('typeBtnIncome').classList.toggle('active', type === 'income');
   document.getElementById('typeBtnTransfer').classList.toggle('active', type === 'transfer');
@@ -223,6 +224,15 @@ function setEntryType(type) {
     populateCategorySelect(type === 'income' ? 'income' : 'expense');
     populateAccountSelect(document.getElementById('entryAccount')?.value || '');
   }
+}
+// Weissen Hintergrund im Umschalter hinter den gewählten Knopf schieben
+function moveTypeIndicator(type) {
+  const toggle = document.getElementById('typeToggle');
+  const btn = { expense: 'typeBtnExpense', income: 'typeBtnIncome', transfer: 'typeBtnTransfer' }[type];
+  if (!toggle || !btn) return;
+  const el = document.getElementById(btn);
+  toggle.style.setProperty('--ind-x', el.offsetLeft + 'px');
+  toggle.style.setProperty('--ind-w', el.offsetWidth + 'px');
 }
 function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
@@ -315,7 +325,7 @@ function saveEntry() {
       state.entries.push({ id: uid(), type: 'transfer', amount, category: 'Interne Überweisung', note, date, fromAccountId, toAccountId });
       applyTransferDelta(fromAccountId, toAccountId, amount);
     }
-    saveState(); render(); closeEntryModal();
+    saveState(); render(); closeEntryModal(); showToast('Gespeichert');
     return;
   }
 
@@ -338,7 +348,7 @@ function saveEntry() {
     state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId });
     applyAccountDelta(accountId, amount, finalType);
   }
-  saveState(); render(); closeEntryModal();
+  saveState(); render(); closeEntryModal(); showToast('Gespeichert');
 }
 
 function toggleTxList() {
@@ -347,6 +357,23 @@ function toggleTxList() {
   if (document.getElementById('txList').classList.contains('open')) {
     window.scrollBy({ top: window.innerHeight * 0.5, behavior: 'smooth' });
   }
+}
+
+// Zahl vom zuletzt angezeigten Wert zum neuen Wert hochzählen lassen (beim ersten Anzeigen direkt setzen)
+function animateNumber(el, to) {
+  const from = el._value;
+  el._value = to;
+  cancelAnimationFrame(el._raf);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (from === undefined || from === to || reduce) { el.textContent = formatNum(to); return; }
+  const start = performance.now(), dur = 400;
+  const step = now => {
+    const t = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = formatNum(from + (to - from) * eased);
+    if (t < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
 }
 
 // ── HELPERS (nur Home)

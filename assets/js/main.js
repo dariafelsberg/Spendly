@@ -460,11 +460,26 @@ function deleteEntry(id) {
       }
     }
     state.entries = state.entries.filter(e => e.id !== id);
-    saveState(); pageRender();
+    saveState(); pageRender(); showToast('Gelöscht');
   }
 }
 
 // ── HELPERS
+// Kurze Bestätigung oben am Bildschirm, verschwindet nach 1.6 s von selbst
+function showToast(text) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+  }
+  el.textContent = text;
+  clearTimeout(el._timer);
+  requestAnimationFrame(() => el.classList.add('show'));
+  el._timer = setTimeout(() => el.classList.remove('show'), 1600);
+}
 function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
