@@ -339,7 +339,12 @@ function saveEntry() {
       // alten Delta umkehren: income → 'expense'-Richtung; expense/account-only → 'income'-Richtung
       const reverseType = (e.type === 'income') ? 'expense' : 'income';
       applyAccountDelta(e.accountId, e.amount, reverseType);
-      Object.assign(e, { amount, category, note, date, accountId });
+      // Schalter "Nur Konto" auch beim Bearbeiten übernehmen (Ausgabe ↔ Nur Konto)
+      let type = e.type;
+      if (type === 'expense' || type === 'account-only') {
+        type = document.getElementById('accountOnlyCheck')?.checked ? 'account-only' : 'expense';
+      }
+      Object.assign(e, { type, amount, category, note, date, accountId });
       applyAccountDelta(accountId, amount, e.type);
     }
   } else {
@@ -353,9 +358,10 @@ function saveEntry() {
 
 function toggleTxList() {
   ['txList','txHeader','txChevron'].forEach(id => document.getElementById(id).classList.toggle('open'));
-  // Beim Aufklappen eine halbe Bildschirmhöhe nach unten scrollen, damit die Einträge sichtbar werden
+  // Beim Aufklappen eine halbe Bildschirmhöhe nach unten scrollen, damit die Einträge sichtbar werden.
+  // Erst nach dem Aufklapp-Animation (.25s), sonst ist die Seite noch zu kurz und es gibt nichts zu scrollen.
   if (document.getElementById('txList').classList.contains('open')) {
-    window.scrollBy({ top: window.innerHeight * 0.5, behavior: 'smooth' });
+    setTimeout(() => window.scrollBy({ top: window.innerHeight * 0.5, behavior: 'smooth' }), 260);
   }
 }
 

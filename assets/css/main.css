@@ -676,7 +676,7 @@ button {
   transition: transform .2s ease-in;
 }
 .modal-overlay.show .modal {
-  transform: translateY(0);
+  transform: none; /* nicht translateY(0): ein bleibendes transform kann auf iOS die Tipp-Ziele im Fenster verschieben */
   transition: transform .26s cubic-bezier(.32, 1.25, .57, 1);
 }
 .modal-handle {
