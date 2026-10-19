@@ -211,7 +211,7 @@ button {
   width: 100%;
   height: 90%;
   height: 90dvh;
-  background: var(--card);
+  background: var(--bg);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: var(--shadow-float);
   padding: var(--sp-lg) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom));
@@ -225,7 +225,6 @@ button {
   gap: var(--sp-sm);
   margin: calc(-1 * var(--sp-lg)) calc(-1 * var(--sp-lg)) var(--sp-lg);
   padding: var(--sp-lg) var(--sp-lg) var(--sp-md);
-  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 .app-menu-close-btn {
