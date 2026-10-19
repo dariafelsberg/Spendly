@@ -358,10 +358,16 @@ function saveEntry() {
 
 function toggleTxList() {
   ['txList','txHeader','txChevron'].forEach(id => document.getElementById(id).classList.toggle('open'));
-  // Beim Aufklappen eine halbe Bildschirmhöhe nach unten scrollen, damit die Einträge sichtbar werden.
-  // Erst nach dem Aufklapp-Animation (.25s), sonst ist die Seite noch zu kurz und es gibt nichts zu scrollen.
-  if (document.getElementById('txList').classList.contains('open')) {
-    setTimeout(() => window.scrollBy({ top: window.innerHeight * 0.5, behavior: 'smooth' }), 260);
+  // Beim Aufklappen so scrollen, dass die Einträge-Karte die unteren 60% des Bildschirms füllt
+  // (Kartenoberkante bei 40% der Bildschirmhöhe). Erst nach der Aufklapp-Animation (.25s),
+  // sonst ist die Seite noch zu kurz und es gibt nichts zu scrollen.
+  const list = document.getElementById('txList');
+  if (list.classList.contains('open')) {
+    setTimeout(() => {
+      const card = list.closest('.transactions-section');
+      const delta = card.getBoundingClientRect().top - window.innerHeight * 0.4;
+      if (delta > 0) window.scrollBy({ top: delta, behavior: 'smooth' });
+    }, 260);
   }
 }
 
