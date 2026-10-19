@@ -358,14 +358,17 @@ function saveEntry() {
 
 function toggleTxList() {
   ['txList','txHeader','txChevron'].forEach(id => document.getElementById(id).classList.toggle('open'));
-  // Beim Aufklappen so scrollen, dass die Einträge-Karte die unteren 60% des Bildschirms füllt
-  // (Kartenoberkante bei 40% der Bildschirmhöhe). Erst nach der Aufklapp-Animation (.25s),
+  // Beim Aufklappen so scrollen, dass die Einträge-Karte höchstens 70% des Bildschirms belegt:
+  // lange Liste → Kartenoberkante bei 30%; kurze Liste → nur so weit, bis die Karte ganz über
+  // der Navigation sichtbar ist. Erst nach der Aufklapp-Animation (.25s),
   // sonst ist die Seite noch zu kurz und es gibt nichts zu scrollen.
   const list = document.getElementById('txList');
   if (list.classList.contains('open')) {
     setTimeout(() => {
-      const card = list.closest('.transactions-section');
-      const delta = card.getBoundingClientRect().top - window.innerHeight * 0.4;
+      const rect = list.closest('.transactions-section').getBoundingClientRect();
+      const navH = document.querySelector('.bottom-nav')?.offsetHeight || 0;
+      const targetTop = Math.max(window.innerHeight * 0.3, window.innerHeight - navH - rect.height - 16);
+      const delta = rect.top - targetTop;
       if (delta > 0) window.scrollBy({ top: delta, behavior: 'smooth' });
     }, 260);
   }
