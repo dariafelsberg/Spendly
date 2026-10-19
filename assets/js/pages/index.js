@@ -357,6 +357,14 @@ function saveEntry() {
 }
 
 function toggleTxList() {
+  const inner = document.getElementById('txListInner');
+  if (document.getElementById('txList').classList.contains('open')) {
+    // Zuklappen: den Teil unterhalb des Bildschirms sofort abschneiden, damit die Animation
+    // nur den sichtbaren Teil schliesst und so schnell wirkt wie das Aufklappen
+    const r = inner.getBoundingClientRect();
+    inner.style.maxHeight = Math.max(0, Math.min(r.bottom, window.innerHeight) - r.top) + 'px';
+    setTimeout(() => { inner.style.maxHeight = ''; }, 260);
+  }
   ['txList','txHeader','txChevron'].forEach(id => document.getElementById(id).classList.toggle('open'));
   // Beim Aufklappen so scrollen, dass die Einträge-Karte höchstens 70% des Bildschirms belegt:
   // lange Liste → Kartenoberkante bei 30%; kurze Liste → nur so weit, bis die Karte ganz über
