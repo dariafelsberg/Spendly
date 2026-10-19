@@ -10,7 +10,7 @@ html.embed-mode .app-shell {
   padding-bottom: 0;
 }
 html.embed-mode .settings-main {
-  padding-top: var(--sp-lg);
+  padding: 0;
 }
 
 /* ── SETTINGS PAGE */
