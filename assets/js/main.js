@@ -384,7 +384,7 @@ const IS_SETTINGS = !!document.getElementById('accountsList');
 function openBudgetModal() { document.getElementById('budgetInput').value = state.budget || ''; document.getElementById('budgetModal').classList.add('show'); }
 function closeBudgetModal() { document.getElementById('budgetModal').classList.remove('show'); }
 function saveBudget() {
-  const val = parseFloat(document.getElementById('budgetInput').value);
+  const val = parseAmount(document.getElementById('budgetInput').value);
   if (!isNaN(val) && val >= 0) {
     state.budget = val; saveState();
     if (IS_HOME) { renderBudgetCard(); renderDonut(); }
@@ -404,7 +404,7 @@ function entryRowInner(e) {
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
           <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
-          <div class="tx-note">${formatDate(e.date)} · ${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
+          <div class="tx-note">${formatRelDate(e.date)} · ${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
         </div>
         <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
         <div class="tx-actions">
@@ -422,7 +422,7 @@ function entryRowInner(e) {
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${catIcon(cat)} ${e.category}</div>
-        <div class="tx-note">${formatDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? e.note + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
+        <div class="tx-note">${formatRelDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? e.note + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
       <div class="tx-actions">
@@ -485,6 +485,21 @@ function dateKey(d) {
 }
 function formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function formatDate(d) { return d ? new Date(d).toLocaleDateString('de-CH') : ''; }
+// Relatives Datum für Listen: "Heute", "Gestern", sonst "Mo, 12.10." (anderes Jahr: "Mo, 12.10.2025")
+function formatRelDate(d) {
+  if (!d) return '';
+  const [y, m, day] = d.split('-').map(Number);
+  const date = new Date(y, m - 1, day);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((today - date) / 86400000);
+  if (diff === 0) return 'Heute';
+  if (diff === 1) return 'Gestern';
+  if (diff === -1) return 'Morgen';
+  const wd = date.toLocaleDateString('de-CH', { weekday: 'short' }).replace('.', '');
+  return `${wd}, ${day}.${m}.${y !== today.getFullYear() ? y : ''}`;
+}
+// Betrag aus einem Eingabefeld lesen: akzeptiert "12,50", "12.50" und "1'200.50"
+function parseAmount(v) { return parseFloat(String(v).trim().replace(/[\s'’]/g, '').replace(',', '.')); }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
 // ── START: Daten laden (die Seitendatei folgt danach)

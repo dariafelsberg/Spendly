@@ -180,7 +180,7 @@ function openAccountModal(editId = null) {
 function closeAccountModal() { document.getElementById('accountModal').classList.remove('show'); state.accountEditId = null; }
 function saveAccount() {
   const name    = document.getElementById('accountName').value.trim();
-  const balance = parseFloat(document.getElementById('accountBalance').value) || 0;
+  const balance = parseAmount(document.getElementById('accountBalance').value) || 0;
   const visible = document.getElementById('accountVisible').checked;
   if (!name) { document.getElementById('accountName').focus(); return; }
   if (state.accountEditId) {
@@ -267,7 +267,7 @@ function openRecurringModal(type, editId = null) {
 function closeRecurringModal() { document.getElementById('recurringModal').classList.remove('show'); state.recurringEditId = null; }
 function saveRecurring() {
   const name      = document.getElementById('recurringName').value.trim();
-  const amount    = parseFloat(document.getElementById('recurringAmount').value);
+  const amount    = parseAmount(document.getElementById('recurringAmount').value);
   const startDate = document.getElementById('recurringStartDate').value || dateKey(new Date());
   if (!name || isNaN(amount) || amount <= 0) { document.getElementById('recurringName').focus(); return; }
 

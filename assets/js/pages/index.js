@@ -23,17 +23,43 @@ function renderTopBar() {
   const total = vis.length
     ? vis.reduce((s, a) => s + a.balance, 0)
     : state.balance + state.entries.reduce((s, e) => s + (e.type === 'income' ? e.amount : e.type === 'transfer' ? 0 : -e.amount), 0);
-  animateNumber(document.getElementById('totalBalanceDisplay'), total);
+  const hidden = isBalanceHidden();
+  const totalEl = document.getElementById('totalBalanceDisplay');
+  if (hidden) { cancelAnimationFrame(totalEl._raf); totalEl._value = undefined; totalEl.textContent = '••••••'; }
+  else animateNumber(totalEl, total);
+  const eye = document.getElementById('balanceEye');
+  if (eye) { eye.querySelector('.ico').className = 'ico ' + (hidden ? 'ico-eye_closed' : 'ico-eye_open'); eye.setAttribute('aria-label', hidden ? 'Guthaben anzeigen' : 'Guthaben verbergen'); }
   const pillsEl = document.getElementById('accountPills');
   if (vis.length) {
     pillsEl.innerHTML = vis.map(a =>
-      `<div class="account-pill-item"><span class="pill-name">${a.name}</span><span class="pill-val">CHF ${formatNum(a.balance)}</span></div>`
+      `<div class="account-pill-item"><span class="pill-name">${a.name}</span><span class="pill-val">CHF ${hidden ? '••••' : formatNum(a.balance)}</span></div>`
     ).join('');
     pillsEl.style.display = 'flex';
   } else {
     pillsEl.innerHTML = '';
     pillsEl.style.display = 'none';
   }
+}
+
+// Guthaben verbergen (z.B. im Zug): pro Gerät gemerkt
+function isBalanceHidden() { try { return localStorage.getItem('spendly_hideBalance') === '1'; } catch (e) { return false; } }
+function toggleBalanceHidden() {
+  try { localStorage.setItem('spendly_hideBalance', isBalanceHidden() ? '0' : '1'); } catch (e) {}
+  renderTopBar();
+}
+
+// Zuletzt verwendetes Konto und Kategorie pro Typ merken (pro Gerät), für die Vorauswahl
+function lastEntryPrefs() { try { return JSON.parse(localStorage.getItem('spendly_lastEntry')) || {}; } catch (e) { return {}; } }
+function rememberEntryPrefs(type, category, accountId) {
+  const p = lastEntryPrefs(); p.cat = p.cat || {}; p.cat[type] = category; if (accountId) p.accountId = accountId;
+  try { localStorage.setItem('spendly_lastEntry', JSON.stringify(p)); } catch (e) {}
+}
+// Vorausgewähltes Konto: zuletzt verwendetes, sonst das erste sichtbare, sonst das erste
+function defaultAccountId() {
+  const last = lastEntryPrefs().accountId;
+  if (last && state.accounts.some(a => a.id === last)) return last;
+  const vis = state.accounts.find(a => a.visible);
+  return vis ? vis.id : (state.accounts[0] ? state.accounts[0].id : '');
 }
 
 function renderBudgetCard() {
@@ -222,6 +248,12 @@ function setEntryType(type) {
     if (transferGroup) transferGroup.style.display = 'none';
     // "Nur Konto" verwendet Ausgaben-Kategorien (bleibt eine Abbuchung, zählt nur nicht ins Budget)
     populateCategorySelect(type === 'income' ? 'income' : 'expense');
+    // Neuer Eintrag: zuletzt verwendete Kategorie dieses Typs vorauswählen
+    if (!state.editId) {
+      const lastCat = (lastEntryPrefs().cat || {})[type === 'income' ? 'income' : 'expense'];
+      const sel = document.getElementById('entryCategory');
+      if (lastCat && sel && [...sel.options].some(o => o.value === lastCat)) sel.value = lastCat;
+    }
     populateAccountSelect(document.getElementById('entryAccount')?.value || '');
   }
 }
@@ -292,7 +324,7 @@ function openEntryModal(editId = null) {
     document.getElementById('entryNote').value   = '';
     document.getElementById('entryDate').valueAsDate = new Date();
     document.getElementById('typeToggle').style.display = '';
-    populateAccountSelect();
+    populateAccountSelect(defaultAccountId());
   }
   const modal = document.getElementById('entryModal');
   const sheet = modal.querySelector('.modal');
@@ -304,7 +336,7 @@ function openEntryModal(editId = null) {
 }
 function closeEntryModal() { document.getElementById('entryModal').classList.remove('show'); state.editId = null; }
 function saveEntry() {
-  const amount = parseFloat(document.getElementById('entryAmount').value);
+  const amount = parseAmount(document.getElementById('entryAmount').value);
   const note   = document.getElementById('entryNote').value.trim();
   const date   = document.getElementById('entryDate').value;
 
@@ -351,6 +383,7 @@ function saveEntry() {
     const aoChecked = document.getElementById('accountOnlyCheck')?.checked;
     const finalType = (state.entryType === 'expense' && aoChecked) ? 'account-only' : state.entryType;
     state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId });
+    rememberEntryPrefs(state.entryType === 'income' ? 'income' : 'expense', category, accountId);
     applyAccountDelta(accountId, amount, finalType);
   }
   saveState(); render(); closeEntryModal(); showToast('Gespeichert');

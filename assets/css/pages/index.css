@@ -12,6 +12,19 @@
   letter-spacing: .12em;
   margin-bottom: 2px;
 }
+.balance-eye {
+  background: none;
+  border: none;
+  padding: 0 0 0 4px;
+  color: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.balance-eye .ico {
+  width: 1.5em;
+  height: 1.5em;
+}
 .total-balance {
   font-size: 2.6rem;
   font-weight: 700;
