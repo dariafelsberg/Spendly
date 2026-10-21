@@ -1098,3 +1098,10 @@ button {
   gap: .3em;
   white-space: nowrap;
 }
+
+/* Handy: alle Icons etwas grösser (scale ändert das Layout nicht) */
+@media (max-width: 767px) {
+  .ico {
+    scale: 1.15;
+  }
+}
