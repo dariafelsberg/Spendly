@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <script src="assets/js/supabase.js"></script>
-  <script>requireLogin();</script>
+  <script>requireLogin(); document.documentElement.classList.add('is-loading');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#e91e63">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,6 +37,7 @@
       
       <div class="topbar-inner-accounts">
         <div class="account-pills" id="accountPills"></div>
+        <div class="sk-pills" aria-hidden="true"><span class="sk sk-pill"></span><span class="sk sk-pill"></span></div>
       </div>
 
     </div>
@@ -71,6 +72,7 @@
           <div class="donut-labels" id="donutLabels"></div>
         </div>
         <div class="categories-grid" id="categoriesGrid"></div>
+        <div class="sk-chips" aria-hidden="true"><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span></div>
       </div>
 
       <!-- Transactions -->

@@ -199,6 +199,19 @@ function applyDueRecurring() {
 let pageRender = () => {};
 function registerPageRender(fn) { pageRender = fn; }
 
+// true, sobald alle Daten da sind (Server-Abgleich fertig, fehlgeschlagen oder
+// nach spätestens 6 s, z.B. bei sehr langsamem Netz). Erst dann verschwindet
+// der Ladebildschirm (Skeleton, Klasse is-loading auf <html>) und die Seite
+// wird gezeichnet.
+let dataReady = false;
+function _finishLoad() {
+  if (dataReady) return;
+  dataReady = true;
+  document.documentElement.classList.remove('is-loading');
+  pageRender();
+}
+setTimeout(_finishLoad, 6000);
+
 // Sofort aus localStorage laden (damit die UI nicht leer flackert)
 // Danach asynchron vom Server nachladen und überschreiben
 function loadState() {
@@ -213,7 +226,7 @@ function loadState() {
   // gibt lokale Änderungen, die der Server noch nicht bestätigt hat)
   sb.auth.getSession()
     .then(({ data: { session } }) => {
-      if (!session) return { error: true };
+      if (!session) { _finishLoad(); return { error: true }; }
       sbAccessToken = session.access_token;
       _claimLocalData(session.user.id);
       // Einmalig: Daten vom alten PHP-Server übernehmen, falls für diese
@@ -227,12 +240,13 @@ function loadState() {
     })
     .then(({ data: row, error }) => {
       serverLoaded = true;
-      if (error) return;
+      if (error) { _finishLoad(); return; }
       if (!row) {
         // Noch kein Datensatz (neues Konto oder Umzug vom alten Server):
         // vorhandene lokale Daten als ersten Stand hochladen
         _synced = {};
         _pushToServer();
+        _finishLoad();
         return;
       }
       const res = { data: row.payload || {} };
@@ -242,6 +256,7 @@ function loadState() {
         // nachsenden, was sich vom Server-Stand unterscheidet.
         _markSynced(res.data);
         _pushToServer();
+        _finishLoad();
         return;
       }
       // Auch leere Serverdaten ({}) übernehmen, damit ein frisches Gerät
@@ -254,9 +269,9 @@ function loadState() {
       _persistLocal();
       // UI neu rendern mit Server-Daten: jede Seite meldet ihre Render-Funktion
       // per registerPageRender() an (siehe assets/js/pages/*.js)
-      pageRender();
+      if (dataReady) pageRender(); else _finishLoad();
     })
-    .catch(() => { serverLoaded = true; }); // Offline? localStorage-Daten behalten
+    .catch(() => { serverLoaded = true; _finishLoad(); }); // Offline? localStorage-Daten behalten
 }
 
 // true, sobald der erste Server-Abgleich in loadState() durch ist.

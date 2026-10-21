@@ -16,7 +16,9 @@ function initHome() {
   });
 }
 
-function render() { renderTopBar(); renderBudgetCard(); renderDonut(); renderTransactions(); }
+// Solange der Ladebildschirm zu sehen ist, nichts zeichnen: main.js ruft
+// render() auf, sobald alle Daten da sind (dann rollen auch die Ziffern)
+function render() { if (!dataReady) return; renderTopBar(); renderBudgetCard(); renderDonut(); renderTransactions(); }
 
 function renderTopBar() {
   const vis = state.accounts.filter(a => a.visible);

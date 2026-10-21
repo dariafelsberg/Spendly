@@ -477,3 +477,56 @@
       bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
     }
 }
+
+/* ── LADEBILDSCHIRM (Skeleton) ─────────────────────────────
+   Solange <html> die Klasse is-loading hat (bis alle Daten da sind),
+   werden Zahlen und Listen durch pulsierende Platzhalter ersetzt. */
+@keyframes sk-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}
+.sk-pills, .sk-chips { display: none; }
+.sk {
+  display: block;
+  border-radius: 999px;
+  background: #f3e3ec;
+  animation: sk-pulse 1.2s ease-in-out infinite;
+}
+.is-loading #accountPills,
+.is-loading #categoriesGrid,
+.is-loading #balanceEye { display: none !important; }
+.is-loading .sk-pills { display: flex; gap: 8px; justify-content: center; }
+.is-loading .sk-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 16px; }
+.sk-pill { width: 110px; height: 30px; background: rgba(255, 255, 255, .28); }
+.sk-chip { height: 34px; }
+
+/* Texte: unsichtbar, an ihrer Stelle ein Balken */
+.is-loading .total-balance,
+.is-loading #budgetDisplay,
+.is-loading #budgetSub,
+.is-loading .donut-center-budget,
+.is-loading .donut-center-spent,
+.is-loading #txCount {
+  color: transparent !important;
+  border-radius: 999px;
+  animation: sk-pulse 1.2s ease-in-out infinite;
+}
+.is-loading .total-balance { display: inline-block; background: rgba(255, 255, 255, .28); }
+.is-loading .total-balance * { color: transparent !important; }
+.is-loading #budgetDisplay,
+.is-loading #budgetSub,
+.is-loading .donut-center-budget,
+.is-loading .donut-center-spent,
+.is-loading #txCount { background: #f3e3ec; border-color: transparent; }
+.is-loading #budgetDisplay,
+.is-loading #budgetSub { width: fit-content; min-width: 120px; }
+.is-loading .donut-center-budget,
+.is-loading .donut-center-spent { margin: 3px auto; width: fit-content; }
+.is-loading #donutSvg { animation: sk-pulse 1.2s ease-in-out infinite; }
+.is-loading #txEmpty { visibility: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk, .is-loading .total-balance, .is-loading #budgetDisplay, .is-loading #budgetSub,
+  .is-loading .donut-center-budget, .is-loading .donut-center-spent, .is-loading #txCount,
+  .is-loading #donutSvg { animation: none; }
+}
