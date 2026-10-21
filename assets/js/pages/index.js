@@ -462,8 +462,8 @@ function rollNumber(el, value) {
   });
   el._rolling = true; el._rollStr = str;
   el.getBoundingClientRect(); // Startzustand (alle Ziffern auf 0) festhalten
-  [...str].forEach((ch, i) => { const strip = el._rollCols[i]; if (strip) { strip.style.transitionDelay = (i * 5) + 'ms'; strip.style.transform = `translateY(-${Number(ch)}em)`; } });
-  el._rollTimer = setTimeout(() => { el._rolling = false; el._rollCols = null; el.textContent = formatNum(el._value); }, 250 + str.length * 5);
+  [...str].forEach((ch, i) => { const strip = el._rollCols[i]; if (strip) { strip.style.transitionDelay = (i * 15) + 'ms'; strip.style.transform = `translateY(-${Number(ch)}em)`; } });
+  el._rollTimer = setTimeout(() => { el._rolling = false; el._rollCols = null; el.textContent = formatNum(el._value); }, 400 + str.length * 15);
 }
 
 // Zahl vom zuletzt angezeigten Wert zum neuen Wert hochzählen lassen (beim ersten Anzeigen direkt setzen)

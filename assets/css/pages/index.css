@@ -62,7 +62,7 @@
   display: block;
   white-space: pre;
   text-align: center;
-  transition: transform .16s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
 }
 .total-balance .currency {
   font-size: clamp(.7rem, 2.5vw, 1rem);
