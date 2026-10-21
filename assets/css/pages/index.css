@@ -34,6 +34,36 @@
   line-height: 1;
   margin-bottom: 12px;
 }
+/* Gleich breite Ziffern: beim Hochzählen und Rollen bleibt das Auge am selben Platz */
+#totalBalanceDisplay {
+  position: relative;
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+/* Verborgenes Guthaben: Zahl unsichtbar (behält ihre Breite), Punkte darüber */
+#totalBalanceDisplay.is-masked {
+  color: transparent;
+}
+#totalBalanceDisplay.is-masked::after {
+  content: '••••••';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #fff;
+}
+/* Rollende Ziffern beim Öffnen der Webseite */
+.roll-col {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.roll-strip {
+  display: block;
+  white-space: pre;
+  text-align: center;
+  transition: transform 1.1s cubic-bezier(.2, .8, .2, 1);
+}
 .total-balance .currency {
   font-size: clamp(.7rem, 2.5vw, 1rem);
   opacity: .65;

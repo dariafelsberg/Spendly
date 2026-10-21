@@ -25,7 +25,14 @@ function renderTopBar() {
     : state.balance + state.entries.reduce((s, e) => s + (e.type === 'income' ? e.amount : e.type === 'transfer' ? 0 : -e.amount), 0);
   const hidden = isBalanceHidden();
   const totalEl = document.getElementById('totalBalanceDisplay');
-  if (hidden) { cancelAnimationFrame(totalEl._raf); totalEl._value = undefined; totalEl.textContent = '••••••'; }
+  // Verborgen: die Zahl bleibt (unsichtbar) stehen und wird nur überdeckt, damit das Auge nicht springt
+  totalEl.classList.toggle('is-masked', hidden);
+  if (!totalEl._init) {
+    totalEl._init = true;
+    // Rollende Ziffern nur beim Öffnen der Webseite, nicht beim Wechseln der Seiten im Menü
+    if (!hidden && shouldRollBalance()) rollNumber(totalEl, total);
+    else { totalEl._value = total; totalEl.textContent = formatNum(total); }
+  } else if (totalEl._rolling) rollNumber(totalEl, total);
   else animateNumber(totalEl, total);
   const eye = document.getElementById('balanceEye');
   if (eye) { eye.querySelector('.ico').className = 'ico ' + (hidden ? 'ico-eye_closed' : 'ico-eye_open'); eye.setAttribute('aria-label', hidden ? 'Guthaben anzeigen' : 'Guthaben verbergen'); }
@@ -413,6 +420,50 @@ function toggleTxList() {
       if (delta > 0) window.scrollBy({ top: delta, behavior: 'smooth' });
     }, 260);
   }
+}
+
+// Rollende Ziffern ("numeric text") beim ersten Anzeigen in dieser Sitzung.
+// sessionStorage überlebt das Wechseln zwischen Home/Kalender/Analyse, nicht aber ein neues Öffnen.
+function shouldRollBalance() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  try {
+    if (sessionStorage.getItem('spendly_balanceRolled')) return false;
+    sessionStorage.setItem('spendly_balanceRolled', '1');
+  } catch (e) {}
+  return true;
+}
+function rollNumber(el, value) {
+  const str = formatNum(value);
+  el._value = value;
+  const cols = el._rollCols;
+  // Läuft die Animation noch und hat der neue Wert gleich viele Zeichen: Ziffern nur neu ansteuern
+  if (el._rolling && el._rollStr && el._rollStr.length === str.length) {
+    [...str].forEach((ch, i) => { if (cols[i]) cols[i].style.transform = `translateY(-${Number(ch)}em)`; });
+    el._rollStr = str;
+    return;
+  }
+  clearTimeout(el._rollTimer);
+  // Breite jedes Zeichens im fertigen Text messen: die rollenden Spalten bekommen genau diese Breite,
+  // so steht die Zahl (und das Auge daneben) während und nach dem Rollen am selben Platz
+  el.textContent = str;
+  const range = document.createRange(); const widths = [];
+  for (let i = 0; i < str.length; i++) { range.setStart(el.firstChild, i); range.setEnd(el.firstChild, i + 1); widths.push(range.getBoundingClientRect().width); }
+  el.textContent = '';
+  el._rollCols = [];
+  [...str].forEach((ch, i) => {
+    if (/\d/.test(ch)) {
+      const col = document.createElement('span'); col.className = 'roll-col'; col.style.width = widths[i] + 'px';
+      const strip = document.createElement('span'); strip.className = 'roll-strip';
+      strip.textContent = '0123456789'.split('').join('\n');
+      col.appendChild(strip); el.appendChild(col); el._rollCols.push(strip);
+    } else {
+      const s = document.createElement('span'); s.textContent = ch; el.appendChild(s); el._rollCols.push(null);
+    }
+  });
+  el._rolling = true; el._rollStr = str;
+  el.getBoundingClientRect(); // Startzustand (alle Ziffern auf 0) festhalten
+  [...str].forEach((ch, i) => { const strip = el._rollCols[i]; if (strip) { strip.style.transitionDelay = (i * 45) + 'ms'; strip.style.transform = `translateY(-${Number(ch)}em)`; } });
+  el._rollTimer = setTimeout(() => { el._rolling = false; el._rollCols = null; el.textContent = formatNum(el._value); }, 1300 + str.length * 45);
 }
 
 // Zahl vom zuletzt angezeigten Wert zum neuen Wert hochzählen lassen (beim ersten Anzeigen direkt setzen)

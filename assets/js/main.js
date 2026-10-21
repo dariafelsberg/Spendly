@@ -464,6 +464,41 @@ function deleteEntry(id) {
   }
 }
 
+// ── FENSTER NACH UNTEN WISCHEN (Touch-Geräte)
+// Das Fenster folgt dem Finger; weit genug oder schnell genug nach unten gezogen schliesst es.
+function initModalSwipe() {
+  document.querySelectorAll('.modal-overlay .modal').forEach(sheet => {
+    const overlay = sheet.closest('.modal-overlay');
+    let startY = 0, startT = 0, dy = 0, dragging = false;
+    sheet.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1 || sheet.scrollTop > 0) return;
+      startY = e.touches[0].clientY; startT = performance.now(); dy = 0; dragging = true;
+    }, { passive: true });
+    sheet.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      dy = e.touches[0].clientY - startY;
+      if (dy <= 0) { sheet.style.transform = ''; sheet.style.transition = ''; return; }
+      if (e.cancelable) e.preventDefault();
+      sheet.style.transition = 'none';
+      sheet.style.transform = `translateY(${dy}px)`;
+    }, { passive: false });
+    const end = () => {
+      if (!dragging) return; dragging = false;
+      const fast = dy > 40 && dy / (performance.now() - startT) > 0.5;
+      sheet.style.transition = '';
+      sheet.style.transform = '';
+      if (dy > 110 || fast) {
+        if (overlay.id === 'entryModal' && typeof closeEntryModal === 'function') closeEntryModal();
+        else overlay.classList.remove('show');
+      }
+      dy = 0;
+    };
+    sheet.addEventListener('touchend', end);
+    sheet.addEventListener('touchcancel', end);
+  });
+}
+document.addEventListener('DOMContentLoaded', initModalSwipe);
+
 // ── HELPERS
 // Kurze Bestätigung oben am Bildschirm, verschwindet nach 1.6 s von selbst
 function showToast(text) {
