@@ -39,7 +39,8 @@ function logout() {
       // Offline schlägt signOut() fehl und lässt die Sitzung liegen →
       // lokal gespeicherte Sitzung in jedem Fall entfernen
       _authStorage.removeItem(SB_STORAGE_KEY);
-      window.location.href = 'login.html';
+      // Auch aus den eingebetteten Einstellungen (iframe) die ganze Seite umleiten
+      window.top.location.href = 'login.html';
     });
 }
 

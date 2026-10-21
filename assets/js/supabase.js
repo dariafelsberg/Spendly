@@ -63,13 +63,14 @@ sb.auth.onAuthStateChange((event, session) => {
   sbUserId      = session ? session.user.id      : null;
 });
 
-// Leitet auf login.html um, wenn keine gültige Sitzung besteht.
+// Leitet auf login.html um, wenn keine gültige Sitzung besteht (immer die
+// ganze Seite, auch aus den eingebetteten Einstellungen).
 // Gibt die Sitzung zurück (oder null).
 function requireLogin() {
   return sb.auth.getSession()
     .then(({ data }) => {
-      if (!data.session) { window.location.replace('login.html'); return null; }
+      if (!data.session) { window.top.location.replace('login.html'); return null; }
       return data.session;
     })
-    .catch(() => { window.location.replace('login.html'); return null; });
+    .catch(() => { window.top.location.replace('login.html'); return null; });
 }
