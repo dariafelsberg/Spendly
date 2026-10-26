@@ -1160,21 +1160,19 @@ button {
   white-space: nowrap;
 }
 
-/* Handy: Icons etwas grösser (scale ändert das Layout nicht).
+/* Icons etwas grösser (scale ändert das Layout nicht), auf allen Bildschirmgrössen.
    Ausnahmen: untere Navigation, Menü-Fenster und die Einstellungen (ausser Stift und Abfalleimer) */
-@media (max-width: 767px) {
-  .ico {
-    scale: 1.15;
-  }
-  .bottom-nav .ico,
-  .app-menu-panel .ico,
-  .page-settings .ico {
-    scale: none;
-  }
-  .page-settings .ico-pencil,
-  .page-settings .ico-trash {
-    scale: 1.15;
-  }
+.ico {
+  scale: 1.15;
+}
+.bottom-nav .ico,
+.app-menu-panel .ico,
+.page-settings .ico {
+  scale: none;
+}
+.page-settings .ico-pencil,
+.page-settings .ico-trash {
+  scale: 1.15;
 }
 
 /* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
