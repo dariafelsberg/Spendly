@@ -229,6 +229,7 @@ button {
   flex-shrink: 0;
 }
 .app-menu-close-btn {
+  color: var(--muted);
   border-radius: 50%;
   order: 2;          /* im HTML steht der Button vor dem Titel, hier nach rechts */
 }
@@ -373,6 +374,10 @@ button {
 }
 .icon-btn:active {
   background: var(--primary-light);
+}
+/* Stift beim Budget in den Einstellungen */
+.page-settings .icon-btn {
+  color: var(--muted);
 }
 
 /* ── DONUT */
