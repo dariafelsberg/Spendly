@@ -514,6 +514,27 @@ function initModalSwipe() {
 }
 document.addEventListener('DOMContentLoaded', initModalSwipe);
 
+// ── HINTERGRUND SPERREN, solange ein Fenster (Modal oder Menü) offen ist
+// position: fixed statt nur overflow: hidden, weil Safari auf dem iPhone
+// sonst trotzdem scrollt. Die Scrollposition wird gemerkt und zurückgesetzt.
+let _scrollLockY = null;
+function _updateScrollLock() {
+  const open = !!document.querySelector('.modal-overlay.show, .app-menu-overlay.show');
+  const b = document.body;
+  if (open && _scrollLockY === null) {
+    _scrollLockY = window.scrollY;
+    Object.assign(b.style, { position: 'fixed', top: -_scrollLockY + 'px', left: '0', right: '0', width: '100%' });
+  } else if (!open && _scrollLockY !== null) {
+    Object.assign(b.style, { position: '', top: '', left: '', right: '', width: '' });
+    window.scrollTo(0, _scrollLockY);
+    _scrollLockY = null;
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const obs = new MutationObserver(_updateScrollLock);
+  document.querySelectorAll('.modal-overlay, .app-menu-overlay').forEach(el => obs.observe(el, { attributes: true, attributeFilter: ['class'] }));
+});
+
 // ── HELPERS
 // Kurze Bestätigung oben am Bildschirm, verschwindet nach 1.6 s von selbst
 function showToast(text) {
