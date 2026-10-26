@@ -1099,9 +1099,15 @@ button {
   white-space: nowrap;
 }
 
-/* Handy: alle Icons etwas grösser (scale ändert das Layout nicht) */
+/* Handy: Icons etwas grösser (scale ändert das Layout nicht).
+   Ausnahmen: untere Navigation, Menü-Fenster und die Einstellungen */
 @media (max-width: 767px) {
   .ico {
     scale: 1.15;
+  }
+  .bottom-nav .ico,
+  .app-menu-panel .ico,
+  .page-settings .ico {
+    scale: none;
   }
 }
