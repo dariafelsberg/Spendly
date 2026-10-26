@@ -467,6 +467,16 @@ button {
   min-height: 0;
   overflow: hidden;
 }
+/* Zugeklappt: Inhalt ausblenden, damit Tab nicht in die versteckten Einträge springt.
+   Beim Zuklappen erst nach der Animation (.25s), beim Aufklappen sofort sichtbar. */
+.tx-list.collapsible .tx-list-inner {
+  visibility: hidden;
+  transition: visibility 0s linear .25s;
+}
+.tx-list.collapsible.open .tx-list-inner {
+  visibility: visible;
+  transition: visibility 0s;
+}
 .tx-list-inner::before {
   content: '';
   display: block;
