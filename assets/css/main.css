@@ -1213,6 +1213,7 @@ button {
 .ico-user          { --ico: url(../icons/ui/user.svg); }
 .ico-wallet        { --ico: url(../icons/ui/wallet.svg); }
 .ico-check         { --ico: url(../icons/ui/check.svg); }
+.ico-plus          { --ico: url(../icons/ui/plus.svg); }
 .ico-wifi-off      { --ico: url(../icons/ui/wifi-off.svg); }
 .tx-btn .ico {
   width: 1.4em;
