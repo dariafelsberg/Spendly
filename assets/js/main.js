@@ -345,6 +345,7 @@ function _pushToServer() {
   const seq = ++_saveSeq;
   if (!Object.keys(changed).length) {
     try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {}
+    if (_syncNoticeShown) { _syncNoticeShown = false; showToast('Wieder verbunden', { text: 'Alle Änderungen sind übertragen.', key: 'sync' }); }
     return;
   }
   // Ohne Token (abgemeldet/abgelaufen) bleibt die Markierung gesetzt und
@@ -367,7 +368,7 @@ function _pushToServer() {
     .then(r => {
       if (!r.ok) { _notifySyncProblem('Nicht auf dem Server gespeichert', 'Der Server hat nicht geantwortet. Deine Änderung ist auf diesem Gerät gesichert.', 'error'); return; }
       Object.assign(_synced, sentJson);
-      if (_syncNoticeShown) { _syncNoticeShown = false; showToast('Wieder verbunden', { text: 'Alle Änderungen sind übertragen.' }); }
+      if (_syncNoticeShown) { _syncNoticeShown = false; showToast('Wieder verbunden', { text: 'Alle Änderungen sind übertragen.', key: 'sync' }); }
       // Nur der zuletzt gesendete Stand darf die Markierung entfernen
       if (seq === _saveSeq) {
         try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {}
@@ -380,12 +381,10 @@ let _syncNoticeShown = false;
 function _notifySyncProblem(title, text, type) {
   const firstTime = !_syncNoticeShown;
   _syncNoticeShown = true;
-  const show = () => {
-    // Läuft gerade "Rückgängig" (Zeitbalken), nicht überdecken, sondern danach zeigen
-    if (document.querySelector('#toast.show .toast-timer')) { setTimeout(show, 500); return; }
-    showToast(title, { type, text, sticky: true, action: { label: 'Erneut versuchen', onClick: _pushToServer } });
-  };
-  setTimeout(show, firstTime ? 1700 : 0); // erst nach "Gespeichert"
+  // key 'sync': dieselbe Meldung wird an ihrem Platz aktualisiert; "Erneut versuchen" lässt sie stehen,
+  // bis das Ergebnis da ist ("Wieder verbunden" oder nochmals dieser Hinweis)
+  setTimeout(() => showToast(title, { type, text, sticky: true, key: 'sync',
+    action: { label: 'Erneut versuchen', replace: true, onClick: _pushToServer } }), firstTime ? 1700 : 0); // erst nach "Gespeichert"
 }
 
 // ── APP MENU (Header-Icon-Overlay) ────────────────────────────
@@ -607,16 +606,38 @@ document.addEventListener('keydown', e => {
 // type: 'success' (Häkchen), 'error' (rot), 'offline' (WLAN aus), 'deleted' (Abfalleimer)
 // Bestätigungen ohne Button verschwinden nach 1.6 s; Fehler und Meldungen mit Button
 // bleiben länger stehen bzw. bis man sie schliesst (sticky).
+// Mehrere Meldungen stapeln sich untereinander (höchstens 3). Fliegt eine weg,
+// rutschen die darunter nach oben nach. Mit key wird eine bestehende Meldung
+// an ihrem Platz ersetzt statt eine neue angehängt (z. B. derselbe Fehler zweimal).
 const _TOAST_ICON = { success: 'ico-check', error: 'ico-banned', offline: 'ico-wifi-off', deleted: 'ico-trash' };
-function showToast(title, { text = '', type = 'success', action = null, duration, sticky = false } = {}) {
-  let el = document.getElementById('toast');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'toast';
-    document.body.appendChild(el);
+const _TOAST_MAX = 3;
+function _toastStack() {
+  let stack = document.getElementById('toastStack');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.id = 'toastStack';
+    stack.className = 'toast-stack';
+    document.body.appendChild(stack);
   }
+  return stack;
+}
+function showToast(title, { text = '', type = 'success', action = null, duration, sticky = false, key = null } = {}) {
+  const stack = _toastStack();
+  let item = key ? [...stack.children].find(x => x.dataset.key === key && !x.classList.contains('leaving')) : null;
+  const isNew = !item;
+  if (isNew) {
+    item = document.createElement('div');
+    item.className = 'toast-item';
+    if (key) item.dataset.key = key;
+    item.innerHTML = '<div class="toast"></div>';
+    stack.appendChild(item);
+    // Zu viele Meldungen: die älteste fliegt weg
+    const visible = [...stack.children].filter(x => !x.classList.contains('leaving'));
+    if (visible.length > _TOAST_MAX) removeToast(visible[0]);
+  }
+  const el = item.querySelector('.toast');
   const simple = !text && !action && !sticky; // kurze Bestätigung: nur Titel, kein X
-  el.className = 'toast toast-' + type + (simple ? ' toast-simple' : '');
+  el.className = 'toast toast-' + type + (simple ? ' toast-simple' : '') + (isNew ? '' : ' show');
   el.setAttribute('role', type === 'error' ? 'alert' : 'status');
   el.innerHTML = `
     <span class="toast-icon" aria-hidden="true"><span class="ico ${_TOAST_ICON[type] || _TOAST_ICON.success}"></span></span>
@@ -632,26 +653,54 @@ function showToast(title, { text = '', type = 'success', action = null, duration
   if (action) {
     const btn = el.querySelector('.toast-action');
     btn.textContent = action.label;
-    btn.onclick = () => { hideToast(); action.onClick(); };
+    // replace: die Meldung bleibt stehen, onClick zeigt mit demselben key die Folgemeldung an ihrem Platz
+    btn.onclick = () => { if (!action.replace) removeToast(item); action.onClick(); };
   }
-  if (!simple) el.querySelector('.toast-close').onclick = hideToast;
-  clearTimeout(el._timer);
-  requestAnimationFrame(() => el.classList.add('show'));
+  if (!simple) el.querySelector('.toast-close').onclick = () => removeToast(item);
+  clearTimeout(item._timer);
+  if (isNew) {
+    void el.offsetWidth; // Startposition oberhalb festlegen, damit das Einfliegen animiert wird
+    el.classList.add('show');
+  }
   if (!sticky) {
     const ms = duration || (simple ? 1600 : action ? 6000 : 5000);
-    el._timer = setTimeout(hideToast, ms);
+    item._timer = setTimeout(() => removeToast(item), ms);
     // Zeitbalken: zeigt, wie lange "Rückgängig" noch möglich ist (läuft genau so lange wie die Meldung)
     const bar = el.querySelector('.toast-timer');
     if (bar) bar.style.animationDuration = ms + 'ms';
   }
+  return item;
 }
-function hideToast() {
-  const el = document.getElementById('toast');
-  if (el) { clearTimeout(el._timer); el.classList.remove('show'); }
+// Meldung nach oben ausfliegen lassen; danach rutschen die übrigen weich an ihren neuen Platz
+function removeToast(item) {
+  if (!item || item.classList.contains('leaving')) return;
+  item.classList.add('leaving');
+  clearTimeout(item._timer);
+  item.querySelector('.toast').classList.remove('show');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(() => {
+    const stack = item.parentNode;
+    if (!stack) return;
+    const others = [...stack.children].filter(x => x !== item);
+    const before = others.map(o => o.getBoundingClientRect().top);
+    item.remove();
+    if (reduce) return;
+    others.forEach((o, i) => {
+      const dy = before[i] - o.getBoundingClientRect().top;
+      if (dy) o.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }],
+                        { duration: 320, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+    });
+  }, reduce ? 0 : 280); // so lange dauert das Ausfliegen (siehe .toast in main.css)
+}
+// Ohne key: alle Meldungen ausblenden; mit key: nur diese
+function hideToast(key) {
+  const stack = document.getElementById('toastStack');
+  if (!stack) return;
+  [...stack.children].filter(x => !key || x.dataset.key === key).forEach(removeToast);
 }
 // Fehler beim Speichern: Meldung zeigen und den Cursor ins betroffene Feld setzen
 function showError(title, text, focusId) {
-  showToast(title, { text, type: 'error' });
+  showToast(title, { text, type: 'error', key: 'error' }); // derselbe Fehler nochmals: ersetzen statt stapeln
   if (focusId) document.getElementById(focusId)?.focus();
 }
 // Sofort löschen und "Rückgängig" anbieten (statt vorher nachzufragen).
@@ -660,10 +709,11 @@ function deleteWithUndo(doDelete, title, text = 'Du kannst es noch ein paar Seku
   const before = JSON.stringify(state);
   doDelete();
   saveState(); pageRender();
-  showToast(title, { text, type: 'deleted', action: { label: 'Rückgängig', onClick: () => {
+  const key = 'undo-' + Date.now(); // "Wiederhergestellt" erscheint am Platz dieser Meldung
+  showToast(title, { text, type: 'deleted', key, action: { label: 'Rückgängig', replace: true, onClick: () => {
     Object.assign(state, JSON.parse(before));
     saveState(); pageRender();
-    showToast('Wiederhergestellt');
+    showToast('Wiederhergestellt', { key });
   } } });
 }
 function dateKey(d) {

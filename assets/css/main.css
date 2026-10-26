@@ -596,36 +596,66 @@ button {
 }
 
 /* ── TOAST: Meldungen oben am Bildschirm
-   Aufbau: Icon · Titel (was ist passiert) · Text (warum) · Button (was jetzt) · Schliessen */
-.toast {
+   Aufbau: Icon · Titel (was ist passiert) · Text (warum) · Button (was jetzt) · Schliessen
+   Mehrere Meldungen stapeln sich in .toast-stack; jede steckt in einem .toast-item,
+   das beim Nachrutschen bewegt wird (main.js), während .toast selbst ein- und ausfliegt. */
+.toast-stack {
   position: fixed;
   top: calc(16px + env(safe-area-inset-top));
   left: 50%;
+  transform: translateX(-50%);
   z-index: 10000;
+  width: min(440px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-xs);
+  pointer-events: none;
+}
+.toast-item {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+/* Ältere Meldungen liegen oben drauf: neue gleiten hinter ihnen hervor */
+.toast-item:nth-child(1) { z-index: 4; }
+.toast-item:nth-child(2) { z-index: 3; }
+.toast-item:nth-child(3) { z-index: 2; }
+.toast-item:nth-child(4) { z-index: 1; }
+.toast {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: var(--sp-sm);
-  width: min(440px, calc(100% - 32px));
+  width: 100%;
   padding: var(--sp-sm);
   border-radius: var(--radius-card);
   background: var(--text);
   color: #fff;
   box-shadow: var(--shadow-float);
-  opacity: 0;
+  pointer-events: auto;
+  /* Ausgeblendet: oberhalb des eigenen Platzes. Ausfliegen nach oben, beschleunigt */
   visibility: hidden;
-  transform: translate(-50%, -8px);
-  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+  opacity: 0;
+  transform: translateY(calc(-100% - 24px - env(safe-area-inset-top)));
+  transition: transform .28s cubic-bezier(.55, 0, 1, .45), opacity .28s ease-in, visibility 0s linear .28s;
 }
-.toast.show {
+/* Die oberste Meldung fliegt ganz aus dem Bildschirm, ohne zu verblassen */
+.toast-item:first-child .toast {
   opacity: 1;
+}
+/* Einfliegen von oben, am Ende sanft abgebremst mit leichtem Nachfedern */
+.toast.show {
   visibility: visible;
-  transform: translate(-50%, 0);
-  transition: opacity .2s ease, transform .2s ease;
+  opacity: 1;
+  transform: none;
+  transition: transform .45s cubic-bezier(.34, 1.4, .64, 1), opacity .2s ease-out;
 }
 /* Kurze Bestätigung ("Gespeichert"): kompakt, mittig, nicht antippbar */
 .toast.toast-simple {
   width: max-content;
-  max-width: calc(100% - 32px);
+  max-width: 100%;
   align-items: center;
   padding: var(--sp-xs) var(--sp-md) var(--sp-xs) var(--sp-xs);
   pointer-events: none;
@@ -1129,7 +1159,8 @@ button {
   .modal-overlay.show .modal,
   .tx-list.collapsible,
   .type-toggle::before,
-  .toast {
+  .toast,
+  .toast.show {
     transition: none;
   }
 }
