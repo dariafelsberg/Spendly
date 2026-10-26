@@ -357,6 +357,7 @@ button {
   margin-bottom: 1px;
 }
 .icon-btn {
+  color: var(--text);  /* sonst färbt Safari auf dem iPhone die Icons blau */
   width: 38px;
   height: 38px;
   border: none;
@@ -1100,7 +1101,7 @@ button {
 }
 
 /* Handy: Icons etwas grösser (scale ändert das Layout nicht).
-   Ausnahmen: untere Navigation, Menü-Fenster und die Einstellungen */
+   Ausnahmen: untere Navigation, Menü-Fenster und die Einstellungen (ausser Stift und Abfalleimer) */
 @media (max-width: 767px) {
   .ico {
     scale: 1.15;
@@ -1109,5 +1110,9 @@ button {
   .app-menu-panel .ico,
   .page-settings .ico {
     scale: none;
+  }
+  .page-settings .ico-pencil,
+  .page-settings .ico-trash {
+    scale: 1.15;
   }
 }
