@@ -176,7 +176,7 @@ function renderDayDetail(dateObj) {
           <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
           <div class="tx-note">${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}${plannedBadge}</div>
         </div>
-        <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
+        <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}</div>
       </div>`;
     }
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };

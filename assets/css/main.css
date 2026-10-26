@@ -8,12 +8,17 @@
   --primary: #e91e63;
   --primary-dark: #c2185b;
   --primary-light: #ffd8e7;
+  /* Signalfarben für Flächen, Punkte, Balken und Diagramme */
   --income: #16a34a;
   --danger: #ef4444;
   --danger-light: #fee2e2;
   --transfer: #7c93ff;
+  /* Dieselben Bedeutungen als Schriftfarbe: mind. 4.5:1 auf Weiss und Rosa-Flächen */
+  --income-text: #15803d;
+  --danger-text: #b91c1c;
+  --transfer-text: #4f5fd6;
   --text: #2d1b24;
-  --muted: #8a6b78;
+  --muted: #7a5c69;
   --border: #f5d7e3;
   --radius-sm: 10px;
   --radius: 12px;
@@ -146,7 +151,7 @@ button {
   display: flex;
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, .16);
+  background: rgba(45, 27, 36, .15); /* dunkler statt heller als das Pink: weisse Schrift darauf 5.4:1 */
   backdrop-filter: blur(8px);
   border-radius: var(--radius-sm);
   padding: 4px;
@@ -162,7 +167,7 @@ button {
   font-size: .84rem;
   font-weight: 600;
   cursor: pointer;
-  color: rgba(255, 255, 255, .75);
+  color: #fff;
   transition: background .18s, color .18s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -519,10 +524,10 @@ button {
   flex-shrink: 0;
 }
 .tx-amount.expense {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 .tx-amount.income {
-  color: var(--income);
+  color: var(--income-text);
 }
 .tx-actions {
   display: flex;
@@ -603,7 +608,7 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 .nav-btn.active {
-  color: var(--primary);
+  color: var(--primary-dark);
 }
 .nav-icon {
   font-size: 1.25rem;
@@ -759,7 +764,7 @@ button {
 }
 .form-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%238a6b78' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237a5c69' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 13px center;
   padding-right: 34px;
@@ -796,7 +801,7 @@ button {
   border: none;
   border-radius: var(--radius-sm);
   padding: 13px;
-  background: var(--primary);
+  background: var(--primary-dark); /* Weiss auf Pink-dunkel 5.9:1, auf Spendly-Pink nur 4.35:1 */
   color: #fff;
   font-family: inherit;
   font-weight: 700;

@@ -44,7 +44,7 @@
 .cal-day.today {
   border: 1.5px solid var(--primary);
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-dark);
 }
 .cal-day.selected {
   background: var(--primary);

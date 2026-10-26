@@ -421,7 +421,7 @@ function entryRowInner(e) {
           <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
           <div class="tx-note">${formatRelDate(e.date)} · ${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
         </div>
-        <div class="tx-amount" style="color:#7c93ff">${formatNum(e.amount)}</div>
+        <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}</div>
         <div class="tx-actions">
           <button class="tx-btn" onclick="editEntry('${e.id}')"><span class="ico ico-pencil"></span></button>
           <button class="tx-btn delete" onclick="deleteEntry('${e.id}')"><span class="ico ico-trash"></span></button>

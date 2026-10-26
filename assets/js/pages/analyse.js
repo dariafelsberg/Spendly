@@ -167,7 +167,7 @@ function renderInsightsMonthList() {
         ? { color: '#7c93ff', icon: 'transfer' }
         : ALL_CATS.find(c => c.name === g.name) || { color: '#ccc', emoji: '?' };
       const totalHtml = g.isTransfer
-        ? `<div class="insights-cat-total" style="color:#7c93ff">${formatNum(g.total)}</div>`
+        ? `<div class="insights-cat-total" style="color:var(--transfer-text)">${formatNum(g.total)}</div>`
         : `<div class="insights-cat-total tx-amount ${g.total >= 0 ? 'income' : 'expense'}">${g.total >= 0 ? '+' : '−'}${formatNum(Math.abs(g.total))}</div>`;
       const group = document.createElement('div');
       group.className = 'insights-cat-group' + (openInsightsCats.has(g.name) ? ' open' : '');

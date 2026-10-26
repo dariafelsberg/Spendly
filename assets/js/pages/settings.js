@@ -44,7 +44,7 @@ function renderRecurringList(type) {
   if (!el) return;
   const list = recurringListFor(type);
   const sign = type === 'income' ? '+' : type === 'transfer' ? '' : '−';
-  const col  = type === 'income' ? 'var(--income)' : type === 'transfer' ? '#7c93ff' : 'var(--danger)';
+  const col  = type === 'income' ? 'var(--income-text)' : type === 'transfer' ? 'var(--transfer-text)' : 'var(--danger-text)';
   el.innerHTML = !list.length
     ? '<div class="empty-tx">Noch keine Einträge.</div>'
     : list.map(r => {

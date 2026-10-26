@@ -7,7 +7,7 @@
 }
 .topbar-label {
   font-size: clamp(.75rem, 2.5vw, 1rem);
-  opacity: .6;
+  font-weight: 600; /* volle Deckkraft und fett: kleine weisse Schrift auf Pink bleibt lesbar */
   text-transform: uppercase;
   letter-spacing: .12em;
   margin-bottom: 2px;
@@ -67,8 +67,7 @@
 }
 .total-balance .currency {
   font-size: clamp(.75rem, 2.5vw, 1rem);
-  opacity: .65;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 /* ── INSIGHTS CHART ── */
@@ -80,7 +79,7 @@
   margin-bottom: 10px;
 }
 .account-pill-item {
-  background: rgba(255, 255, 255, .18);
+  background: rgba(45, 27, 36, .15); /* wie der Umschalter: weisse Schrift darauf 5.4:1 */
   backdrop-filter: blur(8px);
   border-radius: 999px;
   padding: 4px 12px;
@@ -90,7 +89,6 @@
   gap: 6px;
 }
 .pill-name {
-  opacity: .85;
 }
 .pill-val {
   font-weight: 600;
@@ -130,7 +128,7 @@
 .budget-amount {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-dark);
   white-space: nowrap;
 }
 .budget-sub {
@@ -139,7 +137,7 @@
   margin-top: 2px;
 }
 .budget-sub.over {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 /* ── DONUT */
@@ -161,12 +159,12 @@
 }
 .donut-center-budget {
   font-size: 1.2rem;
-  color: var(--primary);
+  color: var(--primary-dark);
   line-height: 1;
 }
 .donut-center-spent {
   font-size: clamp(.75rem, 2.5vw, .9rem);
-  color: var(--danger);
+  color: var(--danger-text);
   font-weight: 600;
   margin-top: 3px;
 }
@@ -263,10 +261,10 @@
   flex-shrink: 0;
 }
 .cat-amount.income {
-  color: var(--income);
+  color: var(--income-text);
 }
 .cat-amount.expense {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 
 /* ── TRANSACTIONS */
@@ -295,7 +293,7 @@
   width: calc(100% - 32px);
   max-width: 360px;
   justify-content: center;
-  background: var(--primary);
+  background: var(--primary-dark); /* wie Speichern: Weiss darauf 5.9:1 */
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -364,13 +362,13 @@
   z-index: 1;
 }
 .type-btn.expense {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 .type-btn.income {
-  color: var(--income);
+  color: var(--income-text);
 }
 .type-btn.transfer {
-  color: var(--transfer);
+  color: var(--transfer-text);
 }
 
 /* ── BREAKPOINT ≥480px */

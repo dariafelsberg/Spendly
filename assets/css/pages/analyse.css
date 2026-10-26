@@ -41,7 +41,7 @@
   font-weight: 700;
 }
 .insights-bar-value.negative {
-  color: var(--danger);
+  color: var(--danger-text);
 }
 .insights-bar {
   position: absolute;
