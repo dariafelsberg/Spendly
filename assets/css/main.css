@@ -59,6 +59,27 @@ button {
   font-family: inherit;
 }
 
+/* ── FOKUS: sichtbarer Rahmen für die Bedienung mit der Tastatur (Tab).
+   :focus-visible erscheint nur bei Tastatur, nicht beim Tippen oder Klicken. */
+:focus-visible {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+/* Auf der pinken Topbar und dem FAB: weisser Rahmen, sonst kaum sichtbar */
+.topbar :focus-visible,
+.settings-topbar :focus-visible,
+.fab:focus-visible {
+  outline-color: #fff;
+}
+/* Fenster selbst bekommt den Fokus nur, damit Tab darin startet – ohne Rahmen */
+.modal:focus {
+  outline: none;
+}
+.toggle-switch input:focus-visible + .toggle-track {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+
 /* ── APP SHELL */
 .app-shell {
   display: flex;
@@ -351,7 +372,7 @@ button {
 
 /* ── BUDGET CARD */
 .section-label {
-  font-size: clamp(.68rem, 2.5vw, .9rem);
+  font-size: clamp(.75rem, 2.5vw, .9rem);
   text-transform: uppercase;
   letter-spacing: .1em;
   color: var(--muted);
@@ -359,8 +380,8 @@ button {
 }
 .icon-btn {
   color: var(--text);  /* sonst färbt Safari auf dem iPhone die Icons blau */
-  width: 38px;
-  height: 38px;
+  width: 44px;  /* Mindestgrösse für Tippflächen */
+  height: 44px;
   border: none;
   border-radius: var(--radius-sm);
   background: var(--card-soft);
@@ -403,7 +424,7 @@ button {
 .tx-count {
   background: var(--primary-light);
   color: var(--primary-dark);
-  font-size: clamp(.68rem, 2.5vw, .9rem);
+  font-size: clamp(.75rem, 2.5vw, .9rem);
   font-weight: 600;
   padding: 2px 9px;
   border-radius: 999px;
@@ -472,7 +493,7 @@ button {
 }
 .tx-account-tag {
   display: inline-block;
-  font-size: clamp(.66rem, 2.5vw, .8rem);
+  font-size: clamp(.75rem, 2.5vw, .8rem);
   background: var(--primary-light);
   color: var(--primary-dark);
   border-radius: 999px;
@@ -481,7 +502,7 @@ button {
   vertical-align: middle;
 }
 .tx-note {
-  font-size: .7rem;
+  font-size: .75rem;
   color: var(--muted);
   white-space: normal;
   overflow-wrap: break-word;
@@ -512,6 +533,11 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  min-width: 40px;  /* grössere Tippfläche, das Icon bleibt gleich gross */
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px 5px;
   border-radius: 7px;
   font-size: .78rem;
@@ -583,7 +609,7 @@ button {
   font-size: 1.25rem;
 }
 .nav-label {
-  font-size: .64rem;
+  font-size: .75rem;
   font-weight: 500;
   letter-spacing: .03em;
 }
@@ -602,7 +628,7 @@ button {
   font-size: .82rem;
 }
 .toggle-sub {
-  font-size: .7rem;
+  font-size: .75rem;
   color: var(--muted);
   margin-top: 2px;
 }
@@ -697,7 +723,7 @@ button {
   margin-bottom: 2px;
 }
 .modal-sub {
-  font-size: .74rem;
+  font-size: .75rem;
   color: var(--muted);
   margin-bottom: 14px;
 }
@@ -706,7 +732,7 @@ button {
 }
 .form-label {
   display: block;
-  font-size: .68rem;
+  font-size: .75rem;
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--muted);
@@ -726,6 +752,10 @@ button {
 }
 .form-input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+.form-input:focus-visible {
+  outline: none; /* Feld zeigt den Fokus schon mit Rand und Schein */
 }
 .form-select {
   appearance: none;
@@ -894,7 +924,7 @@ button {
       padding: 24px 36px 40px;
     }
   .nav-label {
-      font-size: .72rem;
+      font-size: .75rem;
     }
   .nav-icon {
       font-size: 1.35rem;
@@ -917,8 +947,8 @@ button {
   gap: 12px;
 }
 .cal-nav-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: var(--radius-sm);
   background: var(--card-soft);

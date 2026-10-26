@@ -108,7 +108,7 @@ function renderInsightsChart() {
     const barCls = `insights-bar${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
     const valCls = `insights-bar-value${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
     return `
-      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" title="${monthNames[d.month]} ${d.year} · ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}">
+      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${monthNames[d.month]} ${d.year}: ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}" title="${monthNames[d.month]} ${d.year} · ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}">
         <div class="${valCls}">${formatSignedCompactChf(d.net)}</div>
         <div class="insights-bar-track">
           <div class="insights-bar-zero-line" style="top:${zeroTop}px"></div>
@@ -133,6 +133,7 @@ const openInsightsCats = new Set();
 function toggleInsightsCat(headerEl) {
   const group = headerEl.parentElement;
   const open = group.classList.toggle('open');
+  headerEl.setAttribute('aria-expanded', open);
   if (open) openInsightsCats.add(group.dataset.cat); else openInsightsCats.delete(group.dataset.cat);
 }
 // Einträge des in der Analyse-Ansicht ausgewählten Monats, gruppiert nach
@@ -172,7 +173,7 @@ function renderInsightsMonthList() {
       group.className = 'insights-cat-group' + (openInsightsCats.has(g.name) ? ' open' : '');
       group.dataset.cat = g.name;
       group.innerHTML = `
-        <div class="insights-cat-header" onclick="toggleInsightsCat(this)">
+        <div class="insights-cat-header" onclick="toggleInsightsCat(this)" role="button" tabindex="0" aria-expanded="${openInsightsCats.has(g.name)}">
           <div class="tx-cat-dot" style="background:${cat.color}"></div>
           <div class="insights-cat-name">${catIcon(cat)} ${g.name}</div>
           <span class="insights-cat-count">${g.entries.length}</span>

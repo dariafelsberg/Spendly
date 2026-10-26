@@ -30,7 +30,7 @@
   background: var(--border);
 }
 .insights-bar-value {
-  font-size: .64rem;
+  font-size: .75rem;
   font-weight: 600;
   color: var(--muted);
   margin-bottom: 4px;
@@ -65,7 +65,7 @@
 }
 .insights-bar-label {
   margin-top: 8px;
-  font-size: .68rem;
+  font-size: .75rem;
   font-weight: 500;
   color: var(--muted);
 }
@@ -103,7 +103,7 @@
 .insights-cat-count {
   background: var(--primary-light);
   color: var(--primary-dark);
-  font-size: .68rem;
+  font-size: .75rem;
   font-weight: 600;
   padding: 1px 7px;
   border-radius: 999px;

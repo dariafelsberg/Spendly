@@ -119,7 +119,7 @@
       </div>
       <div class="budget-setting-row">
         <div class="budget-setting-val" id="budgetSettingDisplay">CHF 0.00</div>
-        <button class="icon-btn" onclick="openBudgetModal()"><span class="ico ico-pencil"></span></button>
+        <button class="icon-btn" onclick="openBudgetModal()" aria-label="Budget bearbeiten"><span class="ico ico-pencil"></span></button>
       </div>
     </div>
 
@@ -164,12 +164,12 @@
 
 <!-- ══ MODAL: BUDGET ══ -->
 <div class="modal-overlay" id="budgetModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
-    <div class="modal-title">Monatsbudget</div>
+    <div class="modal-title" id="budgetModalTitle">Monatsbudget</div>
     <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
     <div class="form-group">
-      <label class="form-label">Budget (CHF)</label>
+      <label class="form-label" for="budgetInput">Budget (CHF)</label>
       <input class="form-input" type="text" inputmode="decimal" id="budgetInput" placeholder="z.B. 3000" autocomplete="off">
     </div>
     <div class="modal-actions">
@@ -181,15 +181,15 @@
 
 <!-- ══ MODAL: KONTO ══ -->
 <div class="modal-overlay" id="accountModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
     <div class="modal-title" id="accountModalTitle">Konto hinzufügen</div>
     <div class="form-group">
-      <label class="form-label">Kontoname</label>
+      <label class="form-label" for="accountName">Kontoname</label>
       <input class="form-input" type="text" id="accountName" placeholder="z.B. Raiffeisen, Neon…">
     </div>
     <div class="form-group">
-      <label class="form-label">Guthaben (CHF)</label>
+      <label class="form-label" for="accountBalance">Guthaben (CHF)</label>
       <input class="form-input" type="number" id="accountBalance" placeholder="0.00" step="0.01">
     </div>
     <div class="form-group toggle-row">
@@ -198,7 +198,7 @@
         <div class="toggle-sub">Zählt zum Gesamtguthaben</div>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" id="accountVisible" checked>
+        <input type="checkbox" id="accountVisible" aria-label="Im Gesamtguthaben anzeigen" checked>
         <span class="toggle-track"></span>
       </label>
     </div>
@@ -211,23 +211,23 @@
 
 <!-- ══ MODAL: WIEDERKEHREND ══ -->
 <div class="modal-overlay" id="recurringModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="recurringModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
     <div class="modal-title" id="recurringModalTitle">Einnahme hinzufügen</div>
     <div class="form-group">
-      <label class="form-label">Bezeichnung</label>
+      <label class="form-label" for="recurringName">Bezeichnung</label>
       <input class="form-input" type="text" id="recurringName" placeholder="z.B. Lohn, Miete…">
     </div>
     <div class="form-group">
-      <label class="form-label">Betrag (CHF)</label>
+      <label class="form-label" for="recurringAmount">Betrag (CHF)</label>
       <input class="form-input" type="text" inputmode="decimal" id="recurringAmount" placeholder="0.00" autocomplete="off">
     </div>
     <div class="form-group" id="recurringCategoryGroup">
-      <label class="form-label">Kategorie</label>
+      <label class="form-label" for="recurringCategory">Kategorie</label>
       <select class="form-input form-select" id="recurringCategory"></select>
     </div>
     <div class="form-group" id="recurringAccountGroup">
-      <label class="form-label">Konto (optional)</label>
+      <label class="form-label" for="recurringAccount">Konto (optional)</label>
       <select class="form-input form-select" id="recurringAccount">
         <option value="">Kein Konto</option>
       </select>
@@ -238,24 +238,24 @@
         <div class="toggle-sub">Nicht vom Budget abziehen</div>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" id="recurringAccountOnlyCheck">
+        <input type="checkbox" id="recurringAccountOnlyCheck" aria-label="Nur Konto">
         <span class="toggle-track"></span>
       </label>
     </div>
     <div class="form-row" id="recurringTransferAccountsGroup" style="display:none;">
       <div class="form-group">
-        <label class="form-label">Von Konto</label>
+        <label class="form-label" for="recurringFromAccount">Von Konto</label>
         <select class="form-input form-select" id="recurringFromAccount"></select>
       </div>
       <div class="form-group">
-        <label class="form-label">Auf Konto</label>
+        <label class="form-label" for="recurringToAccount">Auf Konto</label>
         <select class="form-input form-select" id="recurringToAccount"></select>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Start ab</label>
+      <label class="form-label" for="recurringStartDate">Start ab</label>
       <input class="form-input" type="date" id="recurringStartDate">
-      <div style="margin-top:6px; font-size:.74rem; color:var(--muted); line-height:1.4;">
+      <div style="margin-top:6px; font-size:.75rem; color:var(--muted); line-height:1.4;">
         Ab diesem Monat wird die Buchung automatisch angelegt.
       </div>
     </div>
@@ -268,15 +268,15 @@
 
 <!-- ══ MODAL: EIGENE KATEGORIE ══ -->
 <div class="modal-overlay" id="customCatModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="customCatModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
-    <div class="modal-title">Eigene Kategorie hinzufügen</div>
+    <div class="modal-title" id="customCatModalTitle">Eigene Kategorie hinzufügen</div>
     <div class="auth-tabs" style="margin-bottom: 16px;">
       <button class="auth-tab active" id="customCatTabExpense" onclick="switchCustomCatType('expense')"><span class="ico ico-shoppingcart"></span> Ausgabe</button>
       <button class="auth-tab" id="customCatTabIncome" onclick="switchCustomCatType('income')"><span class="ico ico-coin"></span> Einnahme</button>
     </div>
     <div class="form-group">
-      <label class="form-label">Name</label>
+      <label class="form-label" for="customCatName">Name</label>
       <input class="form-input" type="text" id="customCatName" placeholder="z.B. Hobbys, Reisen…" maxlength="30">
     </div>
     <div class="form-group">

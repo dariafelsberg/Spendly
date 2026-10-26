@@ -77,7 +77,7 @@
 
       <!-- Transactions -->
       <div class="card transactions-section">
-        <div class="tx-header" onclick="toggleTxList()" id="txHeader">
+        <div class="tx-header" onclick="toggleTxList()" id="txHeader" role="button" tabindex="0" aria-expanded="false" aria-controls="txList">
           <div class="tx-header-left">
             <span class="tx-title">Einträge</span>
             <span class="tx-count" id="txCount">0</span>
@@ -131,7 +131,7 @@
 
   <!-- ══ MODAL: EINTRAG ══ -->
   <div class="modal-overlay" id="entryModal">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="entryModalTitle" tabindex="-1">
       <div class="modal-handle"></div>
       <div class="modal-title" id="entryModalTitle">Eintrag hinzufügen</div>
       <div class="type-toggle" id="typeToggle">
@@ -141,27 +141,27 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Betrag (CHF)</label>
+          <label class="form-label" for="entryAmount">Betrag (CHF)</label>
           <input class="form-input" type="text" inputmode="decimal" id="entryAmount" placeholder="0.00" autocomplete="off">
         </div>
         <div class="form-group" id="entryCategoryGroup">
-          <label class="form-label">Kategorie</label>
+          <label class="form-label" for="entryCategory">Kategorie</label>
           <select class="form-input form-select" id="entryCategory"></select>
         </div>
       </div>
       <div class="form-group" id="accountSelectGroup">
-        <label class="form-label">Konto (optional)</label>
+        <label class="form-label" for="entryAccount">Konto (optional)</label>
         <select class="form-input form-select" id="entryAccount">
           <option value="">Kein Konto</option>
         </select>
       </div>
       <div class="form-row" id="transferAccountsGroup" style="display:none;">
         <div class="form-group">
-          <label class="form-label">Von Konto</label>
+          <label class="form-label" for="entryFromAccount">Von Konto</label>
           <select class="form-input form-select" id="entryFromAccount"></select>
         </div>
         <div class="form-group">
-          <label class="form-label">Auf Konto</label>
+          <label class="form-label" for="entryToAccount">Auf Konto</label>
           <select class="form-input form-select" id="entryToAccount"></select>
         </div>
       </div>
@@ -171,16 +171,16 @@
           <div class="toggle-sub">Nicht vom Budget abziehen</div>
         </div>
         <label class="toggle-switch">
-          <input type="checkbox" id="accountOnlyCheck">
+          <input type="checkbox" id="accountOnlyCheck" aria-label="Nur Konto">
           <span class="toggle-track"></span>
         </label>
       </div>
       <div class="form-group">
-        <label class="form-label">Notiz (optional)</label>
+        <label class="form-label" for="entryNote">Notiz (optional)</label>
         <input class="form-input" type="text" id="entryNote" placeholder="z.B. Migros Wocheneinkauf">
       </div>
       <div class="form-group">
-        <label class="form-label">Datum</label>
+        <label class="form-label" for="entryDate">Datum</label>
         <input class="form-input" type="date" id="entryDate">
       </div>
       <div class="modal-actions">
@@ -192,12 +192,12 @@
 
   <!-- ══ MODAL: BUDGET ══ -->
   <div class="modal-overlay" id="budgetModal">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle" tabindex="-1">
       <div class="modal-handle"></div>
-      <div class="modal-title">Monatsbudget</div>
+      <div class="modal-title" id="budgetModalTitle">Monatsbudget</div>
       <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
       <div class="form-group">
-        <label class="form-label">Budget (CHF)</label>
+        <label class="form-label" for="budgetInput">Budget (CHF)</label>
         <input class="form-input" type="text" inputmode="decimal" id="budgetInput" placeholder="z.B. 3000" autocomplete="off">
       </div>
       <div class="modal-actions">

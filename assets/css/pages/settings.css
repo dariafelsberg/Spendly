@@ -42,7 +42,7 @@ html.embed-mode .settings-main {
   font-size: .9rem;
 }
 .settings-section-sub {
-  font-size: .72rem;
+  font-size: .75rem;
   color: var(--muted);
   margin-top: 2px;
 }
@@ -71,7 +71,7 @@ html.embed-mode .settings-main {
   text-overflow: ellipsis;
 }
 .settings-item-val {
-  font-size: .72rem;
+  font-size: .75rem;
   color: var(--muted);
   margin-top: 1px;
 }
@@ -164,7 +164,7 @@ html.embed-mode .settings-main {
   padding: var(--sp-md) 0 var(--sp-sm);
 }
 .legal-links a {
-  font-size: .72rem;
+  font-size: .75rem;
   color: var(--muted);
   text-decoration: none;
 }

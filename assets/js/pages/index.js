@@ -408,6 +408,7 @@ function toggleTxList() {
     setTimeout(() => { inner.style.maxHeight = ''; }, 260);
   }
   ['txList','txHeader','txChevron'].forEach(id => document.getElementById(id).classList.toggle('open'));
+  document.getElementById('txHeader').setAttribute('aria-expanded', document.getElementById('txList').classList.contains('open'));
   // Beim Aufklappen so scrollen, dass die Einträge-Karte höchstens 70% des Bildschirms belegt:
   // lange Liste → Kartenoberkante bei 30%; kurze Liste → nur so weit, bis die Karte ganz über
   // der Navigation sichtbar ist. Erst nach der Aufklapp-Animation (.25s),

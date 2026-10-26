@@ -37,11 +37,11 @@
       <!-- ══ LOGIN ══ -->
       <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
         <div class="form-group">
-          <label class="form-label">E-Mail</label>
+          <label class="form-label" for="loginIdentifier">E-Mail</label>
           <input class="form-input" type="email" id="loginIdentifier" autocomplete="email" required>
         </div>
         <div class="form-group">
-          <label class="form-label">Passwort</label>
+          <label class="form-label" for="loginPassword">Passwort</label>
           <div class="password-wrap">
             <input class="form-input" type="password" id="loginPassword" autocomplete="current-password" required>
             <button type="button" class="pw-toggle" onclick="togglePw('loginPassword', this)"
@@ -63,15 +63,15 @@
           Mit dieser E-Mail-Adresse existiert bereits ein Konto. Bitte melde dich stattdessen an.
         </div>
         <div class="form-group">
-          <label class="form-label">Benutzername</label>
+          <label class="form-label" for="regUsername">Benutzername</label>
           <input class="form-input" type="text" id="regUsername" autocomplete="username" required minlength="3">
         </div>
         <div class="form-group">
-          <label class="form-label">E-Mail</label>
+          <label class="form-label" for="regEmail">E-Mail</label>
           <input class="form-input" type="email" id="regEmail" autocomplete="email" required>
         </div>
         <div class="form-group">
-          <label class="form-label">Passwort</label>
+          <label class="form-label" for="regPassword">Passwort</label>
           <div class="password-wrap">
             <input class="form-input" type="password" id="regPassword" autocomplete="new-password" required
               minlength="8">
@@ -81,7 +81,7 @@
           <div class="pw-strength" id="pwStrength"></div>
         </div>
         <div class="form-group">
-          <label class="form-label">Passwort bestätigen</label>
+          <label class="form-label" for="regPasswordConfirm">Passwort bestätigen</label>
           <div class="password-wrap">
             <input class="form-input" type="password" id="regPasswordConfirm" autocomplete="new-password" required
               minlength="8">
@@ -104,15 +104,15 @@
 
   <!-- ══ MODAL: PASSWORT VERGESSEN ══ -->
   <div class="modal-overlay" id="resetModal">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle" tabindex="-1">
       <div class="modal-handle"></div>
-      <div class="modal-title">Passwort zurücksetzen</div>
+      <div class="modal-title" id="resetModalTitle">Passwort zurücksetzen</div>
 
       <!-- Eingabe -->
       <div id="resetInputStep">
         <div class="modal-sub">Gib deine E-Mail-Adresse ein. Du erhältst einen Link zum Zurücksetzen deines Passworts.</div>
         <div class="form-group">
-          <label class="form-label">E-Mail-Adresse</label>
+          <label class="form-label" for="resetEmailInput">E-Mail-Adresse</label>
           <input class="form-input" type="email" id="resetEmailInput" autocomplete="email" placeholder="deine@email.ch">
         </div>
         <div class="auth-error" id="resetEmailError"></div>

@@ -535,6 +535,57 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.modal-overlay, .app-menu-overlay').forEach(el => obs.observe(el, { attributes: true, attributeFilter: ['class'] }));
 });
 
+// ── TASTATUR: Fenster bedienbar ohne Maus/Finger
+// Beim Öffnen springt der Fokus ins Fenster, beim Schliessen zurück zum auslösenden Button.
+// Tab bleibt im offenen Fenster, Escape schliesst es (wie "Abbrechen").
+const _FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+function _openModal() {
+  const list = document.querySelectorAll('.modal-overlay.show');
+  return list.length ? list[list.length - 1] : null;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const obs = new MutationObserver(records => records.forEach(r => {
+    const overlay = r.target, sheet = overlay.querySelector('.modal');
+    const isOpen = overlay.classList.contains('show');
+    if (isOpen && !overlay._wasOpen) {
+      overlay._returnFocus = document.activeElement;
+      if (sheet && !sheet.contains(document.activeElement)) sheet.focus({ preventScroll: true });
+    } else if (!isOpen && overlay._wasOpen) {
+      const back = overlay._returnFocus;
+      if (back && document.contains(back) && typeof back.focus === 'function') back.focus({ preventScroll: true });
+    }
+    overlay._wasOpen = isOpen;
+  }));
+  document.querySelectorAll('.modal-overlay').forEach(el => obs.observe(el, { attributes: true, attributeFilter: ['class'] }));
+});
+document.addEventListener('keydown', e => {
+  // Elemente mit role="button" (z. B. Kalendertage, "Einträge") wie echte Buttons mit Enter/Leertaste auslösen
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'button' && e.target.tagName !== 'BUTTON') {
+    e.preventDefault();
+    e.target.click();
+    return;
+  }
+  const overlay = _openModal();
+  if (e.key === 'Escape') {
+    if (overlay) {
+      const cancel = overlay.querySelector('.btn-cancel');
+      if (cancel) cancel.click(); else overlay.classList.remove('show');
+    } else if (document.querySelector('.app-menu-overlay.show')) {
+      closeAppMenu();
+    } else if (window.parent !== window && typeof window.parent.closeAppMenu === 'function') {
+      window.parent.closeAppMenu(); // Einstellungen im Menü-Fenster (iframe)
+    }
+    return;
+  }
+  if (e.key === 'Tab' && overlay) {
+    const items = [...overlay.querySelectorAll(_FOCUSABLE)].filter(el => !el.disabled && el.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  }
+});
+
 // ── HELPERS
 // Kurze Bestätigung oben am Bildschirm, verschwindet nach 1.6 s von selbst
 function showToast(text) {

@@ -268,6 +268,11 @@ function openResetConfirm() {
 function closeResetConfirm() {
   document.getElementById('resetModal').classList.remove('show');
 }
+// Escape schliesst das Fenster "Passwort zurücksetzen" (Login-Seite lädt main.js nicht)
+document.addEventListener('keydown', e => {
+  const m = document.getElementById('resetModal');
+  if (e.key === 'Escape' && m && m.classList.contains('show')) closeResetConfirm();
+});
 
 async function sendResetEmail() {
   const email = document.getElementById('resetEmailInput').value.trim();
