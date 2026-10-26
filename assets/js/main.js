@@ -271,7 +271,10 @@ function loadState() {
       // per registerPageRender() an (siehe assets/js/pages/*.js)
       if (dataReady) pageRender(); else _finishLoad();
     })
-    .catch(() => { serverLoaded = true; _finishLoad(); }); // Offline? localStorage-Daten behalten
+    .catch(() => { // Offline? localStorage-Daten behalten
+      serverLoaded = true; _finishLoad();
+      if (!navigator.onLine) showToast('Du bist offline', { type: 'offline', text: 'Du siehst den zuletzt gespeicherten Stand. Neue Einträge werden übertragen, sobald du wieder online bist.', duration: 8000 });
+    });
 }
 
 // true, sobald der erste Server-Abgleich in loadState() durch ist.
@@ -362,14 +365,27 @@ function _pushToServer() {
     body
   })
     .then(r => {
-      if (!r.ok) return;
+      if (!r.ok) { _notifySyncProblem('Nicht auf dem Server gespeichert', 'Der Server hat nicht geantwortet. Deine Änderung ist auf diesem Gerät gesichert.', 'error'); return; }
       Object.assign(_synced, sentJson);
+      if (_syncNoticeShown) { _syncNoticeShown = false; showToast('Wieder verbunden', { text: 'Alle Änderungen sind übertragen.' }); }
       // Nur der zuletzt gesendete Stand darf die Markierung entfernen
       if (seq === _saveSeq) {
         try { localStorage.removeItem(UNSYNCED_KEY); } catch(e) {}
       }
     })
-    .catch(() => {}); // Offline: bleibt markiert und wird beim nächsten Laden nachgesendet
+    .catch(() => _notifySyncProblem('Du bist offline', 'Deine Änderung ist auf diesem Gerät gespeichert und wird übertragen, sobald du wieder online bist.', 'offline')); // bleibt markiert und wird beim nächsten Laden nachgesendet
+}
+// Hinweis bleibt stehen, bis man ihn schliesst oder "Erneut versuchen" klappt
+let _syncNoticeShown = false;
+function _notifySyncProblem(title, text, type) {
+  const firstTime = !_syncNoticeShown;
+  _syncNoticeShown = true;
+  const show = () => {
+    // Läuft gerade "Rückgängig" (Zeitbalken), nicht überdecken, sondern danach zeigen
+    if (document.querySelector('#toast.show .toast-timer')) { setTimeout(show, 500); return; }
+    showToast(title, { type, text, sticky: true, action: { label: 'Erneut versuchen', onClick: _pushToServer } });
+  };
+  setTimeout(show, firstTime ? 1700 : 0); // erst nach "Gespeichert"
 }
 
 // ── APP MENU (Header-Icon-Overlay) ────────────────────────────
@@ -464,7 +480,7 @@ function applyTransferDelta(fromAccountId, toAccountId, amount) {
 
 function editEntry(id) { openEntryModal(id); }
 function deleteEntry(id) {
-  if (confirm('Eintrag löschen?')) {
+  deleteWithUndo(() => {
     const e = state.entries.find(x => x.id === id);
     if (e) {
       if (e.type === 'transfer') {
@@ -475,8 +491,7 @@ function deleteEntry(id) {
       }
     }
     state.entries = state.entries.filter(e => e.id !== id);
-    saveState(); pageRender(); showToast('Gelöscht');
-  }
+  }, 'Eintrag gelöscht');
 }
 
 // ── FENSTER NACH UNTEN WISCHEN (Touch-Geräte)
@@ -587,20 +602,69 @@ document.addEventListener('keydown', e => {
 });
 
 // ── HELPERS
-// Kurze Bestätigung oben am Bildschirm, verschwindet nach 1.6 s von selbst
-function showToast(text) {
+// Meldung oben am Bildschirm (ersetzt alert/confirm des Browsers).
+// Aufbau nach der Regel: Was ist passiert (title). Warum (text). Was jetzt (action-Button).
+// type: 'success' (Häkchen), 'error' (rot), 'offline' (WLAN aus), 'deleted' (Abfalleimer)
+// Bestätigungen ohne Button verschwinden nach 1.6 s; Fehler und Meldungen mit Button
+// bleiben länger stehen bzw. bis man sie schliesst (sticky).
+const _TOAST_ICON = { success: 'ico-check', error: 'ico-banned', offline: 'ico-wifi-off', deleted: 'ico-trash' };
+function showToast(title, { text = '', type = 'success', action = null, duration, sticky = false } = {}) {
   let el = document.getElementById('toast');
   if (!el) {
     el = document.createElement('div');
     el.id = 'toast';
-    el.className = 'toast';
-    el.setAttribute('role', 'status');
     document.body.appendChild(el);
   }
-  el.textContent = text;
+  const simple = !text && !action && !sticky; // kurze Bestätigung: nur Titel, kein X
+  el.className = 'toast toast-' + type + (simple ? ' toast-simple' : '');
+  el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+  el.innerHTML = `
+    <span class="toast-icon" aria-hidden="true"><span class="ico ${_TOAST_ICON[type] || _TOAST_ICON.success}"></span></span>
+    <div class="toast-body">
+      <div class="toast-title"></div>
+      ${text ? '<div class="toast-text"></div>' : ''}
+      ${action ? '<button type="button" class="toast-action"></button>' : ''}
+    </div>
+    ${simple ? '' : '<button type="button" class="toast-close" aria-label="Meldung schliessen"><span class="ico ico-close"></span></button>'}
+    ${action && !sticky ? '<span class="toast-timer" aria-hidden="true"></span>' : ''}`;
+  el.querySelector('.toast-title').textContent = title;
+  if (text) el.querySelector('.toast-text').textContent = text;
+  if (action) {
+    const btn = el.querySelector('.toast-action');
+    btn.textContent = action.label;
+    btn.onclick = () => { hideToast(); action.onClick(); };
+  }
+  if (!simple) el.querySelector('.toast-close').onclick = hideToast;
   clearTimeout(el._timer);
   requestAnimationFrame(() => el.classList.add('show'));
-  el._timer = setTimeout(() => el.classList.remove('show'), 1600);
+  if (!sticky) {
+    const ms = duration || (simple ? 1600 : action ? 6000 : 5000);
+    el._timer = setTimeout(hideToast, ms);
+    // Zeitbalken: zeigt, wie lange "Rückgängig" noch möglich ist (läuft genau so lange wie die Meldung)
+    const bar = el.querySelector('.toast-timer');
+    if (bar) bar.style.animationDuration = ms + 'ms';
+  }
+}
+function hideToast() {
+  const el = document.getElementById('toast');
+  if (el) { clearTimeout(el._timer); el.classList.remove('show'); }
+}
+// Fehler beim Speichern: Meldung zeigen und den Cursor ins betroffene Feld setzen
+function showError(title, text, focusId) {
+  showToast(title, { text, type: 'error' });
+  if (focusId) document.getElementById(focusId)?.focus();
+}
+// Sofort löschen und "Rückgängig" anbieten (statt vorher nachzufragen).
+// doDelete ändert state; Rückgängig setzt den ganzen Stand von vorher wieder ein.
+function deleteWithUndo(doDelete, title, text = 'Du kannst es noch ein paar Sekunden rückgängig machen.') {
+  const before = JSON.stringify(state);
+  doDelete();
+  saveState(); pageRender();
+  showToast(title, { text, type: 'deleted', action: { label: 'Rückgängig', onClick: () => {
+    Object.assign(state, JSON.parse(before));
+    saveState(); pageRender();
+    showToast('Wiederhergestellt');
+  } } });
 }
 function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;

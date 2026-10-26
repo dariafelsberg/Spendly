@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <path class="st0" d="M10.6 20.6a19 19 0 0 1 26.8 0"/>
+  <path class="st0" d="M14.8 24.8a13 13 0 0 1 18.4 0"/>
+  <path class="st0" d="M19.05 29.05a7 7 0 0 1 9.9 0"/>
+  <circle cx="24" cy="34" r="1.6" fill="currentColor"/>
+  <line class="st0" x1="10" y1="10" x2="38" y2="38"/>
+</svg>

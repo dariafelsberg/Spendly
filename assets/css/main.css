@@ -595,27 +595,119 @@ button {
   background: var(--danger-light);
 }
 
-/* ── TOAST (kurze Bestätigung nach Speichern/Löschen) */
+/* ── TOAST: Meldungen oben am Bildschirm
+   Aufbau: Icon · Titel (was ist passiert) · Text (warum) · Button (was jetzt) · Schliessen */
 .toast {
   position: fixed;
   top: calc(16px + env(safe-area-inset-top));
   left: 50%;
   z-index: 10000;
-  padding: 12px 20px;
-  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-sm);
+  width: min(440px, calc(100% - 32px));
+  padding: var(--sp-sm);
+  border-radius: var(--radius-card);
   background: var(--text);
   color: #fff;
-  font-size: var(--fs-body);
-  font-weight: 600;
   box-shadow: var(--shadow-float);
-  pointer-events: none;
   opacity: 0;
+  visibility: hidden;
   transform: translate(-50%, -8px);
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
 }
 .toast.show {
   opacity: 1;
+  visibility: visible;
   transform: translate(-50%, 0);
+  transition: opacity .2s ease, transform .2s ease;
+}
+/* Kurze Bestätigung ("Gespeichert"): kompakt, mittig, nicht antippbar */
+.toast.toast-simple {
+  width: max-content;
+  max-width: calc(100% - 32px);
+  align-items: center;
+  padding: var(--sp-xs) var(--sp-md) var(--sp-xs) var(--sp-xs);
+  pointer-events: none;
+}
+.toast-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, .12);
+  font-size: 1.25rem;
+}
+.toast-success .toast-icon { color: #86efac; }                                  /* Grün auf dunkel */
+.toast-error .toast-icon { background: var(--danger-text); color: #fff; }
+.toast-offline .toast-icon { background: var(--primary-dark); color: #fff; }
+.toast-body {
+  flex: 1;
+  min-width: 0;
+  align-self: center;
+}
+.toast-title {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.toast-text {
+  margin-top: var(--sp-2xs);
+  font-size: var(--fs-note);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, .85); /* auf Tinte ca. 11:1 */
+}
+.toast-action {
+  margin-top: var(--sp-sm);
+  min-height: 40px;
+  padding: 0 var(--sp-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--fs-note);
+  font-weight: 700;
+  cursor: pointer;
+}
+.toast-close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  margin: -4px -4px 0 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: rgba(255, 255, 255, .7);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.toast :focus-visible {
+  outline-color: #fff;
+}
+/* Zeitbalken unten in der Meldung: läuft von voll nach leer, solange "Rückgängig" möglich ist */
+.toast {
+  overflow: hidden;
+}
+.toast-timer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--primary);
+  transform-origin: left center;
+  animation: toast-timer linear forwards;
+}
+@keyframes toast-timer {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
 }
 
 /* ── BOTTOM NAV */
@@ -1089,6 +1181,8 @@ button {
 .ico-trash         { --ico: url(../icons/ui/trash.svg); }
 .ico-user          { --ico: url(../icons/ui/user.svg); }
 .ico-wallet        { --ico: url(../icons/ui/wallet.svg); }
+.ico-check         { --ico: url(../icons/ui/check.svg); }
+.ico-wifi-off      { --ico: url(../icons/ui/wifi-off.svg); }
 .tx-btn .ico {
   width: 1.4em;
   height: 1.4em;

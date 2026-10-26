@@ -113,7 +113,6 @@ function openCustomCatModal(type) {
   if (tabExp) tabExp.classList.toggle('active', initialType === 'expense');
   if (tabInc) tabInc.classList.toggle('active', initialType === 'income');
   document.getElementById('customCatName').value = '';
-  document.getElementById('customCatError').textContent = '';
   // Emoji-Picker rendern
   const picker = document.getElementById('customCatEmojiPicker');
   picker.innerHTML = PRESET_EMOJIS.map(e =>
@@ -138,9 +137,7 @@ function getSelectedEmoji() {
 
 function saveCustomCat() {
   const name = document.getElementById('customCatName').value.trim();
-  const errEl = document.getElementById('customCatError');
-  errEl.textContent = '';
-  if (!name || name.length < 2) { errEl.textContent = 'Name muss mindestens 2 Zeichen lang sein.'; return; }
+  if (!name || name.length < 2) { showError('Kategorie nicht gespeichert', 'Der Name ist zu kurz. Er braucht mindestens 2 Zeichen.', 'customCatName'); return; }
   const emoji = getSelectedEmoji();
   // Typ aus der Tab-Auswahl im Modal lesen
   const modal = document.getElementById('customCatModal');
@@ -148,7 +145,7 @@ function saveCustomCat() {
   const list = state.customCatType === 'expense' ? state.customExpenseCats : state.customIncomeCats;
   const builtIn = state.customCatType === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
   const allNames = [...builtIn, ...list].map(c => c.name.toLowerCase());
-  if (allNames.includes(name.toLowerCase())) { errEl.textContent = 'Diese Kategorie existiert bereits.'; return; }
+  if (allNames.includes(name.toLowerCase())) { showError('Kategorie nicht gespeichert', 'Diese Kategorie gibt es schon. Wähle einen anderen Namen.', 'customCatName'); return; }
   const color = `hsl(${Math.floor(Math.random()*360)},65%,55%)`;
   list.push({ id: uid(), name, emoji, color });
   saveState();
@@ -157,10 +154,11 @@ function saveCustomCat() {
 }
 
 function deleteCustomCat(type, id) {
-  if (!confirm('Kategorie löschen? Bestehende Einträge behalten ihren Kategorienamen.')) return;
-  if (type === 'expense') state.customExpenseCats = state.customExpenseCats.filter(c => c.id !== id);
-  else                    state.customIncomeCats  = state.customIncomeCats.filter(c => c.id !== id);
-  saveState(); renderCustomCatList();
+  // Bestehende Einträge behalten ihren Kategorienamen
+  deleteWithUndo(() => {
+    if (type === 'expense') state.customExpenseCats = state.customExpenseCats.filter(c => c.id !== id);
+    else                    state.customIncomeCats  = state.customIncomeCats.filter(c => c.id !== id);
+  }, 'Kategorie gelöscht');
 }
 function openAccountModal(editId = null) {
   state.accountEditId = editId;
@@ -182,7 +180,7 @@ function saveAccount() {
   const name    = document.getElementById('accountName').value.trim();
   const balance = parseAmount(document.getElementById('accountBalance').value) || 0;
   const visible = document.getElementById('accountVisible').checked;
-  if (!name) { document.getElementById('accountName').focus(); return; }
+  if (!name) { showError('Konto nicht gespeichert', 'Der Name fehlt. Gib dem Konto einen Namen, zum Beispiel UBS.', 'accountName'); return; }
   if (state.accountEditId) {
     const a = state.accounts.find(x => x.id === state.accountEditId);
     if (a) Object.assign(a, { name, balance, visible });
@@ -192,7 +190,8 @@ function saveAccount() {
   saveState(); renderAccountsList(); closeAccountModal();
 }
 function deleteAccount(id) {
-  if (confirm('Konto löschen? Überweisungen, die dieses Konto nutzen, werden ebenfalls gelöscht.')) {
+  // Überweisungen mit diesem Konto werden mitgelöscht; "Rückgängig" holt alles zurück
+  deleteWithUndo(() => {
     state.accounts = state.accounts.filter(a => a.id !== id);
     // Verwaiste Konto-Referenzen in bestehenden Buchungen entfernen,
     // damit keine toten accountId-Verweise übrig bleiben
@@ -200,8 +199,7 @@ function deleteAccount(id) {
     // Überweisungen ohne gültiges Konto ergeben keinen Sinn mehr — entfernen
     state.entries = state.entries.filter(e => e.type !== 'transfer' || (e.fromAccountId !== id && e.toAccountId !== id));
     state.recurringTransfers = state.recurringTransfers.filter(r => r.fromAccountId !== id && r.toAccountId !== id);
-    saveState(); renderAccountsList(); renderRecurringList('transfer');
-  }
+  }, 'Konto gelöscht', 'Überweisungen mit diesem Konto wurden auch gelöscht.');
 }
 function openRecurringModal(type, editId = null) {
   state.recurringType = type; state.recurringEditId = editId;
@@ -269,13 +267,14 @@ function saveRecurring() {
   const name      = document.getElementById('recurringName').value.trim();
   const amount    = parseAmount(document.getElementById('recurringAmount').value);
   const startDate = document.getElementById('recurringStartDate').value || dateKey(new Date());
-  if (!name || isNaN(amount) || amount <= 0) { document.getElementById('recurringName').focus(); return; }
+  if (!name) { showError('Nicht gespeichert', 'Die Bezeichnung fehlt. Gib eine Bezeichnung ein, zum Beispiel Miete.', 'recurringName'); return; }
+  if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'recurringAmount'); return; }
 
   if (state.recurringType === 'transfer') {
     const fromAccountId = document.getElementById('recurringFromAccount').value;
     const toAccountId   = document.getElementById('recurringToAccount').value;
-    if (!fromAccountId || !toAccountId) { alert('Bitte beide Konten auswählen.'); return; }
-    if (fromAccountId === toAccountId) { alert('Von- und Auf-Konto müssen unterschiedlich sein.'); return; }
+    if (!fromAccountId || !toAccountId) { showError('Nicht gespeichert', 'Ein Konto fehlt. Wähle bei «Von Konto» und «Auf Konto» je ein Konto.', !fromAccountId ? 'recurringFromAccount' : 'recurringToAccount'); return; }
+    if (fromAccountId === toAccountId) { showError('Nicht gespeichert', 'Du hast zweimal dasselbe Konto gewählt. Wähle zwei verschiedene Konten.', 'recurringToAccount'); return; }
     const list = state.recurringTransfers;
     if (state.recurringEditId) {
       const r = list.find(x => x.id === state.recurringEditId);
@@ -299,12 +298,11 @@ function saveRecurring() {
   saveState(); renderRecurringList(state.recurringType); closeRecurringModal();
 }
 function deleteRecurring(type, id) {
-  if (confirm('Eintrag löschen?')) {
+  deleteWithUndo(() => {
     if (type === 'income')          state.recurringIncome    = state.recurringIncome.filter(r => r.id !== id);
     else if (type === 'transfer')   state.recurringTransfers = state.recurringTransfers.filter(r => r.id !== id);
     else                            state.recurringExpense   = state.recurringExpense.filter(r => r.id !== id);
-    saveState(); renderRecurringList(type);
-  }
+  }, 'Eintrag gelöscht');
 }
 
 // ── START

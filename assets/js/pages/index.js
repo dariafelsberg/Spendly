@@ -302,7 +302,7 @@ function populateTransferAccountSelects(fromId = '', toId = '') {
 // Der "Überweisung"-Typ braucht mindestens 2 Konten
 function trySetTransferType() {
   if (state.accounts.length < 2) {
-    alert('Für eine interne Überweisung brauchst du mindestens 2 Konten. Lege in den Einstellungen unter "Konten" ein zweites Konto an.');
+    showToast('Überweisung nicht möglich', { type: 'error', text: 'Du hast erst ein Konto. Für eine Überweisung brauchst du zwei.', action: { label: 'Konto anlegen', onClick: () => { closeEntryModal(); toggleAppMenu(true); } } });
     return;
   }
   setEntryType('transfer');
@@ -352,9 +352,9 @@ function saveEntry() {
   if (state.entryType === 'transfer') {
     const fromAccountId = document.getElementById('entryFromAccount').value;
     const toAccountId   = document.getElementById('entryToAccount').value;
-    if (isNaN(amount) || amount <= 0) { document.getElementById('entryAmount').focus(); return; }
-    if (!fromAccountId || !toAccountId) { alert('Bitte beide Konten auswählen.'); return; }
-    if (fromAccountId === toAccountId) { alert('Von- und Auf-Konto müssen unterschiedlich sein.'); return; }
+    if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'entryAmount'); return; }
+    if (!fromAccountId || !toAccountId) { showError('Nicht gespeichert', 'Ein Konto fehlt. Wähle bei «Von Konto» und «Auf Konto» je ein Konto.', !fromAccountId ? 'entryFromAccount' : 'entryToAccount'); return; }
+    if (fromAccountId === toAccountId) { showError('Nicht gespeichert', 'Du hast zweimal dasselbe Konto gewählt. Wähle zwei verschiedene Konten.', 'entryToAccount'); return; }
     if (state.editId) {
       const e = state.entries.find(x => x.id === state.editId);
       if (e) {
@@ -372,8 +372,9 @@ function saveEntry() {
 
   const category  = document.getElementById('entryCategory').value;
   const accountId = document.getElementById('entryAccount').value;
-  if (!accountId && state.accounts.length > 0) { alert('Bitte ein Konto auswählen.'); document.getElementById('entryAccount').focus(); return; }
-  if (isNaN(amount) || amount <= 0 || !category) { document.getElementById('entryAmount').focus(); return; }
+  if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'entryAmount'); return; }
+  if (!category) { showError('Nicht gespeichert', 'Die Kategorie fehlt. Wähle eine Kategorie aus.', 'entryCategory'); return; }
+  if (!accountId && state.accounts.length > 0) { showError('Nicht gespeichert', 'Das Konto fehlt. Wähle ein Konto aus.', 'entryAccount'); return; }
   if (state.editId) {
     const e = state.entries.find(x => x.id === state.editId);
     if (e) {
