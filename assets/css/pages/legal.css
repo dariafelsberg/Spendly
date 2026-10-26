@@ -10,7 +10,7 @@ body {
 .legal-back {
   display: inline-block;
   margin-bottom: var(--sp-md);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--primary-dark);
   text-decoration: none;
@@ -18,15 +18,15 @@ body {
 .legal-title {
   font-family: 'DM Serif Display', serif;
   font-weight: 400;
-  font-size: 1.8rem;
+  font-size: var(--fs-2xl);
   color: var(--text);
   margin: 0 0 var(--sp-md);
 }
 .legal-body {
   background: var(--card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   padding: var(--sp-lg);
-  font-size: .88rem;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--text);
 }
@@ -42,6 +42,6 @@ body {
 }
 .legal-date {
   color: var(--muted);
-  font-size: .75rem;
+  font-size: var(--fs-note);
   margin-bottom: 0 !important;
 }

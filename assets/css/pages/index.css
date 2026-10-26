@@ -6,7 +6,7 @@
   z-index: 1;
 }
 .topbar-label {
-  font-size: clamp(.75rem, 2.5vw, 1rem);
+  font-size: var(--fs-label);
   font-weight: 600; /* volle Deckkraft und fett: kleine weisse Schrift auf Pink bleibt lesbar */
   text-transform: uppercase;
   letter-spacing: .12em;
@@ -16,8 +16,8 @@
 .balance-eye {
   background: none;
   border: none;
-  padding: 9px 9px 9px 10px; /* Tippfläche ca. 44px, negativer Rand hält die Zeilenhöhe gleich */
-  margin: -9px -9px -9px 0;
+  padding: 8px 8px 8px 12px; /* Tippfläche ca. 44px, negativer Rand hält die Zeilenhöhe gleich */
+  margin: -8px -8px -8px 0;
   color: inherit;
   font-size: 16px;
   line-height: 1;
@@ -30,7 +30,7 @@
   vertical-align: middle;
 }
 .total-balance {
-  font-size: 2.6rem;
+  font-size: var(--fs-3xl);
   font-weight: 700;
   line-height: 1;
   margin-bottom: 12px;
@@ -66,7 +66,7 @@
   transition: transform .3s cubic-bezier(.2, .8, .2, 1);
 }
 .total-balance .currency {
-  font-size: clamp(.75rem, 2.5vw, 1rem);
+  font-size: var(--fs-note);
   font-weight: 600;
 }
 
@@ -75,18 +75,18 @@
 .account-pills {
   display: grid;
   flex-flow: column wrap;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 .account-pill-item {
   background: rgba(45, 27, 36, .15); /* wie der Umschalter: weisse Schrift darauf 5.4:1 */
   backdrop-filter: blur(8px);
   border-radius: 999px;
   padding: 4px 12px;
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .pill-name {
 }
@@ -97,7 +97,7 @@
 /* ── MAIN */
 .month-label {
   text-align: center;
-  font-size: clamp(.8rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   text-transform: uppercase;
   letter-spacing: .12em;
   color: var(--muted);
@@ -126,13 +126,13 @@
   min-width: 0;
 }
 .budget-amount {
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: var(--fs-xl);
   font-weight: 700;
   color: var(--primary-dark);
   white-space: nowrap;
 }
 .budget-sub {
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   color: var(--muted);
   margin-top: 2px;
 }
@@ -158,12 +158,12 @@
   pointer-events: none;
 }
 .donut-center-budget {
-  font-size: 1.2rem;
+  font-size: var(--fs-lg);
   color: var(--primary-dark);
   line-height: 1;
 }
 .donut-center-spent {
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   color: var(--danger-text);
   font-weight: 600;
   margin-top: 3px;
@@ -194,7 +194,7 @@
   /* Breite unabhängig vom Platz bis zum Containerrand, sonst bricht
      rechts aussen jedes Wort um */
   width: max-content;
-  font-size: .8rem;
+  font-size: var(--fs-note);
   font-weight: 700;
   opacity: 0;
   transition: left .7s cubic-bezier(.34, 1.2, .64, 1),
@@ -218,7 +218,7 @@
   .donut-arc-pulse { animation: none; }
 }
 .donut-center-label {
-  font-size: clamp(.75rem, 2.5vw, .8rem);
+  font-size: var(--fs-label);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -227,14 +227,14 @@
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 7px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 16px;
 }
 .cat-chip {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 10px;
+  gap: 8px;
+  padding: 8px 12px;
   border-radius: var(--radius);
   background: var(--card-soft);
   border: 1.5px solid transparent;
@@ -249,14 +249,14 @@
 }
 .cat-name {
   flex: 1;
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .cat-amount {
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -297,8 +297,8 @@
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 14px 24px;
-  font-size: clamp(.9rem, 2.5vw, 1.25rem);
+  padding: 16px 24px;
+  font-size: var(--fs-body);
   font-weight: 700;
   cursor: pointer;
   box-shadow: var(--shadow-float);
@@ -313,7 +313,7 @@
   transform: translateX(-50%) scale(.97);
 }
 .fab-icon {
-  font-size: clamp(.9rem, 2.5vw, 1.25rem);
+  font-size: var(--fs-body);
 }
 
 /* ── MODALS */
@@ -331,9 +331,9 @@
   border: none;
   background: none;
   border-radius: 8px;
-  padding: 9px;
+  padding: 8px;
   font-family: inherit;
-  font-size: .8rem;
+  font-size: var(--fs-note);
   font-weight: 600;
   cursor: pointer;
   color: var(--muted);
@@ -374,7 +374,7 @@
 /* ── BREAKPOINT ≥480px */
 @media (min-width:480px) {
   .total-balance {
-      font-size: 3rem;
+      font-size: var(--fs-hero);
     }
   .donut-container {
       width: 220px;
@@ -418,7 +418,7 @@
   .account-pills {
       display: flex;
       flex-flow: column wrap;
-      gap: 6px;
+      gap: 8px;
       height: 120px;
       overflow: hidden;
     }
@@ -435,7 +435,7 @@
       grid-row: 2/span 16;
     }
   .total-balance {
-      font-size: clamp(2.8rem, 4vw, 3.4rem);
+      font-size: var(--fs-hero);
     }
   .categories-grid {
       grid-template-columns: repeat(2, 1fr);
@@ -445,24 +445,22 @@
       height: 240px;
     }
   .donut-center-budget {
-      font-size: 1.4rem;
+      font-size: var(--fs-lg);
     }
   .tx-chevron {
       font-size: 1.8rem;
     }
-  .fab:hover {
-      transform: translateX(-50%) translateY(-2px);
-    }
+
 }
 
 /* ── BREAKPOINT ≥1024px */
 @media (min-width:1024px) {
   .total-balance {
-      font-size: 3.8rem;
+      font-size: var(--fs-hero);
     }
   .categories-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 9px;
+      gap: 8px;
     }
   .donut-container {
       width: 260px;
@@ -488,7 +486,7 @@
 .sk {
   display: block;
   border-radius: 999px;
-  background: #f3e3ec;
+  background: var(--skeleton);
   animation: sk-pulse 1.2s ease-in-out infinite;
 }
 .is-loading #accountPills,
@@ -516,7 +514,7 @@
 .is-loading #budgetSub,
 .is-loading .donut-center-budget,
 .is-loading .donut-center-spent,
-.is-loading #txCount { background: #f3e3ec; border-color: transparent; }
+.is-loading #txCount { background: var(--skeleton); border-color: transparent; }
 .is-loading #budgetDisplay,
 .is-loading #budgetSub { width: fit-content; min-width: 120px; }
 .is-loading .donut-center-budget,
@@ -528,4 +526,11 @@
   .sk, .is-loading .total-balance, .is-loading #budgetDisplay, .is-loading #budgetSub,
   .is-loading .donut-center-budget, .is-loading .donut-center-spent, .is-loading #txCount,
   .is-loading #donutSvg { animation: none; }
+}
+
+/* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
+@media (hover: hover) {
+  .fab:hover {
+    transform: translateX(-50%) translateY(-2px);
+  }
 }

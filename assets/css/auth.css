@@ -21,7 +21,7 @@
 .auth-logo-mark {
   width: 56px;
   height: 56px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   background: var(--primary);
   display: flex;
   align-items: center;
@@ -31,8 +31,8 @@
 
 .auth-logo-text {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.5rem;
-  margin-top: 6px;
+  font-size: var(--fs-xl);
+  margin-top: 8px;
   color: var(--text);
 }
 
@@ -55,11 +55,11 @@
   flex: 1;
   border: none;
   background: transparent;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   font-family: inherit;
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   cursor: pointer;
   transition: background .15s, color .15s;
@@ -81,7 +81,7 @@
 }
 
 .password-wrap .form-input {
-  padding-right: 50px;
+  padding-right: 52px;
 }
 
 .pw-toggle {
@@ -93,7 +93,7 @@
   background: transparent;
   font-size: 1.05rem;
   cursor: pointer;
-  padding: 10px;
+  padding: 12px;
   line-height: 1;
   border-radius: 8px;
 }
@@ -103,22 +103,22 @@
 }
 
 .pw-strength {
-  margin-top: 6px;
-  font-size: .75rem;
+  margin-top: 8px;
+  font-size: var(--fs-note);
   font-weight: 600;
   min-height: 14px;
 }
 
 .pw-strength.weak { color: var(--danger-text); }
-.pw-strength.medium { color: #d97706; }
+.pw-strength.medium { color: var(--warning-text); }
 .pw-strength.strong { color: var(--income-text); }
 
 .remember-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 14px;
-  font-size: .82rem;
+  margin-top: 16px;
+  font-size: var(--fs-note);
   color: var(--muted);
   cursor: pointer;
 }
@@ -131,15 +131,15 @@
 
 .auth-error {
   min-height: 18px;
-  font-size: .76rem;
+  font-size: var(--fs-note);
   color: var(--danger-text);
-  margin-top: 10px;
+  margin-top: 12px;
   line-height: 1.4;
 }
 
 .auth-submit {
   width: 100%;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .auth-submit:disabled {
@@ -148,12 +148,12 @@
 }
 
 .auth-reset-link {
-  margin-top: 14px;
+  margin-top: 16px;
   border: none;
   background: transparent;
   color: var(--muted);
   font-family: inherit;
-  font-size: .78rem;
+  font-size: var(--fs-note);
   text-decoration: underline;
   cursor: pointer;
   align-self: center;
@@ -162,17 +162,17 @@
 .register-exists-notice {
   display: none;
   background: var(--danger-light);
-  color: #991b1b;
-  font-size: .78rem;
-  padding: 10px 12px;
+  color: var(--danger-text);
+  font-size: var(--fs-note);
+  padding: 12px 12px;
   border-radius: var(--radius-sm);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   line-height: 1.4;
 }
 
 .auth-footnote {
   margin-top: var(--sp-lg);
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   text-align: center;
   max-width: 360px;
@@ -184,7 +184,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .auth-profile-info {
@@ -193,14 +193,14 @@
 
 .auth-profile-name {
   font-weight: 600;
-  font-size: .92rem;
+  font-size: var(--fs-body);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .auth-profile-email {
-  font-size: .76rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -210,12 +210,12 @@
 .auth-logout-btn {
   border: none;
   border-radius: var(--radius-sm);
-  padding: 9px 14px;
+  padding: 8px 16px;
   background: var(--danger-light);
   color: var(--danger-text);
   font-family: inherit;
   font-weight: 600;
-  font-size: .82rem;
+  font-size: var(--fs-body);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -228,7 +228,7 @@
 .emoji-pick-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-top: 4px;
 }
 
@@ -247,13 +247,16 @@
   padding: 0;
 }
 
-.emoji-pick-btn:hover {
-  background: #fff0f6;
-  border-color: var(--primary);
-}
-
 .emoji-pick-btn.selected {
-  background: #fff0f6;
+  background: var(--card-soft);
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(233,30,99,.15);
+}
+
+/* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
+@media (hover: hover) {
+  .emoji-pick-btn:hover {
+    background: var(--card-soft);
+    border-color: var(--primary);
+  }
 }

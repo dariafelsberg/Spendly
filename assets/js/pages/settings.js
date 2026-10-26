@@ -86,7 +86,7 @@ function renderCustomCatList() {
   }
   const renderGroup = (groupType, label, list) => {
     if (!list.length) return '';
-    const header = `<div style="font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px">${label}</div>`;
+    const header = `<div style="font-size:var(--fs-label);font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 0 4px">${label}</div>`;
     const items = list.map(c => `
       <div class="settings-item">
         <div class="settings-item-info">

@@ -262,16 +262,29 @@ function openResetConfirm() {
   document.getElementById('resetSentStep').style.display = 'none';
   document.getElementById('resetEmailInput').value = '';
   document.getElementById('resetEmailError').textContent = '';
-  document.getElementById('resetModal').classList.add('show');
+  const m = document.getElementById('resetModal');
+  _resetReturnFocus = document.activeElement;
+  m.classList.add('show');
+  m.querySelector('.modal').focus({ preventScroll: true }); // Fokus ins Fenster, damit Tab dort startet
 }
 
 function closeResetConfirm() {
   document.getElementById('resetModal').classList.remove('show');
+  if (_resetReturnFocus && _resetReturnFocus.focus) _resetReturnFocus.focus({ preventScroll: true });
 }
-// Escape schliesst das Fenster "Passwort zurücksetzen" (Login-Seite lädt main.js nicht)
+// Tastatur im Fenster "Passwort zurücksetzen" (Login-Seite lädt main.js nicht):
+// Escape schliesst, Tab bleibt im Fenster
+let _resetReturnFocus = null;
 document.addEventListener('keydown', e => {
   const m = document.getElementById('resetModal');
-  if (e.key === 'Escape' && m && m.classList.contains('show')) closeResetConfirm();
+  if (!m || !m.classList.contains('show')) return;
+  if (e.key === 'Escape') { closeResetConfirm(); return; }
+  if (e.key !== 'Tab') return;
+  const items = [...m.querySelectorAll('button, input')].filter(el => !el.disabled && el.offsetParent !== null);
+  if (!items.length) return;
+  const first = items[0], last = items[items.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !m.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !m.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
 });
 
 async function sendResetEmail() {

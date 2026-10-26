@@ -157,7 +157,7 @@ function renderDayDetail(dateObj) {
   if (realForNet.length) {
     const net = realForNet.reduce((s, e) => s + (e.type==='income' ? e.amount : -e.amount), 0);
     totalEl.textContent = (net >= 0 ? '+' : '−') + 'CHF ' + formatNum(Math.abs(net));
-    totalEl.style.color = net >= 0 ? 'var(--income)' : 'var(--danger)';
+    totalEl.style.color = net >= 0 ? 'var(--income-text)' : 'var(--danger-text)';
   } else if (real.length) {
     totalEl.textContent = 'Überweisung';
     totalEl.style.color = 'var(--muted)';

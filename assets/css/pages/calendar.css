@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  font-size: .75rem;
+  font-size: var(--fs-note);
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--muted);
@@ -28,7 +28,7 @@
   justify-content: center;
   border-radius: var(--radius-sm);
   background: var(--card-soft);
-  font-size: .82rem;
+  font-size: var(--fs-body);
   font-weight: 500;
   cursor: pointer;
   transition: background .15s;
@@ -47,7 +47,7 @@
   color: var(--primary-dark);
 }
 .cal-day.selected {
-  background: var(--primary);
+  background: var(--primary-dark); /* Weiss darauf 5.9:1 */
   color: #fff;
 }
 .cal-day-dots {
@@ -66,26 +66,26 @@
   background: var(--danger);
 }
 .cal-day-dot.transfer {
-  background: #7c93ff;
+  background: var(--transfer);
 }
 .cal-day.selected .cal-day-dot.income {
-  background: #d7ffe6;
+  background: var(--income-light);
 }
 .cal-day.selected .cal-day-dot.expense {
-  background: #ffd9d9;
+  background: var(--danger-light);
 }
 .day-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .day-detail-title {
   font-weight: 700;
-  font-size: .95rem;
+  font-size: var(--fs-body);
 }
 .day-detail-total {
-  font-size: .82rem;
+  font-size: var(--fs-note);
   color: var(--muted);
 }
 .day-detail-list .empty-tx {

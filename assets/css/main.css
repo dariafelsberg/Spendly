@@ -20,20 +20,38 @@
   --text: #2d1b24;
   --muted: #7a5c69;
   --border: #f5d7e3;
+  --track: #ddd;              /* Schalter ausgeschaltet */
+  --donut-track: #f0e8f0;     /* leerer Ring im Donut */
+  --skeleton: #f3e3ec;        /* Platzhalter beim Laden */
+  --bg-desktop: #f7edf3;      /* Seitenhintergrund ab 1024px */
+  --income-light: #d7ffe6;
+  --warning-text: #b45309;    /* "mittel" bei der Passwortstärke, 5:1 auf Weiss */
+  /* Radien: Buttons/Felder, Listenzeilen/Chips, Karten/Fenster (radius-karte im CD-Manual) */
   --radius-sm: 10px;
   --radius: 12px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-card: 16px;
   --nav-h: 64px;
   /* Elevation: Schatten nur, wo etwas über etwas anderem liegt. Flächen (Karten, Chips, Buttons) bleiben flach. */
   --shadow-raised: 0 1px 3px rgba(45, 27, 36, .12);  /* aktives Segment / Toggle-Knopf auf seiner Spur */
   --shadow-float: 0 4px 16px rgba(45, 27, 36, .14);  /* schwebende Ebenen: FAB, Modal, Menü-Panel */
   --shadow-bar: 0 -1px 6px rgba(45, 27, 36, .06);    /* fixierte Bottom-Nav über scrollendem Inhalt */
+  /* Abstände im 4er-Raster */
+  --sp-2xs: 4px;
   --sp-xs: 8px;
   --sp-sm: 12px;
   --sp-md: 16px;
   --sp-lg: 20px;
   --sp-xl: 28px;
+  --sp-2xl: 32px;
+  /* Schriftskala aus dem CD-Manual: jede Stufe mind. 20 % grösser als die vorherige */
+  --fs-label: .6875rem;  /* 11px  Labels in Grossbuchstaben (kleinste erlaubte Grösse) */
+  --fs-note: .825rem;    /* 13.2px Notizen, Hilfetexte, Chips */
+  --fs-body: 1rem;       /* 16px  Lauftext, Listen, Buttons, Felder */
+  --fs-lg: 1.25rem;      /* 20px  Zwischentitel */
+  --fs-xl: 1.5rem;       /* 24px  Abschnittstitel, Beträge */
+  --fs-2xl: 1.875rem;    /* 30px  Seitentitel */
+  --fs-3xl: 2.5rem;      /* 40px  Gesamtguthaben (Handy) */
+  --fs-hero: 3rem;       /* 48px  Gesamtguthaben (ab 480px) */
 }
 
 /* ── RESET */
@@ -144,16 +162,16 @@ button {
   display: grid;
   padding: calc(44px + env(safe-area-inset-top)) var(--sp-md) var(--sp-xl);
   margin-top: calc(-1 * env(safe-area-inset-top));
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
 }
 .settings-topbar {
   padding: calc(44px + env(safe-area-inset-top)) var(--sp-md) var(--sp-lg);
   margin-top: calc(-1 * env(safe-area-inset-top));
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
 }
 .settings-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.8rem;
+  font-size: var(--fs-2xl);
   color: #fff;
   position: relative;
   z-index: 1;
@@ -175,9 +193,9 @@ button {
   border: none;
   background: none;
   border-radius: 9px;
-  padding: 10px;
+  padding: 12px;
   font-family: inherit;
-  font-size: .84rem;
+  font-size: var(--fs-note);
   font-weight: 600;
   cursor: pointer;
   color: #fff;
@@ -251,7 +269,7 @@ button {
   height: 90%;
   height: 90dvh;
   background: var(--bg);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
   box-shadow: var(--shadow-float);
   padding: var(--sp-lg) var(--sp-lg) calc(var(--sp-lg) + env(safe-area-inset-bottom));
   display: flex;
@@ -274,7 +292,7 @@ button {
 }
 .app-menu-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
+  font-size: var(--fs-xl);
   color: var(--text);
 }
 .app-menu-list {
@@ -286,9 +304,9 @@ button {
 .app-menu-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px;
-  border-radius: var(--radius-lg);
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius);
   background: var(--card-soft);
   transition: background .15s;
 }
@@ -316,17 +334,15 @@ button {
 }
 .app-menu-item-title {
   font-weight: 600;
-  font-size: .95rem;
+  font-size: var(--fs-body);
   color: var(--text);
 }
 .app-menu-item-sub {
-  font-size: .78rem;
+  font-size: var(--fs-note);
   color: var(--muted);
 }
 @media (min-width: 768px) {
-  .app-menu-item:hover {
-      background: var(--primary-light);
-    }
+
   .app-menu-list {
       grid-template-columns: repeat(2, 1fr);
       align-content: start;
@@ -340,7 +356,7 @@ button {
       width: 65%;
       height: 100%;
       height: 100dvh;
-      border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+      border-radius: var(--radius-card) 0 0 var(--radius-card);
     }
   .app-menu-overlay .app-menu-panel {
       transform: translateX(100%);
@@ -355,7 +371,7 @@ button {
   flex: 1;
   width: 100%;
   border: 0;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--bg);
 }
 
@@ -366,14 +382,14 @@ button {
 .insights-empty {
   text-align: center;
   color: var(--muted);
-  font-size: .82rem;
+  font-size: var(--fs-note);
   padding: var(--sp-lg) 0;
 }
 
 /* ── MAIN */
 .main {
   flex: 1;
-  padding: var(--sp-md) var(--sp-md) 70px;
+  padding: var(--sp-md) var(--sp-md) 72px;
 }
 .settings-main {
   flex: 1;
@@ -383,14 +399,14 @@ button {
 /* ── CARD */
 .card {
   background: var(--card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   padding: var(--sp-md);
   margin-bottom: 12px;
 }
 
 /* ── BUDGET CARD */
 .section-label {
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: .1em;
   color: var(--muted);
@@ -437,19 +453,19 @@ button {
 }
 .tx-title {
   font-weight: 700;
-  font-size: clamp(.9rem, 2.5vw, 1.25rem);
+  font-size: var(--fs-body);
 }
 .tx-count {
   background: var(--primary-light);
   color: var(--primary-dark);
-  font-size: clamp(.75rem, 2.5vw, .9rem);
+  font-size: var(--fs-note);
   font-weight: 600;
-  padding: 2px 9px;
+  padding: 2px 8px;
   border-radius: 999px;
 }
 .tx-list {
   display: none;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 .tx-list.open {
   display: block;
@@ -486,16 +502,16 @@ button {
   text-align: center;
   padding: 16px;
   color: var(--muted);
-  font-size: .78rem;
+  font-size: var(--fs-note);
 }
 .tx-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 12px 12px;
   border-radius: var(--radius);
   background: var(--card-soft);
-  margin-bottom: 7px;
+  margin-bottom: 8px;
   transition: background .15s;
 }
 .tx-item:last-child {
@@ -516,21 +532,21 @@ button {
 }
 .tx-cat-label {
   font-weight: 600;
-  font-size: .82rem;
+  font-size: var(--fs-body);
   padding-bottom: 3px;
 }
 .tx-account-tag {
   display: inline-block;
-  font-size: clamp(.75rem, 2.5vw, .8rem);
+  font-size: var(--fs-note);
   background: var(--primary-light);
   color: var(--primary-dark);
   border-radius: 999px;
-  padding: 6px 7px;
+  padding: 8px 8px;
   font-weight: 500;
   vertical-align: middle;
 }
 .tx-note {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   white-space: normal;
   overflow-wrap: break-word;
@@ -543,7 +559,7 @@ button {
 }
 .tx-amount {
   font-weight: 700;
-  font-size: clamp(.84rem, 2.5vw, .9rem);
+  font-size: var(--fs-body);
   flex-shrink: 0;
 }
 .tx-amount.expense {
@@ -566,9 +582,9 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 5px;
+  padding: 4px 4px;
   border-radius: 7px;
-  font-size: .78rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   transition: background .15s;
 }
@@ -585,11 +601,11 @@ button {
   top: calc(16px + env(safe-area-inset-top));
   left: 50%;
   z-index: 10000;
-  padding: 10px 18px;
+  padding: 12px 20px;
   border-radius: var(--radius-sm);
   background: var(--text);
   color: #fff;
-  font-size: .85rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   box-shadow: var(--shadow-float);
   pointer-events: none;
@@ -637,7 +653,7 @@ button {
   font-size: 1.25rem;
 }
 .nav-label {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   font-weight: 500;
   letter-spacing: .03em;
 }
@@ -649,14 +665,14 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 .toggle-label {
   font-weight: 600;
-  font-size: .82rem;
+  font-size: var(--fs-body);
 }
 .toggle-sub {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   margin-top: 2px;
 }
@@ -675,7 +691,7 @@ button {
 .toggle-track {
   position: absolute;
   inset: 0;
-  background: #ddd;
+  background: var(--track);
   border-radius: 999px;
   cursor: pointer;
   transition: background .25s;
@@ -726,7 +742,7 @@ button {
   background: var(--card);
   width: 100%;
   max-width: 540px;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
   box-shadow: var(--shadow-float);
   padding: 20px var(--sp-md) 36px;
   max-height: 92vh;
@@ -743,36 +759,36 @@ button {
   height: 4px;
   background: var(--border);
   border-radius: 999px;
-  margin: 0 auto 18px;
+  margin: 0 auto 20px;
 }
 .modal-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
+  font-size: var(--fs-xl);
   margin-bottom: 2px;
 }
 .modal-sub {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 .form-group {
   margin-top: 12px;
 }
 .form-label {
   display: block;
-  font-size: .75rem;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: .08em;
   color: var(--muted);
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 .form-input {
   width: 100%;
-  padding: 12px 13px;
+  padding: 12px 12px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--fs-body);
   color: var(--text);
   background: #fff;
   outline: none;
@@ -790,7 +806,7 @@ button {
   background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237a5c69' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 13px center;
-  padding-right: 34px;
+  padding-right: 36px;
   cursor: pointer;
 }
 .form-row {
@@ -800,19 +816,19 @@ button {
 }
 .modal-actions {
   display: flex;
-  gap: 9px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 20px;
 }
 .btn-cancel {
   flex: 1;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 13px;
+  padding: 12px;
   background: var(--card-soft);
   color: var(--muted);
   font-family: inherit;
   font-weight: 600;
-  font-size: clamp(.88rem, 2.5vw, 1.1rem);
+  font-size: var(--fs-body);
   cursor: pointer;
   transition: background .15s;
 }
@@ -823,12 +839,12 @@ button {
   flex: 2;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 13px;
+  padding: 12px;
   background: var(--primary-dark); /* Weiss auf Pink-dunkel 5.9:1, auf Spendly-Pink nur 4.35:1 */
   color: #fff;
   font-family: inherit;
   font-weight: 700;
-  font-size: clamp(.88rem, 2.5vw, 1.1rem);
+  font-size: var(--fs-body);
   cursor: pointer;
   transition: opacity .15s;
 }
@@ -849,11 +865,11 @@ button {
       padding: var(--sp-lg) var(--sp-xl) var(--sp-xl);
     }
   .settings-title {
-      font-size: 2rem;
+      font-size: var(--fs-2xl);
     }
   .form-row {
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 }
 
@@ -863,7 +879,7 @@ button {
       width: 100%;
       margin: 0 auto;
       box-shadow: 0 0 0 1px var(--border);
-      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      border-radius: 0 0 var(--radius-card) var(--radius-card);
       min-height: 100vh;
       display: grid;
       grid-template-columns: repeat(8, 1fr);
@@ -874,21 +890,21 @@ button {
     .settings-topbar {
       grid-column: 1/span 8;
       grid-row: 1;
-      padding: 30px 32px 20px;
+      padding: 32px 32px 20px;
     }
   .main,
     .settings-main,
     .calendar-main {
       grid-column: 1/span 8;
       grid-row: 2;
-      padding: 22px 20px 50px;
+      padding: 24px 20px 52px;
     }
   .bottom-nav {
       width: 100%;
       left: 50%;
       right: auto;
       transform: translateX(-50%);
-      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      border-radius: 0 0 var(--radius-card) var(--radius-card);
       overflow: hidden;
     }
   .main {
@@ -906,35 +922,18 @@ button {
       padding: var(--sp-lg);
       height: 100%;
     }
-  .icon-btn:hover {
-      background: var(--primary-light);
-    }
-  .tx-item:hover {
-      background: var(--primary-light);
-    }
-  .tx-btn:hover {
-      background: rgba(0, 0, 0, .05);
-    }
-  .tx-btn.delete:hover {
-      background: var(--danger-light);
-    }
-  .btn-cancel:hover {
-      background: var(--border);
-    }
-  .btn-save:hover {
-      opacity: .88;
-    }
+
 }
 
 /* ── BREAKPOINT ≥1024px */
 @media (min-width:1024px) {
   body {
-      background: #f7edf3;
+      background: var(--bg-desktop);
     }
   .app-shell {
       width: 100%;
       margin: auto 0;
-      border-radius: var(--radius-xl);
+      border-radius: var(--radius-card);
       min-height: calc(100vh - 64px);
       box-shadow: 0 0 0 1px var(--border);
       overflow: hidden;
@@ -952,7 +951,7 @@ button {
       padding: 24px 36px 40px;
     }
   .nav-label {
-      font-size: .75rem;
+      font-size: var(--fs-note);
     }
   .nav-icon {
       font-size: 1.35rem;
@@ -995,7 +994,7 @@ button {
 }
 .cal-month-label {
   font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
+  font-size: var(--fs-xl);
   text-align: center;
   flex: 1;
   text-transform: capitalize;
@@ -1006,7 +1005,7 @@ button {
       grid-template-columns: 1fr 1fr;
       grid-template-rows: auto auto auto;
       gap: 12px;
-      padding: 22px 20px 50px;
+      padding: 24px 20px 52px;
       align-content: start;
     }
   #calendarView.calendar-main .calendar-nav {
@@ -1017,9 +1016,7 @@ button {
       flex: 1;
       text-align: center;
     }
-  .cal-nav-btn:hover {
-      background: var(--primary-light);
-    }
+
 }
 
 /* ── SAFE AREA */
@@ -1177,5 +1174,33 @@ button {
   .page-settings .ico-pencil,
   .page-settings .ico-trash {
     scale: 1.15;
+  }
+}
+
+/* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
+@media (hover: hover) {
+  .app-menu-item:hover {
+    background: var(--primary-light);
+  }
+  .icon-btn:hover {
+    background: var(--primary-light);
+  }
+  .tx-item:hover {
+    background: var(--primary-light);
+  }
+  .tx-btn:hover {
+    background: rgba(0, 0, 0, .05);
+  }
+  .tx-btn.delete:hover {
+    background: var(--danger-light);
+  }
+  .btn-cancel:hover {
+    background: var(--border);
+  }
+  .btn-save:hover {
+    opacity: .88;
+  }
+  .cal-nav-btn:hover {
+    background: var(--primary-light);
   }
 }

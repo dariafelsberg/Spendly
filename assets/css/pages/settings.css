@@ -16,7 +16,7 @@ html.embed-mode .settings-main {
 /* ── SETTINGS PAGE */
 .settings-section {
   background: var(--card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   padding: var(--sp-md);
   margin-bottom: 12px;
 }
@@ -24,7 +24,7 @@ html.embed-mode .settings-main {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 .settings-section-icon {
   width: 40px;
@@ -39,23 +39,23 @@ html.embed-mode .settings-main {
 }
 .settings-section-title {
   font-weight: 700;
-  font-size: .9rem;
+  font-size: var(--fs-body);
 }
 .settings-section-sub {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   margin-top: 2px;
 }
 .settings-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
 }
 .settings-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 12px;
+  gap: 12px;
+  padding: 12px 12px;
   background: var(--card-soft);
   border-radius: var(--radius);
 }
@@ -65,13 +65,13 @@ html.embed-mode .settings-main {
 }
 .settings-item-name {
   font-weight: 600;
-  font-size: .82rem;
+  font-size: var(--fs-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .settings-item-val {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   margin-top: 1px;
 }
@@ -81,14 +81,14 @@ html.embed-mode .settings-main {
 }
 .settings-add-btn {
   width: 100%;
-  margin-top: 10px;
-  padding: 11px;
+  margin-top: 12px;
+  padding: 12px;
   border: 1.5px dashed var(--border);
   border-radius: var(--radius);
   background: none;
   color: var(--primary-dark);
   font-family: inherit;
-  font-size: .82rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   cursor: pointer;
   transition: background .15s;
@@ -103,7 +103,7 @@ html.embed-mode .settings-main {
 }
 .budget-setting-val {
   font-family: 'DM Sans', sans-serif;
-  font-size: 1.5rem;
+  font-size: var(--fs-xl);
   color: var(--primary-dark);
 }
 
@@ -112,9 +112,7 @@ html.embed-mode .settings-main {
   .settings-section {
       padding: var(--sp-lg);
     }
-  .settings-add-btn:hover {
-      background: var(--primary-light);
-    }
+
 }
 
 /* ── ZWEISPALTIG: Monatliche Einnahmen und Ausgaben nebeneinander, alle
@@ -160,14 +158,21 @@ html.embed-mode .settings-main {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 6px 16px;
+  gap: 8px 16px;
   padding: var(--sp-md) 0 var(--sp-sm);
 }
 .legal-links a {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   color: var(--muted);
   text-decoration: none;
 }
-.legal-links a:hover {
-  text-decoration: underline;
+
+/* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
+@media (hover: hover) {
+  .settings-add-btn:hover {
+    background: var(--primary-light);
+  }
+  .legal-links a:hover {
+    text-decoration: underline;
+  }
 }

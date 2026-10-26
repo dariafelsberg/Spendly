@@ -5,7 +5,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   height: 200px;
   margin-top: var(--sp-md);
 }
@@ -30,7 +30,7 @@
   background: var(--border);
 }
 .insights-bar-value {
-  font-size: .75rem;
+  font-size: var(--fs-note);
   font-weight: 600;
   color: var(--muted);
   margin-bottom: 4px;
@@ -65,7 +65,7 @@
 }
 .insights-bar-label {
   margin-top: 8px;
-  font-size: .75rem;
+  font-size: var(--fs-note);
   font-weight: 500;
   color: var(--muted);
 }
@@ -78,7 +78,7 @@
 .insights-cat-group {
   border-radius: var(--radius);
   background: var(--card-soft);
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 .insights-cat-group:last-child {
   margin-bottom: 0;
@@ -86,8 +86,8 @@
 .insights-cat-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 12px;
+  gap: 12px;
+  padding: 12px 12px;
   cursor: pointer;
   user-select: none;
 }
@@ -95,7 +95,7 @@
   flex: 1;
   min-width: 0;
   font-weight: 600;
-  font-size: clamp(.84rem, 2.5vw, .9rem);
+  font-size: var(--fs-body);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -103,15 +103,15 @@
 .insights-cat-count {
   background: var(--primary-light);
   color: var(--primary-dark);
-  font-size: .75rem;
+  font-size: var(--fs-note);
   font-weight: 600;
-  padding: 1px 7px;
+  padding: 1px 8px;
   border-radius: 999px;
   flex-shrink: 0;
 }
 .insights-cat-total {
   font-weight: 700;
-  font-size: clamp(.84rem, 2.5vw, .9rem);
+  font-size: var(--fs-body);
   flex-shrink: 0;
 }
 .insights-cat-chevron {
@@ -138,7 +138,7 @@
 @media (min-width:768px) {
   #analysisView.calendar-main {
       display: block;
-      padding: 22px 20px 50px;
+      padding: 24px 20px 52px;
     }
   #analysisView.calendar-main .card {
       height: auto;
