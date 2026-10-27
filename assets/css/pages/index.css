@@ -241,7 +241,21 @@
   cursor: pointer;
   min-width: 0;
 }
+/* Kategorie mit Ausgaben: Farben kommen aus renderDonut() (--cat-bg, --cat-border) */
+.cat-chip.used {
+  background: var(--cat-bg);
+  border-color: var(--cat-border);
+  transition: background .15s;
+}
+/* Gedrückt: Hintergrund in der Farbe des Rahmens, Punkt wird hell */
+.cat-chip.used:active {
+  background: var(--cat-border);
+}
+.cat-chip.used:active .cat-dot {
+  opacity: .4;
+}
 .cat-dot {
+  transition: opacity .15s;
   width: 8px;
   height: 8px;
   border-radius: 50%;

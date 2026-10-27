@@ -154,13 +154,16 @@ function renderDonut() {
   });
   document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
     const amt = catTotals[c.name] || 0;
-    return `<div class="cat-chip" data-cat="${c.name.replace(/"/g, '&quot;')}" style="${amt ? `background:${c.color}15;border-color:${c.color}44` : ''}">
+    return `<div class="cat-chip${amt ? ' used' : ''}" data-cat="${c.name.replace(/"/g, '&quot;')}" style="${amt ? `--cat-bg:${c.color}15;--cat-border:${c.color}44` : ''}">
       <div class="cat-dot" style="background:${amt ? c.color : '#ddd'}"></div>
       <span class="cat-name">${catIcon(c)} ${c.name}</span>
       ${amt ? `<span class="cat-amount expense">−${formatNum(amt)}</span>` : ''}
     </div>`;
   }).join('');
 }
+
+// Leerer Touch-Listener: sonst zeigt Safari auf dem iPhone den gedrückten Zustand (:active) nicht an
+document.getElementById('categoriesGrid').addEventListener('touchstart', () => {}, { passive: true });
 
 // Klick auf eine Kategorie lässt ihren Bogen im Donut pulsieren.
 document.getElementById('categoriesGrid').addEventListener('click', e => {
