@@ -367,6 +367,21 @@ button {
 }
 
 /* ── APP MENU SETTINGS FRAME ── */
+/* Fenster aus den Einstellungen liegt über allem: iframe füllt den ganzen Bildschirm (siehe _updateEmbedModal) */
+.app-menu-overlay.frame-modal-open .app-menu-panel {
+  transform: none;
+  transition: none;
+  overflow: visible;
+}
+.app-menu-overlay.frame-modal-open .app-menu-settings-frame {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 0;
+  background: transparent;
+}
 .app-menu-settings-frame {
   flex: 1;
   width: 100%;

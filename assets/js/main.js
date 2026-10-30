@@ -533,6 +533,8 @@ document.addEventListener('DOMContentLoaded', initModalSwipe);
 // sonst trotzdem scrollt. Die Scrollposition wird gemerkt und zurückgesetzt.
 let _scrollLockY = null;
 function _updateScrollLock() {
+  const frame = document.documentElement.classList.contains('embed-mode') ? window.frameElement : null;
+  if (frame) { _updateEmbedModal(frame); return; }
   const open = !!document.querySelector('.modal-overlay.show, .app-menu-overlay.show');
   const b = document.body;
   if (open && _scrollLockY === null) {
@@ -542,6 +544,33 @@ function _updateScrollLock() {
     Object.assign(b.style, { position: '', top: '', left: '', right: '', width: '' });
     window.scrollTo(0, _scrollLockY);
     _scrollLockY = null;
+  }
+}
+// Einstellungen im Menü-Fenster (iframe): Damit ein Fenster über allem liegt, wird der
+// iframe so lange bildschirmfüllend. Die Einstellungen bleiben dabei genau an ihrer Stelle.
+let _embedModalTimer = null;
+function _updateEmbedModal(frame) {
+  const open = !!document.querySelector('.modal-overlay.show');
+  const root = document.documentElement, b = document.body, shell = document.querySelector('.app-shell');
+  const menu = frame.closest('.app-menu-overlay');
+  clearTimeout(_embedModalTimer);
+  if (open && _scrollLockY === null) {
+    const rect = frame.getBoundingClientRect();
+    _scrollLockY = window.scrollY;
+    Object.assign(b.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px', width: root.clientWidth + 'px', height: rect.height + 'px', minHeight: '0' });
+    shell.style.marginTop = -_scrollLockY + 'px';
+    root.classList.add('embed-modal-open');
+    menu.classList.add('frame-modal-open');
+  } else if (!open && _scrollLockY !== null) {
+    // Erst nach dem Ausblenden zurück, sonst wird das Fenster abgeschnitten
+    _embedModalTimer = setTimeout(() => {
+      menu.classList.remove('frame-modal-open');
+      root.classList.remove('embed-modal-open');
+      Object.assign(b.style, { position: '', left: '', top: '', width: '', height: '', minHeight: '' });
+      shell.style.marginTop = '';
+      window.scrollTo(0, _scrollLockY);
+      _scrollLockY = null;
+    }, 220);
   }
 }
 document.addEventListener('DOMContentLoaded', () => {

@@ -13,6 +13,15 @@ html.embed-mode .settings-main {
   padding: 0;
 }
 
+html.embed-modal-open {
+  overflow: hidden;
+  background: transparent;
+}
+html.embed-modal-open body {
+  overflow: hidden;
+  background: transparent;
+}
+
 /* ── SETTINGS PAGE */
 .settings-section {
   background: var(--card);
