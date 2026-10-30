@@ -306,6 +306,14 @@
 .profile-field:focus-within {
   background: var(--card-soft);
 }
+/* Stift: zeigt, dass das Feld geändert werden kann */
+.profile-field .ico {
+  color: var(--muted);
+  cursor: text;
+}
+.profile-field:focus-within .ico {
+  color: var(--primary);
+}
 .profile-field-label {
   flex-shrink: 0;
   font-size: var(--fs-note);
@@ -322,9 +330,6 @@
   font-family: inherit;
   font-size: var(--fs-body);
   text-align: right;
-}
-.profile-field-input[readonly] {
-  color: var(--muted);
 }
 .profile-fields + .auth-error:empty {
   display: none;

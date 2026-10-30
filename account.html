@@ -35,11 +35,11 @@
     <div class="profile-fields">
       <label class="profile-field">
         <span class="profile-field-label">Benutzername</span>
-        <input class="profile-field-input" type="text" id="profileUsername" autocomplete="username" minlength="3" oninput="updateProfileAvatar()">
+        <input class="profile-field-input" type="text" id="profileUsername" autocomplete="username" minlength="3" oninput="updateProfileAvatar()"><span class="ico ico-pencil" aria-hidden="true"></span>
       </label>
       <label class="profile-field">
         <span class="profile-field-label">E-Mail</span>
-        <input class="profile-field-input" type="email" id="profileEmail" readonly tabindex="-1">
+        <input class="profile-field-input" type="email" id="profileEmail" autocomplete="email" inputmode="email"><span class="ico ico-pencil" aria-hidden="true"></span>
       </label>
     </div>
     <div class="auth-error" id="profileError"></div>

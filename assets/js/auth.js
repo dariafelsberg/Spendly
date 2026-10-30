@@ -46,12 +46,13 @@ function logout() {
 
 // ── PROFIL (Einstellungen) ──────────────────────────────────
 // ── ACCOUNT BEARBEITEN (Einstellungen) ──────────────────────
-// Der Benutzername liegt in den Metadaten des Logins. Die E-Mail-Adresse
-// wird nur angezeigt: Sie ist das Login und lässt sich hier nicht ändern.
+// Der Benutzername liegt in den Metadaten des Logins. Eine neue E-Mail-Adresse
+// gilt erst, wenn sie über den Link in der Bestätigungs-Mail bestätigt wurde.
 function updateProfileAvatar() {
   const name = document.getElementById('profileUsername').value.trim();
   document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
 }
+let _profileEmail = '';
 function initProfilePage() {
   if (!document.getElementById('profileUsername')) return;
   sb.auth.getSession()
@@ -59,13 +60,16 @@ function initProfilePage() {
       const user = data.session && data.session.user;
       if (!user) return;
       document.getElementById('profileUsername').value = (user.user_metadata && user.user_metadata.username) || '';
-      document.getElementById('profileEmail').value = user.email || '';
+      _profileEmail = user.email || '';
+      document.getElementById('profileEmail').value = _profileEmail;
       updateProfileAvatar();
     })
     .catch(() => {});
 }
 function saveProfile() {
   const username = document.getElementById('profileUsername').value.trim();
+  const emailEl = document.getElementById('profileEmail');
+  const email = emailEl.value.trim().toLowerCase();
   const btn = document.getElementById('profileSaveBtn');
   const errEl = document.getElementById('profileError');
   errEl.textContent = '';
@@ -73,14 +77,22 @@ function saveProfile() {
     errEl.textContent = 'Der Benutzername braucht mindestens 3 Zeichen.';
     return;
   }
+  if (!email || !emailEl.checkValidity()) {
+    errEl.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
+    return;
+  }
+  const emailChanged = email !== _profileEmail.toLowerCase();
   btn.disabled = true;
-  sb.auth.updateUser({ data: { username } })
+  sb.auth.updateUser(emailChanged ? { email, data: { username } } : { data: { username } })
     .then(({ error }) => {
       if (error) throw error;
-      showToast('Gespeichert');
+      if (emailChanged) showToast('Bestätigungs-Mail gesendet', { text: 'Bestätige die neue Adresse über den Link in der Mail.' });
+      else showToast('Gespeichert');
     })
-    .catch(() => {
-      errEl.textContent = 'Das hat nicht geklappt. Bitte prüfe deine Verbindung und versuche es erneut.';
+    .catch(error => {
+      errEl.textContent = error && error.code === 'email_exists'
+        ? 'Diese E-Mail-Adresse wird schon verwendet.'
+        : 'Das hat nicht geklappt. Bitte prüfe deine Verbindung und versuche es erneut.';
     })
     .finally(() => { btn.disabled = false; });
 }
@@ -458,3 +470,6 @@ async function sendResetEmail() {
 // Profilinfos in den Einstellungen befüllen, falls vorhanden
 renderAuthProfile();
 initProfilePage();
+
+// Link aus der Mail "Passwort geändert": Fenster "Passwort zurücksetzen" gleich öffnen
+if (onLoginPage && new URLSearchParams(location.search).get('reset') === '1') openResetConfirm();
