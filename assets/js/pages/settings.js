@@ -201,8 +201,11 @@ function deleteAccount(id) {
     state.recurringTransfers = state.recurringTransfers.filter(r => r.fromAccountId !== id && r.toAccountId !== id);
   }, 'Konto gelöscht', 'Überweisungen mit diesem Konto wurden auch gelöscht.');
 }
+// Beispiele für das Feld Bezeichnung, passend zur Art
+const RECURRING_EXAMPLES = { income: ['Lohn', 'Nebenjob'], expense: ['Miete', 'Krankenkasse'], transfer: ['Sparkonto', 'Säule 3a'] };
 function openRecurringModal(type, editId = null) {
   state.recurringType = type; state.recurringEditId = editId;
+  document.getElementById('recurringName').placeholder = 'z.B. ' + RECURRING_EXAMPLES[type].join(', ') + '…';
   document.getElementById('recurringModalTitle').textContent =
     (editId ? 'Bearbeiten' : 'Hinzufügen') + ' – ' + (type === 'income' ? 'Einnahme' : type === 'transfer' ? 'Überweisung' : 'Ausgabe');
 
@@ -267,7 +270,7 @@ function saveRecurring() {
   const name      = document.getElementById('recurringName').value.trim();
   const amount    = parseAmount(document.getElementById('recurringAmount').value);
   const startDate = document.getElementById('recurringStartDate').value || dateKey(new Date());
-  if (!name) { showError('Nicht gespeichert', 'Die Bezeichnung fehlt. Gib eine Bezeichnung ein, zum Beispiel Miete.', 'recurringName'); return; }
+  if (!name) { showError('Nicht gespeichert', `Die Bezeichnung fehlt. Gib eine Bezeichnung ein, zum Beispiel ${RECURRING_EXAMPLES[state.recurringType][0]}.`, 'recurringName'); return; }
   if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'recurringAmount'); return; }
 
   if (state.recurringType === 'transfer') {
