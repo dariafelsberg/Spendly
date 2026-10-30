@@ -94,6 +94,61 @@ function saveProfile() {
     .finally(() => { btn.disabled = false; });
 }
 
+// ── PASSWORT ÄNDERN (Einstellungen) ─────────────────────────
+// Das aktuelle Passwort wird zuerst geprüft, damit niemand an einem
+// entsperrten Gerät das Passwort einfach ändern kann.
+const PW_FIELDS = ['pwCurrent', 'pwNew', 'pwNewConfirm'];
+function openPasswordModal() {
+  PW_FIELDS.forEach(id => {
+    const input = document.getElementById(id);
+    input.value = '';
+    input.type = 'password';
+    input.parentElement.querySelector('.pw-toggle').innerHTML = '<span class="ico ico-eye_open"></span>';
+  });
+  showPwStrength('pwNew', 'pwNewStrength');
+  document.getElementById('passwordError').textContent = '';
+  document.getElementById('passwordModal').classList.add('show');
+}
+function closePasswordModal() {
+  document.getElementById('passwordModal').classList.remove('show');
+}
+async function savePassword() {
+  const current = document.getElementById('pwCurrent').value;
+  const password = document.getElementById('pwNew').value;
+  const confirm = document.getElementById('pwNewConfirm').value;
+  const errEl = document.getElementById('passwordError');
+  const btn = document.getElementById('passwordSaveBtn');
+  errEl.textContent = '';
+  if (!current) { errEl.textContent = 'Bitte gib dein aktuelles Passwort ein.'; return; }
+  if (password.length < 8) { errEl.textContent = 'Passwort muss mindestens 8 Zeichen lang sein.'; return; }
+  if (password !== confirm) { errEl.textContent = 'Passwörter stimmen nicht überein.'; return; }
+  btn.disabled = true;
+  try {
+    const { data } = await sb.auth.getSession();
+    const email = data.session && data.session.user.email;
+    const check = await sb.auth.signInWithPassword({ email, password: current });
+    if (check.error) {
+      errEl.textContent = check.error.status === 400
+        ? 'Das aktuelle Passwort stimmt nicht.'
+        : 'Verbindungsfehler. Bitte erneut versuchen.';
+      return;
+    }
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) {
+      errEl.textContent = error.code === 'same_password'
+        ? 'Das neue Passwort muss sich vom alten unterscheiden.'
+        : 'Das Passwort konnte nicht geändert werden.';
+      return;
+    }
+    closePasswordModal();
+    showToast('Passwort geändert');
+  } catch (e) {
+    errEl.textContent = 'Verbindungsfehler. Bitte erneut versuchen.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // ── SPENDLY-KONTO LÖSCHEN (Einstellungen) ───────────────────
 // Die Datenbankfunktion delete_my_account() löscht das Login; die Daten in
 // user_data werden dadurch mitgelöscht (siehe supabase/schema.sql).
@@ -191,9 +246,10 @@ function togglePw(inputId, btn) {
   btn.innerHTML = `<span class="ico ico-${show ? 'eye_closed' : 'eye_open'}"></span>`;
 }
 
-function updatePwStrength() {
-  const val = document.getElementById('regPassword').value;
-  const el = document.getElementById('pwStrength');
+function updatePwStrength() { showPwStrength('regPassword', 'pwStrength'); }
+function showPwStrength(inputId, outputId) {
+  const val = document.getElementById(inputId).value;
+  const el = document.getElementById(outputId);
   if (!val) { el.textContent = ''; el.className = 'pw-strength'; return; }
   let score = 0;
   if (val.length >= 8) score++;
