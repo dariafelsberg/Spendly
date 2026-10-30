@@ -219,36 +219,56 @@
   opacity: .8;
 }
 
-/* Konto löschen: umrandet, füllt sich beim Darüberfahren und Drücken mit Rot */
-.auth-delete-btn {
+/* Zeile "Account bearbeiten" in den Einstellungen */
+.auth-edit-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 8px;
   width: 100%;
-  margin-top: var(--sp-md);
-  padding: 11px 16px;
-  border: 1.5px solid var(--danger-light);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--danger-text);
+  margin-top: var(--sp-sm);
+  padding: var(--sp-sm) 0 0;
+  border: none;
+  border-top: 1px solid var(--border);
+  background: none;
+  color: var(--text);
   font-family: inherit;
   font-size: var(--fs-body);
-  font-weight: 600;
   cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
+}
+.auth-edit-btn .ico {
+  color: var(--muted);
+}
+.auth-edit-btn:active {
+  color: var(--primary);
+}
+/* Konto löschen: bewusst unauffällig ganz unten im Fenster "Account bearbeiten" */
+.auth-delete-btn {
+  display: block;
+  width: 100%;
+  margin-top: var(--sp-md);
+  padding: 8px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: var(--fs-note);
+  cursor: pointer;
 }
 .auth-delete-btn:active {
-  background: var(--danger-text);
-  border-color: var(--danger-text);
-  color: #fff;
+  color: var(--danger-text);
 }
 @media (hover: hover) {
-  .auth-delete-btn:hover {
-    background: var(--danger-text);
-    border-color: var(--danger-text);
-    color: #fff;
+  .auth-edit-btn:hover {
+    color: var(--primary);
   }
+  .auth-delete-btn:hover {
+    color: var(--danger-text);
+  }
+}
+.form-input[readonly] {
+  background: var(--card-soft);
+  color: var(--muted);
 }
 .btn-save.btn-danger {
   background: var(--danger-text);

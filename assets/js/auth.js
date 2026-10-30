@@ -45,6 +45,49 @@ function logout() {
 }
 
 // ── PROFIL (Einstellungen) ──────────────────────────────────
+// ── ACCOUNT BEARBEITEN (Einstellungen) ──────────────────────
+// Der Benutzername liegt in den Metadaten des Logins. Die E-Mail-Adresse
+// wird nur angezeigt: Sie ist das Login und lässt sich hier nicht ändern.
+function openProfileModal() {
+  document.getElementById('profileError').textContent = '';
+  document.getElementById('profileUsername').value = '';
+  document.getElementById('profileEmail').value = '';
+  document.getElementById('profileModal').classList.add('show');
+  sb.auth.getSession()
+    .then(({ data }) => {
+      const user = data.session && data.session.user;
+      if (!user) return;
+      document.getElementById('profileUsername').value = (user.user_metadata && user.user_metadata.username) || '';
+      document.getElementById('profileEmail').value = user.email || '';
+    })
+    .catch(() => {});
+}
+function closeProfileModal() {
+  document.getElementById('profileModal').classList.remove('show');
+}
+function saveProfile() {
+  const username = document.getElementById('profileUsername').value.trim();
+  const btn = document.getElementById('profileSaveBtn');
+  const errEl = document.getElementById('profileError');
+  errEl.textContent = '';
+  if (username.length < 3) {
+    errEl.textContent = 'Der Benutzername braucht mindestens 3 Zeichen.';
+    return;
+  }
+  btn.disabled = true;
+  sb.auth.updateUser({ data: { username } })
+    .then(({ error }) => {
+      if (error) throw error;
+      renderAuthProfile();
+      closeProfileModal();
+      showToast('Gespeichert');
+    })
+    .catch(() => {
+      errEl.textContent = 'Das hat nicht geklappt. Bitte prüfe deine Verbindung und versuche es erneut.';
+    })
+    .finally(() => { btn.disabled = false; });
+}
+
 // ── SPENDLY-KONTO LÖSCHEN (Einstellungen) ───────────────────
 // Die Datenbankfunktion delete_my_account() löscht das Login; die Daten in
 // user_data werden dadurch mitgelöscht (siehe supabase/schema.sql).
