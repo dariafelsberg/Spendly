@@ -52,12 +52,8 @@ function updateProfileAvatar() {
   const name = document.getElementById('profileUsername').value.trim();
   document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
 }
-function openProfileModal() {
-  document.getElementById('profileError').textContent = '';
-  document.getElementById('profileUsername').value = '';
-  document.getElementById('profileEmail').value = '';
-  updateProfileAvatar();
-  document.getElementById('profileModal').classList.add('show');
+function initProfilePage() {
+  if (!document.getElementById('profileUsername')) return;
   sb.auth.getSession()
     .then(({ data }) => {
       const user = data.session && data.session.user;
@@ -67,9 +63,6 @@ function openProfileModal() {
       updateProfileAvatar();
     })
     .catch(() => {});
-}
-function closeProfileModal() {
-  document.getElementById('profileModal').classList.remove('show');
 }
 function saveProfile() {
   const username = document.getElementById('profileUsername').value.trim();
@@ -84,8 +77,6 @@ function saveProfile() {
   sb.auth.updateUser({ data: { username } })
     .then(({ error }) => {
       if (error) throw error;
-      renderAuthProfile();
-      closeProfileModal();
       showToast('Gespeichert');
     })
     .catch(() => {
@@ -466,3 +457,4 @@ async function sendResetEmail() {
 
 // Profilinfos in den Einstellungen befüllen, falls vorhanden
 renderAuthProfile();
+initProfilePage();

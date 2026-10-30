@@ -54,7 +54,7 @@
         </div>
         <button class="auth-logout-btn" onclick="logout()">Abmelden</button>
       </div>
-      <button class="auth-edit-btn" onclick="openProfileModal()">Account bearbeiten<span class="ico ico-arrow-right" aria-hidden="true"></span></button>
+      <a class="auth-edit-btn" href="account.html" target="_top">Account bearbeiten<span class="ico ico-arrow-right" aria-hidden="true"></span></a>
     </div>
 
     <!-- KONTEN -->
@@ -178,82 +178,6 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>
       <button class="btn-save" onclick="saveBudget()">Speichern</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MODAL: ACCOUNT BEARBEITEN ══ -->
-<div class="modal-overlay" id="profileModal" onclick="if(event.target===this) closeProfileModal()">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle" tabindex="-1">
-    <div class="modal-handle"></div>
-    <div class="modal-title profile-title" id="profileModalTitle">Account bearbeiten</div>
-    <div class="profile-avatar" id="profileAvatar" aria-hidden="true"></div>
-    <div class="profile-fields">
-      <label class="profile-field">
-        <span class="profile-field-label">Benutzername</span>
-        <input class="profile-field-input" type="text" id="profileUsername" autocomplete="username" minlength="3" oninput="updateProfileAvatar()">
-      </label>
-      <label class="profile-field">
-        <span class="profile-field-label">E-Mail</span>
-        <input class="profile-field-input" type="email" id="profileEmail" readonly tabindex="-1">
-      </label>
-    </div>
-    <div class="auth-error" id="profileError"></div>
-    <button class="auth-edit-btn" onclick="closeProfileModal(); openPasswordModal()">Passwort ändern<span class="ico ico-arrow-right" aria-hidden="true"></span></button>
-    <button class="btn-save profile-save" id="profileSaveBtn" onclick="saveProfile()">Speichern</button>
-    <button class="auth-delete-btn" onclick="closeProfileModal(); openDeleteAccountModal()">Konto löschen</button>
-  </div>
-</div>
-
-<!-- ══ MODAL: PASSWORT ÄNDERN ══ -->
-<div class="modal-overlay" id="passwordModal" onclick="if(event.target===this) closePasswordModal()">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" tabindex="-1">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="passwordModalTitle">Passwort ändern</div>
-    <div class="form-group">
-      <label class="form-label" for="pwCurrent">Aktuelles Passwort</label>
-      <div class="password-wrap">
-        <input class="form-input" type="password" id="pwCurrent" autocomplete="current-password">
-        <button type="button" class="pw-toggle" onclick="togglePw('pwCurrent', this)" aria-label="Passwort anzeigen"><span class="ico ico-eye_open"></span></button>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="pwNew">Neues Passwort</label>
-      <div class="password-wrap">
-        <input class="form-input" type="password" id="pwNew" autocomplete="new-password" minlength="8" oninput="showPwStrength('pwNew', 'pwNewStrength')">
-        <button type="button" class="pw-toggle" onclick="togglePw('pwNew', this)" aria-label="Passwort anzeigen"><span class="ico ico-eye_open"></span></button>
-      </div>
-      <div class="pw-strength" id="pwNewStrength"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="pwNewConfirm">Neues Passwort bestätigen</label>
-      <div class="password-wrap">
-        <input class="form-input" type="password" id="pwNewConfirm" autocomplete="new-password" minlength="8">
-        <button type="button" class="pw-toggle" onclick="togglePw('pwNewConfirm', this)" aria-label="Passwort anzeigen"><span class="ico ico-eye_open"></span></button>
-      </div>
-    </div>
-    <div class="auth-error" id="passwordError"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closePasswordModal()">Abbrechen</button>
-      <button class="btn-save" id="passwordSaveBtn" onclick="savePassword()">Speichern</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MODAL: SPENDLY-KONTO LÖSCHEN ══ -->
-<div class="modal-overlay" id="deleteAccountModal" onclick="if(event.target===this) closeDeleteAccountModal()">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteAccountModalTitle" tabindex="-1">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="deleteAccountModalTitle">Konto löschen</div>
-    <div class="modal-sub">Dein Spendly-Konto und alle deine Daten werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.</div>
-    <div class="form-group">
-      <label class="form-label" for="deleteAccountInput">Tippe LÖSCHEN zur Bestätigung</label>
-      <input class="form-input" type="text" id="deleteAccountInput" autocomplete="off" autocapitalize="characters" oninput="updateDeleteAccountBtn()">
-    </div>
-    <div class="auth-error" id="deleteAccountError"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeDeleteAccountModal()">Abbrechen</button>
-      <button class="btn-save btn-danger" id="deleteAccountBtn" onclick="confirmDeleteAccount()" disabled>Endgültig löschen</button>
     </div>
   </div>
 </div>
