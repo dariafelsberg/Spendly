@@ -145,3 +145,30 @@ $$;
 
 revoke all on function public.claim_legacy_data() from public, anon;
 grant execute on function public.claim_legacy_data() to authenticated;
+
+-- ── RPC: eigenes Konto endgültig löschen ────────────────────
+-- Löscht nur das Konto des Aufrufers. public.user_data verschwindet durch
+-- "on delete cascade" mit. Noch nicht übernommene Daten vom alten Server
+-- (legacy_data) hängen an der E-Mail-Adresse und werden deshalb separat gelöscht.
+create or replace function public.delete_my_account()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  uid  uuid := auth.uid();
+  mail text;
+begin
+  if uid is null then
+    raise exception 'not authenticated';
+  end if;
+
+  select lower(email) into mail from auth.users where id = uid;
+  delete from public.legacy_data where email = mail;
+  delete from auth.users where id = uid;
+end;
+$$;
+
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;

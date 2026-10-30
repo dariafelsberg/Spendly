@@ -219,6 +219,27 @@
   opacity: .8;
 }
 
+/* Konto löschen: bewusst unauffällig unter dem Abmelden-Knopf */
+.auth-delete-btn {
+  display: block;
+  margin: var(--sp-sm) 0 0 auto;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--danger-text);
+  font-family: inherit;
+  font-size: var(--fs-note);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.btn-save.btn-danger {
+  background: var(--danger-text);
+}
+.btn-save.btn-danger:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 /* ── EMOJI PICKER (Eigene Kategorien) ── */
 .emoji-pick-grid {
   display: flex;

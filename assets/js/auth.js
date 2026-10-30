@@ -45,6 +45,44 @@ function logout() {
 }
 
 // ── PROFIL (Einstellungen) ──────────────────────────────────
+// ── SPENDLY-KONTO LÖSCHEN (Einstellungen) ───────────────────
+// Die Datenbankfunktion delete_my_account() löscht das Login; die Daten in
+// user_data werden dadurch mitgelöscht (siehe supabase/schema.sql).
+function _deleteAccountInput() { return document.getElementById('deleteAccountInput'); }
+function updateDeleteAccountBtn() {
+  document.getElementById('deleteAccountBtn').disabled = _deleteAccountInput().value.trim().toUpperCase() !== 'LÖSCHEN';
+}
+function openDeleteAccountModal() {
+  _deleteAccountInput().value = '';
+  document.getElementById('deleteAccountError').textContent = '';
+  updateDeleteAccountBtn();
+  document.getElementById('deleteAccountModal').classList.add('show');
+}
+function closeDeleteAccountModal() {
+  document.getElementById('deleteAccountModal').classList.remove('show');
+}
+function confirmDeleteAccount() {
+  const btn = document.getElementById('deleteAccountBtn');
+  const errEl = document.getElementById('deleteAccountError');
+  btn.disabled = true;
+  errEl.textContent = '';
+  sb.rpc('delete_my_account')
+    .then(({ error }) => {
+      if (error) throw error;
+      // Lokale Kopie entfernen. budgetApp_owner bleibt absichtlich stehen: So
+      // wird ein Rest der Daten nie in ein später erstelltes Konto hochgeladen.
+      ['budgetApp_v2', 'budgetApp_unsynced', 'spendly_lastEntry', 'spendly_hideBalance'].forEach(k => {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      _authStorage.removeItem(SB_STORAGE_KEY);
+      window.top.location.href = 'login.html';
+    })
+    .catch(() => {
+      errEl.textContent = 'Das Konto konnte nicht gelöscht werden. Bitte prüfe deine Verbindung und versuche es erneut.';
+      btn.disabled = false;
+    });
+}
+
 // Der Seitenschutz läuft über requireLogin() im <head>; hier werden
 // nur Benutzername und E-Mail in den Einstellungen angezeigt.
 function renderAuthProfile() {

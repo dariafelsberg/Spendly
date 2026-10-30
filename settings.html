@@ -54,6 +54,7 @@
         </div>
         <button class="auth-logout-btn" onclick="logout()">Abmelden</button>
       </div>
+      <button class="auth-delete-btn" onclick="openDeleteAccountModal()">Konto löschen</button>
     </div>
 
     <!-- KONTEN -->
@@ -177,6 +178,24 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>
       <button class="btn-save" onclick="saveBudget()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: SPENDLY-KONTO LÖSCHEN ══ -->
+<div class="modal-overlay" id="deleteAccountModal" onclick="if(event.target===this) closeDeleteAccountModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteAccountModalTitle" tabindex="-1">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="deleteAccountModalTitle">Konto löschen</div>
+    <div class="modal-sub">Dein Spendly-Konto und alle deine Daten werden endgültig gelöscht. Das kann nicht rückgängig gemacht werden.</div>
+    <div class="form-group">
+      <label class="form-label" for="deleteAccountInput">Tippe LÖSCHEN zur Bestätigung</label>
+      <input class="form-input" type="text" id="deleteAccountInput" autocomplete="off" autocapitalize="characters" oninput="updateDeleteAccountBtn()">
+    </div>
+    <div class="auth-error" id="deleteAccountError"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteAccountModal()">Abbrechen</button>
+      <button class="btn-save btn-danger" id="deleteAccountBtn" onclick="confirmDeleteAccount()" disabled>Endgültig löschen</button>
     </div>
   </div>
 </div>
