@@ -496,7 +496,7 @@ function deleteEntry(id) {
 // ── FENSTER NACH UNTEN WISCHEN (Touch-Geräte)
 // Das Fenster folgt dem Finger; weit genug oder schnell genug nach unten gezogen schliesst es.
 function initModalSwipe() {
-  document.querySelectorAll('.modal-overlay .modal').forEach(sheet => {
+  document.querySelectorAll('.modal-overlay:not(.modal-center) .modal').forEach(sheet => {
     const overlay = sheet.closest('.modal-overlay');
     let startY = 0, startT = 0, dy = 0, dragging = false;
     sheet.addEventListener('touchstart', e => {

@@ -876,6 +876,20 @@ button {
   transform: none; /* nicht translateY(0): ein bleibendes transform kann auf iOS die Tipp-Ziele im Fenster verschieben */
   transition: transform .26s cubic-bezier(.32, 1.25, .57, 1);
 }
+/* Fenster in der Bildschirmmitte, z.B. für wichtige Bestätigungen */
+.modal-overlay.modal-center {
+  align-items: center;
+  padding: var(--sp-md);
+}
+.modal-center .modal {
+  max-width: 420px;
+  border-radius: var(--radius-card);
+  padding: var(--sp-lg);
+  transform: scale(.96);
+}
+.modal-overlay.modal-center.show .modal {
+  transform: none;
+}
 .modal-handle {
   width: 40px;
   height: 4px;
