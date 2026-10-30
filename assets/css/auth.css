@@ -258,6 +258,14 @@
   margin: 0 auto;
   padding: var(--sp-md) var(--sp-md) var(--sp-xl);
 }
+/* Auf dem hellen Seitenhintergrund weiss wie der Kasten darüber */
+.account-main .auth-edit-btn {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+}
+.account-main .auth-edit-btn:active {
+  background: var(--primary-light);
+}
 .account-back {
   display: inline-flex;
   align-items: center;
@@ -331,9 +339,9 @@
   width: 100%;
   margin-top: var(--sp-sm);
   padding: 12px;
-  border: none;
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--card-soft);
+  background: transparent;
   color: var(--muted);
   font-family: inherit;
   font-size: var(--fs-note);
