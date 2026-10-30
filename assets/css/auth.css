@@ -219,18 +219,36 @@
   opacity: .8;
 }
 
-/* Konto löschen: bewusst unauffällig unter dem Abmelden-Knopf */
+/* Konto löschen: umrandet, füllt sich beim Darüberfahren und Drücken mit Rot */
 .auth-delete-btn {
-  display: block;
-  margin: var(--sp-sm) 0 0 auto;
-  padding: 4px 0;
-  border: none;
-  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: var(--sp-md);
+  padding: 11px 16px;
+  border: 1.5px solid var(--danger-light);
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--danger-text);
   font-family: inherit;
-  font-size: var(--fs-note);
-  text-decoration: underline;
+  font-size: var(--fs-body);
+  font-weight: 600;
   cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.auth-delete-btn:active {
+  background: var(--danger-text);
+  border-color: var(--danger-text);
+  color: #fff;
+}
+@media (hover: hover) {
+  .auth-delete-btn:hover {
+    background: var(--danger-text);
+    border-color: var(--danger-text);
+    color: #fff;
+  }
 }
 .btn-save.btn-danger {
   background: var(--danger-text);

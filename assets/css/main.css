@@ -431,7 +431,7 @@ button {
   background: var(--primary-light);
 }
 /* Stift beim Budget in den Einstellungen */
-.page-settings .icon-btn {
+.page-settings .icon-btn:not(.menu-toggle-btn) {
   color: var(--muted);
 }
 
