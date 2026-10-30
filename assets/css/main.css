@@ -1274,9 +1274,6 @@ button {
 .pw-toggle {
   color: var(--muted);
 }
-.auth-logo-mark {
-  color: #fff;
-}
 .type-btn,
 .auth-tab {
   display: inline-flex;
