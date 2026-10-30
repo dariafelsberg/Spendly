@@ -48,10 +48,15 @@ function logout() {
 // ── ACCOUNT BEARBEITEN (Einstellungen) ──────────────────────
 // Der Benutzername liegt in den Metadaten des Logins. Die E-Mail-Adresse
 // wird nur angezeigt: Sie ist das Login und lässt sich hier nicht ändern.
+function updateProfileAvatar() {
+  const name = document.getElementById('profileUsername').value.trim();
+  document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
+}
 function openProfileModal() {
   document.getElementById('profileError').textContent = '';
   document.getElementById('profileUsername').value = '';
   document.getElementById('profileEmail').value = '';
+  updateProfileAvatar();
   document.getElementById('profileModal').classList.add('show');
   sb.auth.getSession()
     .then(({ data }) => {
@@ -59,6 +64,7 @@ function openProfileModal() {
       if (!user) return;
       document.getElementById('profileUsername').value = (user.user_metadata && user.user_metadata.username) || '';
       document.getElementById('profileEmail').value = user.email || '';
+      updateProfileAvatar();
     })
     .catch(() => {});
 }

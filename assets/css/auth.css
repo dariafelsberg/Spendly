@@ -227,48 +227,119 @@
   gap: 8px;
   width: 100%;
   margin-top: var(--sp-sm);
-  padding: var(--sp-sm) 0 0;
+  padding: var(--sp-sm);
   border: none;
+  border-radius: var(--radius-sm);
+  background: var(--card-soft);
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.auth-edit-btn .ico {
+  color: var(--muted);
+  transition: transform .15s, color .15s;
+}
+.auth-edit-btn:active {
+  background: var(--primary-light);
+}
+.auth-edit-btn:active .ico {
+  color: var(--primary);
+  transform: translateX(3px);
+}
+/* Fenster "Account bearbeiten" */
+.profile-title {
+  text-align: center;
+}
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin: var(--sp-sm) auto var(--sp-md);
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+}
+.profile-fields {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.profile-field {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: 13px var(--sp-md);
+}
+.profile-field + .profile-field {
   border-top: 1px solid var(--border);
+}
+.profile-field:focus-within {
+  background: var(--card-soft);
+}
+.profile-field-label {
+  flex-shrink: 0;
+  font-size: var(--fs-note);
+  color: var(--muted);
+}
+.profile-field-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  outline: none;
   background: none;
   color: var(--text);
   font-family: inherit;
   font-size: var(--fs-body);
-  cursor: pointer;
+  text-align: right;
 }
-.auth-edit-btn .ico {
+.profile-field-input[readonly] {
   color: var(--muted);
 }
-.auth-edit-btn:active {
-  color: var(--primary);
+.profile-fields + .auth-error:empty {
+  display: none;
 }
-/* Konto löschen: bewusst unauffällig ganz unten im Fenster "Account bearbeiten" */
+.profile-save {
+  width: 100%;
+  margin-top: var(--sp-md);
+}
+/* Konto löschen: bewusst unauffällig ganz unten im Fenster */
 .auth-delete-btn {
   display: block;
   width: 100%;
-  margin-top: var(--sp-md);
-  padding: 8px;
+  margin-top: var(--sp-sm);
+  padding: 12px;
   border: none;
-  background: none;
+  border-radius: var(--radius-sm);
+  background: var(--card-soft);
   color: var(--muted);
   font-family: inherit;
   font-size: var(--fs-note);
+  font-weight: 600;
   cursor: pointer;
+  transition: color .15s;
 }
 .auth-delete-btn:active {
   color: var(--danger-text);
 }
 @media (hover: hover) {
   .auth-edit-btn:hover {
+    background: var(--primary-light);
+  }
+  .auth-edit-btn:hover .ico {
     color: var(--primary);
+    transform: translateX(3px);
   }
   .auth-delete-btn:hover {
     color: var(--danger-text);
   }
-}
-.form-input[readonly] {
-  background: var(--card-soft);
-  color: var(--muted);
 }
 .btn-save.btn-danger {
   background: var(--danger-text);
