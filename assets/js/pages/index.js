@@ -41,7 +41,7 @@ function renderTopBar() {
   const pillsEl = document.getElementById('accountPills');
   if (vis.length) {
     pillsEl.innerHTML = vis.map(a =>
-      `<div class="account-pill-item"><span class="pill-name">${a.name}</span><span class="pill-val">CHF ${hidden ? '••••' : formatNum(a.balance)}</span></div>`
+      `<div class="account-pill-item"><span class="pill-name">${esc(a.name)}</span><span class="pill-val">CHF ${hidden ? '••••' : formatNum(a.balance)}</span></div>`
     ).join('');
     pillsEl.style.display = 'flex';
   } else {
@@ -154,9 +154,9 @@ function renderDonut() {
   });
   document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
     const amt = catTotals[c.name] || 0;
-    return `<div class="cat-chip${amt ? ' used' : ''}" data-cat="${c.name.replace(/"/g, '&quot;')}" style="${amt ? `--cat-bg:${c.color}15;--cat-border:${c.color}44` : ''}">
-      <div class="cat-dot" style="background:${amt ? c.color : '#ddd'}"></div>
-      <span class="cat-name">${catIcon(c)} ${c.name}</span>
+    return `<div class="cat-chip${amt ? ' used' : ''}" data-cat="${esc(c.name)}" style="${amt ? `--cat-bg:${esc(c.color)}15;--cat-border:${esc(c.color)}44` : ''}">
+      <div class="cat-dot" style="background:${amt ? esc(c.color) : '#ddd'}"></div>
+      <span class="cat-name">${catIcon(c)} ${esc(c.name)}</span>
       ${amt ? `<span class="cat-amount expense">−${formatNum(amt)}</span>` : ''}
     </div>`;
   }).join('');
@@ -282,13 +282,13 @@ function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
   if (!sel) return;
   sel.innerHTML = (type === 'income' ? allIncomeCats() : allExpenseCats())
-    .map(c => `<option value="${c.name}">${catOptionLabel(c)}</option>`).join('');
+    .map(c => `<option value="${esc(c.name)}">${catOptionLabel(c)}</option>`).join('');
 }
 function populateAccountSelect(selectedId = '') {
   const sel = document.getElementById('entryAccount');
   if (!sel) return;
   sel.innerHTML = `<option value="" ${!selectedId ? 'selected' : ''}>Kein Konto</option>` +
-    state.accounts.map(a => `<option value="${a.id}" ${a.id === selectedId ? 'selected' : ''}>${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+    state.accounts.map(a => `<option value="${esc(a.id)}" ${a.id === selectedId ? 'selected' : ''}>${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
   const grp = document.getElementById('accountSelectGroup');
   if (grp) grp.style.display = state.accounts.length ? '' : 'none';
 }
@@ -296,7 +296,7 @@ function populateTransferAccountSelects(fromId = '', toId = '') {
   const fromSel = document.getElementById('entryFromAccount');
   const toSel   = document.getElementById('entryToAccount');
   if (!fromSel || !toSel) return;
-  const opts = state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+  const opts = state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
   fromSel.innerHTML = opts;
   toSel.innerHTML = opts;
   if (fromId) fromSel.value = fromId; else if (state.accounts.length) fromSel.selectedIndex = 0;

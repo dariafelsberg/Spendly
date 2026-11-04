@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
   <script src="assets/js/supabase.js"></script>
   <script>requireLogin();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -35,7 +35,7 @@
     <div class="profile-fields">
       <label class="profile-field">
         <span class="profile-field-label">Benutzername</span>
-        <input class="profile-field-input" type="text" id="profileUsername" autocomplete="username" minlength="3" oninput="updateProfileAvatar()"><span class="ico ico-pencil" aria-hidden="true"></span>
+        <input class="profile-field-input" type="text" id="profileUsername" maxlength="30" autocomplete="username" minlength="3" oninput="updateProfileAvatar()"><span class="ico ico-pencil" aria-hidden="true"></span>
       </label>
       <label class="profile-field">
         <span class="profile-field-label">E-Mail</span>

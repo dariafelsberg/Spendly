@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
   <script src="assets/js/supabase.js"></script>
   <script>requireLogin();</script>
   <script>
@@ -173,7 +173,7 @@
     <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
     <div class="form-group">
       <label class="form-label" for="budgetInput">Budget (CHF)</label>
-      <input class="form-input" type="text" inputmode="decimal" id="budgetInput" placeholder="z.B. 3000" autocomplete="off">
+      <input class="form-input" type="text" inputmode="decimal" id="budgetInput" maxlength="15" placeholder="z.B. 3000" autocomplete="off">
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>
@@ -189,7 +189,7 @@
     <div class="modal-title" id="accountModalTitle">Konto hinzufügen</div>
     <div class="form-group">
       <label class="form-label" for="accountName">Kontoname</label>
-      <input class="form-input" type="text" id="accountName" placeholder="z.B. Raiffeisen, Neon…">
+      <input class="form-input" type="text" id="accountName" maxlength="40" placeholder="z.B. Raiffeisen, Neon…">
     </div>
     <div class="form-group">
       <label class="form-label" for="accountBalance">Guthaben (CHF)</label>
@@ -219,11 +219,11 @@
     <div class="modal-title" id="recurringModalTitle">Einnahme hinzufügen</div>
     <div class="form-group">
       <label class="form-label" for="recurringName">Bezeichnung</label>
-      <input class="form-input" type="text" id="recurringName">
+      <input class="form-input" type="text" id="recurringName" maxlength="40">
     </div>
     <div class="form-group">
       <label class="form-label" for="recurringAmount">Betrag (CHF)</label>
-      <input class="form-input" type="text" inputmode="decimal" id="recurringAmount" placeholder="0.00" autocomplete="off">
+      <input class="form-input" type="text" inputmode="decimal" id="recurringAmount" maxlength="15" placeholder="0.00" autocomplete="off">
     </div>
     <div class="form-group" id="recurringCategoryGroup">
       <label class="form-label" for="recurringCategory">Kategorie</label>

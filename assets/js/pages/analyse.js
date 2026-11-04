@@ -175,7 +175,7 @@ function renderInsightsMonthList() {
       group.innerHTML = `
         <div class="insights-cat-header" onclick="toggleInsightsCat(this)" role="button" tabindex="0" aria-expanded="${openInsightsCats.has(g.name)}">
           <div class="tx-cat-dot" style="background:${cat.color}"></div>
-          <div class="insights-cat-name">${catIcon(cat)} ${g.name}</div>
+          <div class="insights-cat-name">${catIcon(cat)} ${esc(g.name)}</div>
           <span class="insights-cat-count">${g.entries.length}</span>
           ${totalHtml}
           <span class="insights-cat-chevron ico ico-arrow-down"></span>

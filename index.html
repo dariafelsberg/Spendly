@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
   <script src="assets/js/supabase.js"></script>
   <script>requireLogin(); document.documentElement.classList.add('is-loading');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -144,7 +144,7 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="entryAmount">Betrag (CHF)</label>
-          <input class="form-input" type="text" inputmode="decimal" id="entryAmount" placeholder="0.00" autocomplete="off">
+          <input class="form-input" type="text" inputmode="decimal" id="entryAmount" maxlength="15" placeholder="0.00" autocomplete="off">
         </div>
         <div class="form-group" id="entryCategoryGroup">
           <label class="form-label" for="entryCategory">Kategorie</label>
@@ -179,7 +179,7 @@
       </div>
       <div class="form-group">
         <label class="form-label" for="entryNote">Notiz (optional)</label>
-        <input class="form-input" type="text" id="entryNote" placeholder="z.B. Migros Wocheneinkauf">
+        <input class="form-input" type="text" id="entryNote" maxlength="100" placeholder="z.B. Migros Wocheneinkauf">
       </div>
       <div class="form-group">
         <label class="form-label" for="entryDate">Datum</label>
@@ -200,7 +200,7 @@
       <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
       <div class="form-group">
         <label class="form-label" for="budgetInput">Budget (CHF)</label>
-        <input class="form-input" type="text" inputmode="decimal" id="budgetInput" placeholder="z.B. 3000" autocomplete="off">
+        <input class="form-input" type="text" inputmode="decimal" id="budgetInput" maxlength="15" placeholder="z.B. 3000" autocomplete="off">
       </div>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>

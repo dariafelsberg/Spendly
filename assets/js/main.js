@@ -37,15 +37,23 @@ Object.defineProperty(window, 'ALL_CATS', { get: allCats });
 // Icon einer Kategorie: Standard-Kategorien haben ein SVG-Icon (assets/icons/ui),
 // eigene Kategorien behalten ihr gewähltes Emoji.
 function iconHtml(name, color) {
-  return `<span class="ico ico-${name}"${color ? ` style="color:${color}"` : ''}></span>`;
+  return `<span class="ico ico-${esc(name)}"${color ? ` style="color:${esc(color)}"` : ''}></span>`;
 }
 function catIcon(cat) {
-  return cat.icon ? iconHtml(cat.icon, cat.color) : (cat.emoji || '');
+  return cat.icon ? iconHtml(cat.icon, cat.color) : esc(cat.emoji || '');
 }
 // Für <option>-Texte (dort ist kein HTML möglich): nur eigene Kategorien zeigen ihr Emoji.
 function catOptionLabel(cat) {
-  return cat.icon ? cat.name : `${cat.emoji} ${cat.name}`;
+  return esc(cat.icon ? cat.name : `${cat.emoji} ${cat.name}`);
 }
+
+// ── SICHERHEIT: eigene Texte (Namen, Notizen …) nie als HTML einfügen
+// esc() macht aus < > & " ' harmlose Zeichen, damit eingegebener Text nicht
+// als Code ausgeführt wird. jsArg() für Werte in onclick="…('…')".
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+}
+function jsArg(v) { return esc(JSON.stringify(String(v))); }
 
 // ── STATE
 let state = {
@@ -434,30 +442,30 @@ function entryRowInner(e) {
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
           <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
-          <div class="tx-note">${formatRelDate(e.date)} · ${e.note ? e.note + ' · ' : ''}${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}</div>
+          <div class="tx-note">${formatRelDate(e.date)} · ${e.note ? esc(e.note) + ' · ' : ''}${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}</div>
         </div>
         <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}</div>
         <div class="tx-actions">
-          <button class="tx-btn" onclick="editEntry('${e.id}')"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteEntry('${e.id}')"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})"><span class="ico ico-trash"></span></button>
         </div>`;
   }
   const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
   const isInc = e.type === 'income';
   const isAccOnly = e.type === 'account-only';
   const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
-  const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${acc.name}</span>` : '';
+  const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${esc(acc.name)}</span>` : '';
   const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
   return `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
-        <div class="tx-cat-label">${catIcon(cat)} ${e.category}</div>
-        <div class="tx-note">${formatRelDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? e.note + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
+        <div class="tx-cat-label">${catIcon(cat)} ${esc(e.category)}</div>
+        <div class="tx-note">${formatRelDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? esc(e.note) + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
       <div class="tx-actions">
-        <button class="tx-btn" onclick="editEntry('${e.id}')"><span class="ico ico-pencil"></span></button>
-        <button class="tx-btn delete" onclick="deleteEntry('${e.id}')"><span class="ico ico-trash"></span></button>
+        <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})"><span class="ico ico-pencil"></span></button>
+        <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})"><span class="ico ico-trash"></span></button>
       </div>`;
 }
 

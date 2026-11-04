@@ -24,12 +24,12 @@ function renderAccountsList() {
     : state.accounts.map(a => `
       <div class="settings-item">
         <div class="settings-item-info">
-          <div class="settings-item-name">${a.name}</div>
+          <div class="settings-item-name">${esc(a.name)}</div>
           <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt'}</span></div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openAccountModal('${a.id}')"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteAccount('${a.id}')"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openAccountModal(${jsArg(a.id)})"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteAccount(${jsArg(a.id)})"><span class="ico ico-trash"></span></button>
         </div>
       </div>`).join('');
 }
@@ -52,20 +52,20 @@ function renderRecurringList(type) {
         if (type === 'transfer') {
           const fromAcc = state.accounts.find(a => a.id === r.fromAccountId);
           const toAcc   = state.accounts.find(a => a.id === r.toAccountId);
-          detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? fromAcc.name : '?'} → ${toAcc ? toAcc.name : '?'}`;
+          detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}`;
         } else {
           const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
-          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${r.category}${acc ? ' · ' + iconHtml('bank') + ' ' + acc.name : ''}${r.accountOnly ? ' · ' + iconHtml('banned') + ' Budget' : ''}`;
+          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${esc(r.category)}${acc ? ' · ' + iconHtml('bank') + ' ' + esc(acc.name) : ''}${r.accountOnly ? ' · ' + iconHtml('banned') + ' Budget' : ''}`;
         }
         return `
       <div class="settings-item">
         <div class="settings-item-info">
-          <div class="settings-item-name">${r.name}</div>
+          <div class="settings-item-name">${esc(r.name)}</div>
           <div class="settings-item-val" style="color:${col}">${detail}</div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openRecurringModal('${type}','${r.id}')"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteRecurring('${type}','${r.id}')"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openRecurringModal('${type}',${jsArg(r.id)})"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteRecurring('${type}',${jsArg(r.id)})"><span class="ico ico-trash"></span></button>
         </div>
       </div>`;
       }).join('');
@@ -90,10 +90,10 @@ function renderCustomCatList() {
     const items = list.map(c => `
       <div class="settings-item">
         <div class="settings-item-info">
-          <div class="settings-item-name">${catIcon(c)} ${c.name}</div>
+          <div class="settings-item-name">${catIcon(c)} ${esc(c.name)}</div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}','${c.id}')"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}',${jsArg(c.id)})"><span class="ico ico-trash"></span></button>
         </div>
       </div>`).join('');
     return header + items;
@@ -225,7 +225,7 @@ function openRecurringModal(type, editId = null) {
     if (transferGroup) transferGroup.style.display = '';
     const fromSel = document.getElementById('recurringFromAccount');
     const toSel   = document.getElementById('recurringToAccount');
-    const opts = state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+    const opts = state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
     if (fromSel) fromSel.innerHTML = opts;
     if (toSel)   toSel.innerHTML = opts;
   } else {
@@ -233,10 +233,10 @@ function openRecurringModal(type, editId = null) {
     if (transferGroup) transferGroup.style.display = 'none';
     document.getElementById('recurringCategory').innerHTML =
       (type === 'income' ? allIncomeCats() : allExpenseCats())
-        .map(c => `<option value="${c.name}">${catOptionLabel(c)}</option>`).join('');
+        .map(c => `<option value="${esc(c.name)}">${catOptionLabel(c)}</option>`).join('');
     if (accSel) {
       accSel.innerHTML = `<option value="">Kein Konto</option>` +
-        state.accounts.map(a => `<option value="${a.id}">${a.name} (CHF ${formatNum(a.balance)})</option>`).join('');
+        state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
     }
     if (accGroup) accGroup.style.display = '';
   }
