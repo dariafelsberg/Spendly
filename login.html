@@ -16,26 +16,52 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/auth.css">
   <link rel="manifest" href="manifest.json">
+  <script>
+    // Willkommens-Screen nur beim ersten Besuch auf diesem Gerät (vor dem Zeichnen setzen, sonst flackert das Formular)
+    try {
+      if (!localStorage.getItem('spendly_welcomed') && !/[?&]reset=1/.test(location.search)) document.documentElement.classList.add('show-welcome');
+    } catch (e) {}
+  </script>
 </head>
 
 <body>
 
+  <!-- ══ WILLKOMMEN (erster Besuch) ══ -->
+  <section class="welcome" aria-labelledby="welcomeTitle">
+    <img class="welcome-logo" src="assets/icons/logo_spendly.svg" alt="">
+    <h1 class="welcome-title" id="welcomeTitle">Behalte dein Geld im Blick.</h1>
+    <p class="welcome-text">Budget, Konten und Ausgaben an einem Ort. Du siehst jederzeit, wie viel diesen Monat noch übrig ist.</p>
+    <div class="welcome-actions">
+      <button class="btn-save welcome-start" onclick="leaveWelcome('start')">Los geht's</button>
+      <button class="welcome-login" onclick="leaveWelcome('login')">Ich habe schon ein Konto</button>
+    </div>
+  </section>
+
   <div class="auth-shell">
 
-    <div class="auth-logo">
-      <img class="auth-logo-mark" src="assets/icons/logo_spendly.svg" alt="">
-      <div class="auth-logo-text">Spendly</div>
-    </div>
+    <div class="auth-column">
 
-    <div class="card auth-card">
+      <img class="auth-mark" src="assets/icons/logo_spendly.svg" alt="Spendly">
 
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Anmelden</button>
-        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Registrieren</button>
-      </div>
+      <!-- ══ START: zuerst Account erstellen, darunter Einloggen (wie bei Notion) ══ -->
+      <form id="startForm" class="auth-form" onsubmit="return handleStart(event)" novalidate>
+        <h1 class="auth-title">Account erstellen</h1>
+        <p class="auth-sub">Gratis und ohne Werbung. Auf Handy, Tablet und Computer.</p>
+        <div class="form-group">
+          <label class="form-label" for="startEmail">E-Mail</label>
+          <input class="form-input" type="email" id="startEmail" autocomplete="email" placeholder="deine@email.ch">
+        </div>
+        <div class="auth-error" id="startError"></div>
+        <button class="btn-save auth-submit" type="submit">Registrieren</button>
+        <div class="auth-divider"><span>Schon ein Konto?</span></div>
+        <button type="button" class="auth-secondary" onclick="goLogin()">Einloggen</button>
+      </form>
 
       <!-- ══ LOGIN ══ -->
-      <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
+      <form id="loginForm" class="auth-form" style="display:none" onsubmit="return handleLogin(event)">
+        <button type="button" class="auth-back" onclick="showStep('start')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
+        <h1 class="auth-title">Einloggen</h1>
+        <p class="auth-sub">Schön, dass du wieder da bist.</p>
         <div class="form-group">
           <label class="form-label" for="loginIdentifier">E-Mail</label>
           <input class="form-input" type="email" id="loginIdentifier" autocomplete="email" required>
@@ -53,22 +79,26 @@
           <span>Angemeldet bleiben</span>
         </label>
         <div class="auth-error" id="loginError"></div>
-        <button class="btn-save auth-submit" type="submit" id="loginSubmitBtn">Anmelden</button>
+        <button class="btn-save auth-submit" type="submit" id="loginSubmitBtn">Einloggen</button>
         <button type="button" class="auth-reset-link" onclick="openResetConfirm()">Passwort vergessen?</button>
       </form>
 
       <!-- ══ REGISTRIEREN ══ -->
       <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
+        <button type="button" class="auth-back" onclick="showStep('start')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
+        <h1 class="auth-title">Account einrichten</h1>
+        <p class="auth-sub">Wähle einen Benutzernamen und ein Passwort.</p>
         <div class="register-exists-notice" id="registerExistsNotice">
-          Mit dieser E-Mail-Adresse existiert bereits ein Konto. Bitte melde dich stattdessen an.
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="regUsername">Benutzername</label>
-          <input class="form-input" type="text" id="regUsername" maxlength="30" autocomplete="username" required minlength="3">
+          Mit dieser E-Mail-Adresse gibt es schon ein Konto.
+          <button type="button" class="auth-inline-link" onclick="goLogin()">Stattdessen einloggen</button>
         </div>
         <div class="form-group">
           <label class="form-label" for="regEmail">E-Mail</label>
           <input class="form-input" type="email" id="regEmail" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regUsername">Benutzername</label>
+          <input class="form-input" type="text" id="regUsername" maxlength="30" autocomplete="username" required minlength="3">
         </div>
         <div class="form-group">
           <label class="form-label" for="regPassword">Passwort</label>
@@ -90,15 +120,16 @@
           </div>
         </div>
         <div class="auth-error" id="registerError"></div>
-        <button class="btn-save auth-submit" type="submit">Konto erstellen</button>
+        <button class="btn-save auth-submit" type="submit">Account erstellen</button>
       </form>
 
-    </div><!-- /auth-card -->
+      <p class="auth-footnote">
+        Mit der Registrierung akzeptierst du die <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a>
+        und die <a href="datenschutz.html">Datenschutzerklärung</a>. Dein Passwort wird verschlüsselt
+        übertragen und nie im Klartext gespeichert.
+      </p>
 
-    <div class="auth-footnote">
-      🔒 Dein Passwort wird verschlüsselt (HTTPS) übertragen und ausschliesslich als gesalzener
-      bcrypt-Hash gespeichert – nie im Klartext.
-    </div>
+    </div><!-- /auth-column -->
 
   </div><!-- /auth-shell -->
 

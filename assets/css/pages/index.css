@@ -8,8 +8,6 @@
 .topbar-label {
   font-size: var(--fs-label);
   font-weight: 600; /* volle Deckkraft und fett: kleine weisse Schrift auf Pink bleibt lesbar */
-  text-transform: uppercase;
-  letter-spacing: .12em;
   margin-bottom: 2px;
 }
 /* Auge direkt neben dem Gesamtguthaben: fixe Grösse, unabhängig von der grossen Zahl */
@@ -98,8 +96,6 @@
 .month-label {
   text-align: center;
   font-size: var(--fs-note);
-  text-transform: uppercase;
-  letter-spacing: .12em;
   color: var(--muted);
   margin-bottom: 12px;
 }
@@ -159,14 +155,17 @@
 }
 .donut-center-budget {
   font-size: var(--fs-lg);
+  font-weight: 700;
   color: var(--primary-dark);
   line-height: 1;
 }
-.donut-center-spent {
-  font-size: var(--fs-note);
+.donut-center-budget.over {
   color: var(--danger-text);
-  font-weight: 600;
-  margin-top: 3px;
+}
+.donut-center-spent {
+  font-size: var(--fs-label);
+  color: var(--muted);
+  margin-top: 4px;
 }
 .donut-arc {
   transition: stroke-dasharray .7s cubic-bezier(.34, 1.2, .64, 1),
@@ -220,8 +219,6 @@
 .donut-center-label {
   font-size: var(--fs-label);
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .08em;
   margin-top: 2px;
 }
 .categories-grid {
@@ -548,4 +545,12 @@
   .fab:hover {
     transform: translateX(-50%) translateY(-2px);
   }
+}
+
+/* ── ONBOARDING (erster Start) */
+.onb-progress {
+  font-size: var(--fs-label);
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 6px;
 }

@@ -41,6 +41,14 @@
         <button class="cal-nav-btn" id="insightsNavNext" onclick="changeInsightsMonth(1)" aria-label="Nächster Monat"><span class="ico ico-arrow-right"></span></button>
       </div>
 
+      <!-- Monatsrückblick: Ausgaben im Vergleich zum Vormonat -->
+      <div class="card insights-review" id="insightsReview" hidden>
+        <button class="icon-btn insights-review-close" onclick="hideInsightsReview()" aria-label="Rückblick ausblenden"><span class="ico ico-close"></span></button>
+        <div class="section-label">Rückblick</div>
+        <p class="insights-review-text" id="insightsReviewText"></p>
+        <p class="insights-review-sub" id="insightsReviewSub"></p>
+      </div>
+
       <div class="card insights-chart-card">
         <div class="section-label">Monatsbilanz</div>
         <div class="insights-chart" id="insightsChart"></div>

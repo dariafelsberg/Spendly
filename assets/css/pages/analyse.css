@@ -144,3 +144,30 @@
       height: auto;
     }
 }
+
+/* ── MONATSRÜCKBLICK */
+.insights-review-text {
+  margin: 6px 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+.insights-review-text.good { color: var(--income-text); }
+.insights-review-text.bad { color: var(--danger-text); }
+.insights-review-sub {
+  margin: 6px 0 0;
+  font-size: var(--fs-note);
+  color: var(--muted);
+}
+.insights-review { position: relative; }
+.insights-review-close {
+  position: absolute;
+  top: var(--sp-sm);
+  right: var(--sp-sm);
+  width: 32px;
+  height: 32px;
+  color: var(--muted);
+}
+.insights-review .section-label,
+.insights-review-text { padding-right: 36px; }

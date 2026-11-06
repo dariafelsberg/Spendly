@@ -44,7 +44,7 @@
   --sp-xl: 28px;
   --sp-2xl: 32px;
   /* Schriftskala aus dem CD-Manual: jede Stufe mind. 20 % grösser als die vorherige */
-  --fs-label: .6875rem;  /* 11px  Labels in Grossbuchstaben (kleinste erlaubte Grösse) */
+  --fs-label: .75rem;    /* 12px  Labels (normale Schreibweise, darum etwas grösser) */
   --fs-note: .825rem;    /* 13.2px Notizen, Hilfetexte, Chips */
   --fs-body: 1rem;       /* 16px  Lauftext, Listen, Buttons, Felder */
   --fs-lg: 1.25rem;      /* 20px  Zwischentitel */
@@ -422,8 +422,6 @@ button {
 /* ── BUDGET CARD */
 .section-label {
   font-size: var(--fs-label);
-  text-transform: uppercase;
-  letter-spacing: .1em;
   color: var(--muted);
   margin-bottom: 1px;
 }
@@ -928,8 +926,7 @@ button {
 .form-label {
   display: block;
   font-size: var(--fs-label);
-  text-transform: uppercase;
-  letter-spacing: .08em;
+  font-weight: 500;
   color: var(--muted);
   margin-bottom: 4px;
 }

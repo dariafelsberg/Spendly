@@ -18,7 +18,55 @@ function initHome() {
 
 // Solange der Ladebildschirm zu sehen ist, nichts zeichnen: main.js ruft
 // render() auf, sobald alle Daten da sind (dann rollen auch die Ziffern)
-function render() { if (!dataReady) return; renderTopBar(); renderBudgetCard(); renderDonut(); renderTransactions(); }
+function render() { if (!dataReady) return; renderTopBar(); renderBudgetCard(); renderDonut(); renderTransactions(); maybeStartOnboarding(); }
+
+// ── ONBOARDING: beim ersten Start ohne Konten, Budget und Einträge
+// Erst wenn der Server-Stand da ist (serverLoaded), sonst könnte ein leerer
+// lokaler Stand fälschlich als "neues Konto" gelten. Pro Gerät nur einmal.
+function maybeStartOnboarding() {
+  if (!serverLoaded || maybeStartOnboarding.done) return;
+  let seen = false;
+  try { seen = !!localStorage.getItem('spendly_onboarded'); } catch (e) {}
+  if (seen || state.accounts.length || state.budget || state.entries.length) return;
+  maybeStartOnboarding.done = true;
+  showOnbStep(1);
+  document.getElementById('onboardingModal').classList.add('show');
+}
+function showOnbStep(n) {
+  document.querySelectorAll('#onboardingModal .onb-step').forEach(el => { el.hidden = el.dataset.step !== String(n); });
+  const first = document.querySelector(`#onboardingModal .onb-step[data-step="${n}"] input`);
+  if (first) setTimeout(() => first.focus({ preventScroll: true }), 50);
+}
+function onbNext(step, skip = false) {
+  // Escape klickt den ersten "Überspringen"-Knopf, auch wenn ein anderer Schritt offen ist: dann schliessen
+  const open = document.querySelector('#onboardingModal .onb-step:not([hidden])');
+  if (!open || open.dataset.step !== String(step)) { onbFinish(false); return; }
+  if (step === 1 && !skip) {
+    const name = document.getElementById('onbAccountName').value.trim();
+    const raw = document.getElementById('onbAccountBalance').value.trim();
+    const balance = raw ? parseAmount(raw) : 0;
+    const err = document.getElementById('onbError1');
+    if (!name) { err.textContent = 'Gib dem Konto einen Namen oder überspringe den Schritt.'; return; }
+    if (isNaN(balance)) { err.textContent = 'Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'; return; }
+    err.textContent = '';
+    state.accounts.push({ id: uid(), name, balance, visible: true });
+    saveState(); renderTopBar();
+  }
+  if (step === 2 && !skip) {
+    const val = parseAmount(document.getElementById('onbBudget').value);
+    const err = document.getElementById('onbError2');
+    if (isNaN(val) || val <= 0) { err.textContent = 'Gib einen Betrag ein, zum Beispiel 2000, oder überspringe den Schritt.'; return; }
+    err.textContent = '';
+    state.budget = val;
+    saveState(); renderBudgetCard(); renderDonut();
+  }
+  showOnbStep(step + 1);
+}
+function onbFinish(addEntry) {
+  try { localStorage.setItem('spendly_onboarded', '1'); } catch (e) {}
+  document.getElementById('onboardingModal').classList.remove('show');
+  if (addEntry) setTimeout(() => openEntryModal(), 250);
+}
 
 function renderTopBar() {
   const vis = state.accounts.filter(a => a.visible);
@@ -83,8 +131,21 @@ function renderBudgetCard() {
 
 function renderDonut() {
   const spent = totalExpenses();
-  document.getElementById('donutBudget').textContent = 'CHF ' + formatNum(state.budget);
-  document.getElementById('donutSpent').textContent  = '−CHF ' + formatNum(spent);
+  // In der Mitte: was diesen Monat noch übrig ist (ohne Budget: was ausgegeben wurde)
+  const centerEl = document.getElementById('donutBudget');
+  const centerSub = document.getElementById('donutSpent');
+  const centerLabel = document.getElementById('donutLabel');
+  const rest = state.budget - spent;
+  if (!state.budget) {
+    centerEl.textContent = 'CHF ' + formatNum(spent);
+    centerLabel.textContent = 'ausgegeben';
+    centerSub.textContent = '';
+  } else {
+    centerEl.textContent = (rest < 0 ? '−CHF ' : 'CHF ') + formatNum(Math.abs(rest));
+    centerLabel.textContent = rest < 0 ? 'über dem Budget' : 'noch verfügbar';
+    centerSub.textContent = 'von CHF ' + formatNum(state.budget);
+  }
+  centerEl.classList.toggle('over', state.budget > 0 && rest < 0);
   const nowKey = monthKey(new Date());
   const catTotals = {};
   state.entries.filter(e => e.type === 'expense' && e.date.slice(0, 7) === nowKey).forEach(e => { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });

@@ -66,8 +66,8 @@
           </svg>
           <div class="donut-center">
             <div class="donut-center-budget" id="donutBudget">CHF 0</div>
-            <div class="donut-center-spent" id="donutSpent">−CHF 0</div>
-            <div class="donut-center-label">Ausgaben</div>
+            <div class="donut-center-label" id="donutLabel">noch verfügbar</div>
+            <div class="donut-center-spent" id="donutSpent">von CHF 0</div>
           </div>
           <div class="donut-labels" id="donutLabels"></div>
         </div>
@@ -98,6 +98,53 @@
       <span class="fab-icon ico ico-plus" aria-hidden="true"></span>
       <span class="fab-label">Eintrag hinzufügen</span>
     </button>
+
+    <!-- ── ONBOARDING (erster Start ohne Daten) ── -->
+    <div class="modal-overlay modal-center" id="onboardingModal">
+      <div class="modal onboarding" role="dialog" aria-modal="true" aria-labelledby="onbTitle1" tabindex="-1">
+        <div class="onb-step" data-step="1">
+          <div class="onb-progress">Schritt 1 von 3</div>
+          <div class="modal-title" id="onbTitle1">Dein erstes Konto</div>
+          <div class="modal-sub">Wo liegt dein Geld? Trag dein Hauptkonto ein, zum Beispiel dein Lohnkonto.</div>
+          <div class="form-group">
+            <label class="form-label" for="onbAccountName">Kontoname</label>
+            <input class="form-input" type="text" id="onbAccountName" maxlength="40" placeholder="z.B. Raiffeisen" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="onbAccountBalance">Aktuelles Guthaben (CHF)</label>
+            <input class="form-input" type="text" inputmode="decimal" id="onbAccountBalance" maxlength="15" placeholder="0.00" autocomplete="off">
+          </div>
+          <div class="auth-error" id="onbError1"></div>
+          <div class="modal-actions">
+            <button class="btn-cancel" onclick="onbNext(1, true)">Überspringen</button>
+            <button class="btn-save" onclick="onbNext(1)">Weiter</button>
+          </div>
+        </div>
+        <div class="onb-step" data-step="2" hidden>
+          <div class="onb-progress">Schritt 2 von 3</div>
+          <div class="modal-title">Dein Monatsbudget</div>
+          <div class="modal-sub">Wie viel möchtest du pro Monat höchstens ausgeben? Spendly zeigt dir dann, wie viel noch übrig ist.</div>
+          <div class="form-group">
+            <label class="form-label" for="onbBudget">Budget pro Monat (CHF)</label>
+            <input class="form-input" type="text" inputmode="decimal" id="onbBudget" maxlength="15" placeholder="z.B. 2000" autocomplete="off">
+          </div>
+          <div class="auth-error" id="onbError2"></div>
+          <div class="modal-actions">
+            <button class="btn-cancel" onclick="onbNext(2, true)">Überspringen</button>
+            <button class="btn-save" onclick="onbNext(2)">Weiter</button>
+          </div>
+        </div>
+        <div class="onb-step" data-step="3" hidden>
+          <div class="onb-progress">Schritt 3 von 3</div>
+          <div class="modal-title">Alles bereit</div>
+          <div class="modal-sub">Erfasse jetzt deine erste Ausgabe. Am besten gleich die letzte, an die du dich erinnerst.</div>
+          <div class="modal-actions">
+            <button class="btn-cancel" onclick="onbFinish(false)">Später</button>
+            <button class="btn-save" onclick="onbFinish(true)">Ausgabe erfassen</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ── APP MENU OVERLAY ── -->
     <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">

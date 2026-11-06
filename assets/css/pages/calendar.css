@@ -6,8 +6,6 @@
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-size: var(--fs-note);
-  text-transform: uppercase;
-  letter-spacing: .08em;
   color: var(--muted);
   margin-bottom: 8px;
 }

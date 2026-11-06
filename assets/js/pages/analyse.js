@@ -69,8 +69,59 @@ function renderInsightsView() {
     nextBtn.style.opacity = disabled ? '0.3' : '';
     nextBtn.style.cursor = disabled ? 'default' : '';
   }
+  renderInsightsReview();
   renderInsightsChart();
   renderInsightsMonthList();
+}
+
+// Monatsrückblick: Ausgaben des gewählten Monats im Vergleich zum Vormonat.
+// Erscheint erst in der letzten Woche des Monats (dann fair bis zum gleichen Tag
+// verglichen) und bei vergangenen Monaten. Mit dem Kreuz pro Monat ausblendbar.
+function reviewHiddenMonths() { try { return JSON.parse(localStorage.getItem('spendly_reviewHidden')) || []; } catch (e) { return []; } }
+function hideInsightsReview() {
+  const list = reviewHiddenMonths();
+  list.push(monthKey(insightsViewDate));
+  try { localStorage.setItem('spendly_reviewHidden', JSON.stringify(list.slice(-24))); } catch (e) {}
+  document.getElementById('insightsReview').hidden = true;
+}
+function renderInsightsReview() {
+  const box = document.getElementById('insightsReview');
+  if (!box) return;
+  const now = new Date();
+  const y = insightsViewDate.getFullYear(), m = insightsViewDate.getMonth();
+  const isCurrent = y === now.getFullYear() && m === now.getMonth();
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  if ((isCurrent && now.getDate() <= lastDay - 7) || reviewHiddenMonths().includes(monthKey(insightsViewDate))) { box.hidden = true; return; }
+  const day = isCurrent ? now.getDate() : 31;
+  const prev = new Date(y, m - 1, 1);
+  const sumUntil = (date) => {
+    const key = monthKey(date);
+    return state.entries
+      .filter(e => !e.isPreview && e.type === 'expense' && e.date.slice(0, 7) === key && Number(e.date.slice(8, 10)) <= day)
+      .reduce((s, e) => s + e.amount, 0);
+  };
+  const cur = sumUntil(insightsViewDate), before = sumUntil(prev);
+  const prevName = prev.toLocaleDateString('de-CH', { month: 'long' });
+  const curName = insightsViewDate.toLocaleDateString('de-CH', { month: 'long' });
+  if (!cur && !before) { box.hidden = true; return; }
+  box.hidden = false;
+  const text = document.getElementById('insightsReviewText');
+  const sub = document.getElementById('insightsReviewSub');
+  const when = isCurrent ? 'Bis heute hast du' : `Im ${curName} hast du`;
+  const compare = isCurrent ? `als im ${prevName} bis zum ${day}.` : `als im ${prevName}.`;
+  if (!before) {
+    text.textContent = `Im ${prevName} hast du keine Ausgaben erfasst, darum gibt es noch keinen Vergleich.`;
+  } else {
+    const diff = Math.round((cur - before) / before * 100);
+    text.textContent = diff === 0
+      ? `${when} gleich viel ausgegeben ${compare}`
+      : `${when} ${Math.abs(diff)} % ${diff < 0 ? 'weniger' : 'mehr'} ausgegeben ${compare}`;
+    text.classList.toggle('good', diff < 0);
+    text.classList.toggle('bad', diff > 0);
+  }
+  sub.textContent = isCurrent
+    ? `CHF ${formatNum(cur)} bis heute, CHF ${formatNum(before)} im ${prevName} bis zum ${day}.`
+    : `CHF ${formatNum(cur)} im ${curName}, CHF ${formatNum(before)} im ${prevName}`;
 }
 // Netto (Einnahmen − Ausgaben − interne Überweisungen, z. B. Sparen) pro
 // Monat. Geplante Vorschau-Einträge zählen nicht mit, da sie noch nicht

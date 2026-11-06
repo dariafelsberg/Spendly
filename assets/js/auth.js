@@ -217,7 +217,7 @@ if (onLoginPage) {
 }
 
 function initLoginPage() {
-  switchTab('login');
+  showStep('start');
   updateLockoutUI();
   setInterval(updateLockoutUI, 1000);
 
@@ -229,17 +229,60 @@ function initLoginPage() {
   });
 }
 
-function switchTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('tabLogin').classList.toggle('active', isLogin);
-  document.getElementById('tabRegister').classList.toggle('active', !isLogin);
-  document.getElementById('loginForm').style.display = isLogin ? 'flex' : 'none';
-  document.getElementById('registerForm').style.display = isLogin ? 'none' : 'flex';
-  document.getElementById('loginError').textContent = '';
-  document.getElementById('registerError').textContent = '';
+// Willkommens-Screen verlassen: "Los geht's" führt zu "Account erstellen", sonst zum Einloggen
+function leaveWelcome(step) {
+  try { localStorage.setItem('spendly_welcomed', '1'); } catch (e) {}
+  document.documentElement.classList.remove('show-welcome');
+  if (step === 'login') goLogin(); else showStep('start');
+  window.scrollTo(0, 0);
+}
 
+// Ablauf wie bei Notion: zuerst "Account erstellen" mit E-Mail,
+// darunter "Registrieren" und "Einloggen". Die E-Mail wird in den
+// nächsten Schritt übernommen.
+function showStep(step) {
+  const steps = { start: 'startForm', login: 'loginForm', register: 'registerForm' };
+  Object.entries(steps).forEach(([key, id]) => {
+    document.getElementById(id).style.display = key === step ? 'flex' : 'none';
+  });
+  ['startError', 'loginError', 'registerError'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.textContent.startsWith('Zu viele')) el.textContent = '';
+  });
   const notice = document.getElementById('registerExistsNotice');
-if (notice) notice.style.display = 'none';
+  if (notice) notice.style.display = 'none';
+  // Rechtlicher Hinweis gehört nur zur Registrierung
+  const foot = document.querySelector('.auth-footnote');
+  if (foot) foot.style.display = step === 'login' ? 'none' : '';
+}
+function _startEmail() { return document.getElementById('startEmail').value.trim(); }
+function _focusFirstEmpty(ids) {
+  const el = ids.map(id => document.getElementById(id)).find(i => !i.value) || document.getElementById(ids[ids.length - 1]);
+  el.focus();
+}
+
+function handleStart(event) {
+  event.preventDefault();
+  const input = document.getElementById('startEmail');
+  const errEl = document.getElementById('startError');
+  const email = _startEmail();
+  if (!email || !input.checkValidity() || !email.includes('@')) {
+    errEl.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
+    input.focus();
+    return false;
+  }
+  document.getElementById('regEmail').value = email;
+  showStep('register');
+  _focusFirstEmpty(['regUsername', 'regPassword']);
+  return false;
+}
+
+function goLogin() {
+  const email = _startEmail() || document.getElementById('regEmail').value.trim();
+  if (email) document.getElementById('loginIdentifier').value = email;
+  showStep('login');
+  updateLockoutUI();
+  _focusFirstEmpty(['loginIdentifier', 'loginPassword']);
 }
 
 function togglePw(inputId, btn) {

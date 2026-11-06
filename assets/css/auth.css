@@ -1,40 +1,117 @@
 /* ── AUTH PAGE (login.html) — nutzt Tokens aus styles.css ── */
 
+/* Ruhige, schmale Spalte ohne Karte (angelehnt an Notion):
+   Zeichen, grosser Serifentitel, ein Feld, zwei Knöpfe untereinander */
 .auth-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: var(--sp-lg) var(--sp-md);
+  align-items: center;
+  padding: calc(var(--sp-2xl) + env(safe-area-inset-top)) var(--sp-md) calc(var(--sp-2xl) + env(safe-area-inset-bottom));
   background: var(--bg);
 }
 
-.auth-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: var(--sp-lg);
+.auth-column {
+  width: 100%;
+  max-width: 360px;
 }
 
-.auth-logo-mark {
-  width: 72px;
-  height: 72px;
+.auth-mark {
   display: block;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--sp-xl);
 }
 
-.auth-logo-text {
+.auth-title {
   font-family: 'DM Serif Display', serif;
-  font-size: var(--fs-xl);
-  margin-top: 8px;
+  font-weight: 400;
+  font-size: var(--fs-3xl);
+  line-height: 1.1;
+  letter-spacing: -.01em;
   color: var(--text);
 }
 
-.auth-card {
+.auth-sub {
+  margin: var(--sp-xs) 0 var(--sp-xl);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.auth-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 var(--sp-md) -8px;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--primary-dark);
+  font-family: inherit;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Trennlinie mit "Schon ein Konto?" zwischen Registrieren und Einloggen */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  margin: var(--sp-lg) 0 var(--sp-sm);
+  font-size: var(--fs-note);
+  color: var(--muted);
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--muted);
+  opacity: .3;
+}
+
+/* Einloggen: gleich gross wie Registrieren, aber weiss mit Rand */
+.auth-secondary {
   width: 100%;
-  max-width: 400px;
-  padding: var(--sp-lg);
+  padding: 10.5px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.auth-secondary:active {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+@media (hover: hover) {
+  .auth-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+  }
+  .auth-back:hover { background: var(--card-soft); }
+}
+
+.auth-inline-link {
+  display: block;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .auth-tabs {
@@ -166,12 +243,14 @@
 }
 
 .auth-footnote {
-  margin-top: var(--sp-lg);
+  margin-top: var(--sp-xl);
   font-size: var(--fs-note);
   color: var(--muted);
-  text-align: center;
-  max-width: 360px;
   line-height: 1.5;
+}
+.auth-footnote a {
+  color: var(--text);
+  text-decoration: underline;
 }
 
 /* ── Profil-Block in den Einstellungen ── */
@@ -352,10 +431,13 @@
   font-size: var(--fs-note);
   font-weight: 600;
   cursor: pointer;
-  transition: color .15s;
+  transition: background .15s, border-color .15s, color .15s;
 }
+/* Darüberfahren oder Drücken: ganzer Button rot */
 .auth-delete-btn:active {
-  color: var(--danger-text);
+  background: var(--danger-text);
+  border-color: var(--danger-text);
+  color: #fff;
 }
 @media (hover: hover) {
   .auth-edit-btn:hover {
@@ -366,7 +448,9 @@
     transform: translateX(3px);
   }
   .auth-delete-btn:hover {
-    color: var(--danger-text);
+    background: var(--danger-text);
+    border-color: var(--danger-text);
+    color: #fff;
   }
 }
 .btn-save.btn-danger {
@@ -412,4 +496,61 @@
     background: var(--card-soft);
     border-color: var(--primary);
   }
+}
+
+/* ── WILLKOMMEN (erster Besuch, siehe login.html) ── */
+.welcome { display: none; }
+html.show-welcome .auth-shell { display: none; }
+html.show-welcome .welcome {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: calc(var(--sp-xl) + env(safe-area-inset-top)) var(--sp-lg) calc(var(--sp-xl) + env(safe-area-inset-bottom));
+}
+.welcome-logo {
+  width: 96px;
+  height: 96px;
+  margin-bottom: var(--sp-lg);
+}
+.welcome-title {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 400;
+  font-size: 2.4rem;
+  line-height: 1.1;
+  color: var(--text);
+  margin: 0 0 var(--sp-sm);
+}
+.welcome-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 var(--sp-xl);
+}
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+}
+.welcome-start { width: 100%; }
+/* Zweiter Button unter "Los geht's": gleicher Stil wie "Konto löschen" (umrandet, ruhig) */
+.welcome-login {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .15s;
+}
+.welcome-login:active { color: var(--primary); }
+@media (hover: hover) {
+  .welcome-login:hover { color: var(--primary); }
 }
