@@ -1,8 +1,8 @@
 // ══════════════════════════════════════════════════════════
-//  SUPABASE-WECKER — wird von Vercel Cron alle 3 Tage
+//  SUPABASE-WECKER — wird von Vercel Cron täglich
 //  aufgerufen (siehe vercel.json) und stupst die Datenbank an,
 //  damit Supabase das Gratis-Projekt nicht wegen Inaktivität
-//  pausiert (passiert nach ca. 7 Tagen ohne Zugriff).
+//  pausiert oder schlafen legt (Nov. 2026: trotz Aufruf alle 3 Tage passiert, darum täglich).
 //  Gleiche Werte wie in assets/js/supabase.js. Der anon-Key ist
 //  öffentlich, dank Row Level Security sieht die Abfrage keine Daten.
 // ══════════════════════════════════════════════════════════

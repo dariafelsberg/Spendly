@@ -1,6 +1,6 @@
 {
   "crons": [
-    { "path": "/api/keepalive", "schedule": "17 6 */3 * *" }
+    { "path": "/api/keepalive", "schedule": "17 6 * * *" }
   ],
   "headers": [
     {

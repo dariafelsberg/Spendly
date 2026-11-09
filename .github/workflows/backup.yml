@@ -1,0 +1,52 @@
+# Wöchentliches Backup der Spendly-Daten (Tabelle public.user_data in Supabase).
+# Der Gratis-Plan von Supabase macht keine Backups, darum dieses hier.
+#
+# Das Repository ist öffentlich: Die Datei wird deshalb mit AES-256 verschlüsselt,
+# bevor sie als Artefakt gespeichert wird. Ohne die Passphrase ist sie unlesbar.
+# Nötige Secrets (GitHub → Settings → Secrets and variables → Actions):
+#   SUPABASE_SECRET_KEY        Supabase → Project Settings → API Keys → Secret keys → default (sb_secret_…)
+#   BACKUP_PASSPHRASE          lange, eigene Passphrase (im Passwort-Manager speichern)
+# Entschlüsseln: gpg --decrypt spendly-backup-JJJJ-MM-TT.json.gpg > backup.json
+name: Wöchentliches Backup
+
+on:
+  schedule:
+    - cron: '23 3 * * 1'   # jeden Montag 03:23 UTC
+  workflow_dispatch:       # von Hand starten: Actions → Wöchentliches Backup → Run workflow
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Daten aus Supabase holen
+        env:
+          SUPABASE_URL: https://pniabxirdrrfxyymzynh.supabase.co
+          KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$KEY" ]; then echo "::error::Secret SUPABASE_SECRET_KEY fehlt"; exit 1; fi
+          curl -fsS --retry 5 --retry-delay 30 --retry-all-errors \
+            "$SUPABASE_URL/rest/v1/user_data?select=*" \
+            -H "apikey: $KEY" -o backup.json   # neue Secret Keys nur im apikey-Header
+          echo "Gesicherte Konten: $(jq 'length' backup.json)"
+
+      - name: Verschlüsseln
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "$PASS" ]; then echo "::error::Secret BACKUP_PASSPHRASE fehlt"; exit 1; fi
+          printf '%s' "$PASS" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 -o "spendly-backup-$(date -u +%F).json.gpg" backup.json
+          shred -u backup.json
+
+      - name: Als Artefakt speichern (90 Tage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: spendly-backup-${{ github.run_number }}
+          path: '*.json.gpg'
+          retention-days: 90
+          if-no-files-found: error
