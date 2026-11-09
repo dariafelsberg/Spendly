@@ -217,7 +217,7 @@ if (onLoginPage) {
 }
 
 function initLoginPage() {
-  showStep('start');
+  if (hasAccountOnDevice()) showStep('login'); else showStep('start');
   updateLockoutUI();
   setInterval(updateLockoutUI, 1000);
 
@@ -229,13 +229,10 @@ function initLoginPage() {
   });
 }
 
-// Willkommens-Screen verlassen: "Los geht's" führt zu "Account erstellen", sonst zum Einloggen
-function leaveWelcome(step) {
-  try { localStorage.setItem('spendly_welcomed', '1'); } catch (e) {}
-  document.documentElement.classList.remove('show-welcome');
-  if (step === 'login') goLogin(); else showStep('start');
-  window.scrollTo(0, 0);
-}
+// Wer sich auf diesem Gerät schon einmal angemeldet hat, landet direkt beim Einloggen
+const HAS_ACCOUNT_KEY = 'spendly_hasAccount';
+function markHasAccount() { try { localStorage.setItem(HAS_ACCOUNT_KEY, '1'); } catch (e) {} }
+function hasAccountOnDevice() { try { return !!localStorage.getItem(HAS_ACCOUNT_KEY); } catch (e) { return false; } }
 
 // Ablauf wie bei Notion: zuerst "Account erstellen" mit E-Mail,
 // darunter "Registrieren" und "Einloggen". Die E-Mail wird in den
@@ -366,6 +363,7 @@ async function handleLogin(event) {
 
     if (!result.error) {
         clearAttempts();
+        markHasAccount();
         window.location.href = "index.html";
     } else if (!result.error.status) {
         // supabase-js meldet Netzwerkfehler als Fehler ohne HTTP-Status
@@ -429,6 +427,7 @@ async function handleRegister(event) {
         return;
     }
 
+    markHasAccount();
     if (data.session) {
         // E-Mail-Bestätigung ist ausgeschaltet → direkt angemeldet
         window.location.href = "index.html";

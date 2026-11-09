@@ -404,7 +404,7 @@ button {
 /* ── MAIN */
 .main {
   flex: 1;
-  padding: var(--sp-md) var(--sp-md) 72px;
+  padding: var(--sp-md) var(--sp-md) 96px; /* Platz für "Eintrag hinzufügen", damit er die letzte Karte nicht verdeckt */
 }
 .settings-main {
   flex: 1;
@@ -511,6 +511,23 @@ button {
   display: block;
   height: 10px;
 }
+/* Knopf in leeren Zuständen (z. B. "Budget festlegen") */
+.empty-cta {
+  display: inline-block;
+  text-decoration: none;
+  margin-top: var(--sp-xs);
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-family: inherit;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  cursor: pointer;
+}
+.empty-cta:active { opacity: .8; }
+@media (hover: hover) { .empty-cta:hover { background: var(--border); } }
 .empty-tx {
   text-align: center;
   padding: 16px;
@@ -1351,3 +1368,83 @@ button {
     background: var(--primary-light);
   }
 }
+
+/* ── COMPUTER (≥1024px): Navigation links statt unten, Inhalt mit fester Breite
+   Die untere Leiste wird zur Seitenleiste mit Logo; "Eintrag hinzufügen" sitzt darin.
+   Im eingebetteten Einstellungs-Fenster (embed-mode) bleibt alles wie bisher. */
+@media (min-width: 1024px) {
+  :root { --sidebar-w: 232px; }
+  html:not(.embed-mode) body:has(.bottom-nav) {
+    padding-left: var(--sidebar-w);
+  }
+  /* Vollbild: beginnt direkt am Rand der Seitenleiste und nutzt die ganze Breite */
+  html:not(.embed-mode) .app-shell {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding-bottom: 0;
+    min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  html:not(.embed-mode) .topbar,
+  html:not(.embed-mode) .settings-topbar {
+    border-radius: 0 0 var(--radius-card) 0;
+  }
+  html:not(.embed-mode) .bottom-nav {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: var(--sidebar-w);
+    height: auto;
+    transform: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 28px 16px;
+    border-top: none;
+    border-right: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+  /* Logo oben in der Seitenleiste */
+  html:not(.embed-mode) .bottom-nav::before {
+    content: 'Spendly';
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    padding-left: 48px;
+    margin: 0 0 24px 8px;
+    background: url(../icons/logo_spendly.svg) no-repeat left center / 36px 36px;
+    font-family: 'DM Serif Display', serif;
+    font-size: var(--fs-xl);
+    color: var(--text);
+  }
+  html:not(.embed-mode) .nav-btn {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+  }
+  html:not(.embed-mode) .nav-btn.active {
+    background: var(--primary-light);
+  }
+  html:not(.embed-mode) .nav-label {
+    font-size: var(--fs-body);
+    letter-spacing: 0;
+  }
+}
+@media (min-width: 1024px) and (hover: hover) {
+  html:not(.embed-mode) .nav-btn:not(.active):hover {
+    background: var(--card-soft);
+    color: var(--text);
+  }
+}
+
+/* hidden-Attribut gewinnt immer, auch gegen display aus einer Klasse
+   (sonst bleiben z. B. "Budget festlegen" oder die Kategorien sichtbar) */
+[hidden] { display: none !important; }

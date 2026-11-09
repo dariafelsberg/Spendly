@@ -426,7 +426,7 @@ function saveBudget() {
   if (!isNaN(val) && val >= 0) {
     state.budget = val; saveState();
     if (IS_HOME) { renderBudgetCard(); renderDonut(); }
-    if (IS_SETTINGS) { const sd = document.getElementById('budgetSettingDisplay'); if (sd) sd.textContent = 'CHF ' + formatNum(state.budget); }
+    if (IS_SETTINGS) { const sd = document.getElementById('budgetSettingDisplay'); if (sd) showBudgetSetting(sd); }
   }
   closeBudgetModal();
 }

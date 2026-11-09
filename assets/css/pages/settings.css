@@ -189,3 +189,9 @@ html.embed-modal-open body {
     text-decoration: underline;
   }
 }
+
+/* Noch kein Budget: ruhiger Hinweis statt "CHF 0.00" */
+.budget-setting-val.is-empty {
+  font-size: var(--fs-body);
+  color: var(--muted);
+}

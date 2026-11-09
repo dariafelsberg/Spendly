@@ -171,3 +171,20 @@
 }
 .insights-review .section-label,
 .insights-review-text { padding-right: 36px; }
+
+/* Leer: Erklärung statt Nullen */
+.insights-chart-card.is-empty .insights-chart {
+  height: auto;
+  display: block;
+}
+.insights-empty {
+  padding: var(--sp-lg) var(--sp-md) var(--sp-sm);
+  text-align: center;
+}
+.insights-empty p {
+  max-width: 300px;
+  margin: 0 auto var(--sp-sm);
+  font-size: var(--fs-note);
+  line-height: 1.5;
+  color: var(--muted);
+}

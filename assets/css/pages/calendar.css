@@ -25,7 +25,7 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  background: var(--card-soft);
+  background: none; /* alle Tage schlicht: nur die Zahl, Einträge zeigen sich über die Punkte */
   font-size: var(--fs-body);
   font-weight: 500;
   cursor: pointer;
@@ -102,4 +102,13 @@
       grid-column: 1/-1;
       grid-row: 3;
     }
+}
+
+/* Wochenende (Samstag, Sonntag = 6. und 7. Spalte) leicht absetzen:
+   Zahl in Grau, im Kopf die Buchstaben fett */
+.calendar-grid > .cal-day:is(:nth-child(7n+6), :nth-child(7n)):not(.selected):not(.today) {
+  color: var(--muted);
+}
+.calendar-weekdays > div:is(:nth-child(6), :nth-child(7)) {
+  font-weight: 700;
 }

@@ -30,6 +30,7 @@
   font-size: var(--fs-3xl);
   line-height: 1.1;
   letter-spacing: -.01em;
+  text-wrap: balance;
   color: var(--text);
 }
 
@@ -496,61 +497,4 @@
     background: var(--card-soft);
     border-color: var(--primary);
   }
-}
-
-/* ── WILLKOMMEN (erster Besuch, siehe login.html) ── */
-.welcome { display: none; }
-html.show-welcome .auth-shell { display: none; }
-html.show-welcome .welcome {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: calc(var(--sp-xl) + env(safe-area-inset-top)) var(--sp-lg) calc(var(--sp-xl) + env(safe-area-inset-bottom));
-}
-.welcome-logo {
-  width: 96px;
-  height: 96px;
-  margin-bottom: var(--sp-lg);
-}
-.welcome-title {
-  font-family: 'DM Serif Display', serif;
-  font-weight: 400;
-  font-size: 2.4rem;
-  line-height: 1.1;
-  color: var(--text);
-  margin: 0 0 var(--sp-sm);
-}
-.welcome-text {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--muted);
-  margin: 0 0 var(--sp-xl);
-}
-.welcome-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-xs);
-}
-.welcome-start { width: 100%; }
-/* Zweiter Button unter "Los geht's": gleicher Stil wie "Konto löschen" (umrandet, ruhig) */
-.welcome-login {
-  width: 100%;
-  padding: 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--muted);
-  font-family: inherit;
-  font-size: var(--fs-note);
-  font-weight: 600;
-  cursor: pointer;
-  transition: color .15s;
-}
-.welcome-login:active { color: var(--primary); }
-@media (hover: hover) {
-  .welcome-login:hover { color: var(--primary); }
 }

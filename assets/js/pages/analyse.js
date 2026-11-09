@@ -145,6 +145,15 @@ function renderInsightsChart() {
   const el = document.getElementById('insightsChart');
   if (!el) return;
   const monthNames = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  // Noch gar keine Einträge: Erklärung statt acht Nullen über einer leeren Fläche
+  el.parentElement.classList.toggle('is-empty', !state.entries.length);
+  if (!state.entries.length) {
+    el.innerHTML = `<div class="insights-empty">
+      <p>Sobald du Einnahmen und Ausgaben erfasst, siehst du hier, wie viel dir jeden Monat übrig bleibt.</p>
+      <a class="empty-cta" href="index.html">Eintrag erfassen</a>
+    </div>`;
+    return;
+  }
   const data = computeMonthlyNet(8, insightsWindowAnchor);
   const values = data.map(d => d.net);
   const maxVal = Math.max(...values, 0);

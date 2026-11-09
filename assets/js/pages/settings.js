@@ -15,7 +15,12 @@ function renderSettings() {
   renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense'); renderRecurringList('transfer');
   renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
-  if (sd) sd.textContent = 'CHF ' + formatNum(state.budget);
+  if (sd) showBudgetSetting(sd);
+}
+// Ohne Budget kein 'CHF 0.00', sondern ein Hinweis
+function showBudgetSetting(sd) {
+  sd.textContent = state.budget ? 'CHF ' + formatNum(state.budget) : 'Noch kein Budget';
+  sd.classList.toggle('is-empty', !state.budget);
 }
 function renderAccountsList() {
   const el = document.getElementById('accountsList');

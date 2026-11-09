@@ -554,3 +554,72 @@
   font-weight: 600;
   margin-bottom: 6px;
 }
+
+/* ── LEERE ZUSTÄNDE: ein Satz und ein Knopf statt "CHF 0.00" */
+.budget-amount.is-empty {
+  font-size: var(--fs-lg);
+  color: var(--text);
+}
+.account-pill-add {
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+.account-pill-add .ico { font-size: .9em; }
+.donut-center-budget.is-empty {
+  color: var(--text);
+  font-size: var(--fs-body);
+}
+.donut-empty-hint {
+  max-width: 280px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: var(--fs-note);
+  line-height: 1.5;
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .account-pill-add:hover { background: rgba(45, 27, 36, .25); }
+}
+
+/* Computer: "Eintrag hinzufügen" gross und schwebend unten in der Mitte des Inhalts
+   (Mitte der Fläche rechts neben der Seitenleiste), nicht am Rand */
+@media (min-width: 1024px) {
+  .fab {
+    left: calc(var(--sidebar-w) + (100% - var(--sidebar-w)) / 2);
+    bottom: 32px;
+    width: auto;
+    min-width: 320px;
+    max-width: none;
+    padding: 18px 32px;
+    font-size: var(--fs-lg);
+    transform: translateX(-50%);
+    z-index: 60;
+  }
+  .fab:active { transform: translateX(-50%) scale(.97); }
+}
+@media (min-width: 1024px) and (hover: hover) {
+  .fab:hover { transform: translateX(-50%) translateY(-2px); }
+}
+/* Platz unter dem Inhalt, damit der schwebende Knopf nichts verdeckt */
+@media (min-width: 1024px) {
+  .main { padding-bottom: 120px; }
+}
+/* Monat als grosser Titel über den Karten (DM Serif Display wie die Seitentitel) */
+.month-title {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 400;
+  font-size: var(--fs-2xl);
+  line-height: 1.1;
+  color: var(--text);
+  margin: var(--sp-xs) 0 var(--sp-md);
+}
+@media (min-width: 768px) {
+  .month-title { grid-column: 1/-1; grid-row: 1; margin: 0; }
+  .budget-section { grid-row: 2/span 2; }
+  .donut-wrapper { grid-row: 2/span 16; }
+  .transactions-section { grid-row: 4/span 3; }
+}

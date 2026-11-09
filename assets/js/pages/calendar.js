@@ -130,7 +130,7 @@ function renderMonthGrid(year, month, byDay, todayStr, gridId) {
       ${expenseEs.length  ? `<div class="cal-day-dot expense${expensePlanned ? ' planned' : ''}"></div>`   : ''}
       ${transferEs.length ? `<div class="cal-day-dot transfer${transferPlanned ? ' planned' : ''}"></div>` : ''}
     </div>` : '';
-    const cls = ['cal-day', key===todayStr?'today':'', calSelectedDay&&key===dateKey(calSelectedDay)?'selected':''].filter(Boolean).join(' ');
+    const cls = ['cal-day', es.length?'has-entries':'', key===todayStr?'today':'', calSelectedDay&&key===dateKey(calSelectedDay)?'selected':''].filter(Boolean).join(' ');
     html += `<div class="${cls}" onclick="selectCalDay(${year},${month},${d})" role="button" tabindex="0"${key===todayStr ? ' aria-current="date"' : ''}><span>${d}</span>${dots}</div>`;
   }
   document.getElementById(gridId).innerHTML = html;

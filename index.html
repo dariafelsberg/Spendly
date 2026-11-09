@@ -45,7 +45,7 @@
     <!-- ── MAIN ── -->
     <div class="main">
 
-      <div class="month-label" id="monthLabel"></div>
+      <h2 class="month-title" id="monthLabel"></h2>
 
       <!-- Budget card -->
       <div class="card budget-section">
@@ -54,6 +54,7 @@
           <div class="section-label">Monatsbudget</div>
           <div class="budget-amount" id="budgetDisplay">CHF 0.00</div>
           <div class="budget-sub" id="budgetSub">Noch kein Budget gesetzt</div>
+          <button class="empty-cta" id="budgetCta" onclick="openBudgetModal()" hidden>Budget festlegen</button>
         </div>
       </div>
 
@@ -71,6 +72,7 @@
           </div>
           <div class="donut-labels" id="donutLabels"></div>
         </div>
+        <p class="donut-empty-hint" id="donutEmptyHint" hidden>Erfasse deine erste Ausgabe mit «Eintrag hinzufügen». Hier siehst du dann, wofür du dein Geld ausgibst.</p>
         <div class="categories-grid" id="categoriesGrid"></div>
         <div class="sk-chips" aria-hidden="true"><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span><span class="sk sk-chip"></span></div>
       </div>

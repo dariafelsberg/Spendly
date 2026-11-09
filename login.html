@@ -16,26 +16,9 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/auth.css">
   <link rel="manifest" href="manifest.json">
-  <script>
-    // Willkommens-Screen nur beim ersten Besuch auf diesem Gerät (vor dem Zeichnen setzen, sonst flackert das Formular)
-    try {
-      if (!localStorage.getItem('spendly_welcomed') && !/[?&]reset=1/.test(location.search)) document.documentElement.classList.add('show-welcome');
-    } catch (e) {}
-  </script>
 </head>
 
 <body>
-
-  <!-- ══ WILLKOMMEN (erster Besuch) ══ -->
-  <section class="welcome" aria-labelledby="welcomeTitle">
-    <img class="welcome-logo" src="assets/icons/logo_spendly.svg" alt="">
-    <h1 class="welcome-title" id="welcomeTitle">Behalte dein Geld im Blick.</h1>
-    <p class="welcome-text">Budget, Konten und Ausgaben an einem Ort. Du siehst jederzeit, wie viel diesen Monat noch übrig ist.</p>
-    <div class="welcome-actions">
-      <button class="btn-save welcome-start" onclick="leaveWelcome('start')">Los geht's</button>
-      <button class="welcome-login" onclick="leaveWelcome('login')">Ich habe schon ein Konto</button>
-    </div>
-  </section>
 
   <div class="auth-shell">
 
@@ -46,7 +29,7 @@
       <!-- ══ START: zuerst Account erstellen, darunter Einloggen (wie bei Notion) ══ -->
       <form id="startForm" class="auth-form" onsubmit="return handleStart(event)" novalidate>
         <h1 class="auth-title">Account erstellen</h1>
-        <p class="auth-sub">Gratis und ohne Werbung. Auf Handy, Tablet und Computer.</p>
+        <p class="auth-sub">Behalte Budget, Konten und Ausgaben an einem Ort im Blick. Gratis und ohne Werbung, auf Handy, Tablet und Computer.</p>
         <div class="form-group">
           <label class="form-label" for="startEmail">E-Mail</label>
           <input class="form-input" type="email" id="startEmail" autocomplete="email" placeholder="deine@email.ch">

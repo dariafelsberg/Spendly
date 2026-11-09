@@ -6,6 +6,7 @@
 // ── HOME
 function initHome() {
   const now = new Date();
+  // Der Monat steht als grosser Titel über den Karten
   document.getElementById('monthLabel').textContent = now.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
   document.getElementById('entryDate').valueAsDate = now;
   populateCategorySelect('expense');
@@ -93,8 +94,9 @@ function renderTopBar() {
     ).join('');
     pillsEl.style.display = 'flex';
   } else {
-    pillsEl.innerHTML = '';
-    pillsEl.style.display = 'none';
+    // Noch kein Konto: statt nur "0.00" direkt zeigen, was zu tun ist
+    pillsEl.innerHTML = '<button class="account-pill-item account-pill-add" onclick="toggleAppMenu(true)"><span class="ico ico-plus" aria-hidden="true"></span> Konto hinzufügen</button>';
+    pillsEl.style.display = 'flex';
   }
 }
 
@@ -121,9 +123,19 @@ function defaultAccountId() {
 
 function renderBudgetCard() {
   const spent = totalExpenses();
-  document.getElementById('budgetDisplay').textContent = 'CHF ' + formatNum(state.budget);
+  const display = document.getElementById('budgetDisplay');
   const sub = document.getElementById('budgetSub');
-  if (!state.budget) { sub.textContent = 'Noch kein Budget gesetzt'; sub.className = 'budget-sub'; return; }
+  const cta = document.getElementById('budgetCta');
+  // Leer: kein "CHF 0.00", sondern ein Satz und ein Knopf zum Festlegen
+  display.classList.toggle('is-empty', !state.budget);
+  if (cta) cta.hidden = !!state.budget;
+  if (!state.budget) {
+    display.textContent = 'Noch kein Budget';
+    sub.textContent = 'Leg fest, wie viel du pro Monat ausgeben willst.';
+    sub.className = 'budget-sub';
+    return;
+  }
+  display.textContent = 'CHF ' + formatNum(state.budget);
   const rem = state.budget - spent;
   sub.textContent = rem >= 0 ? `Noch CHF ${formatNum(rem)} verfügbar` : `CHF ${formatNum(Math.abs(rem))} überzogen!`;
   sub.className = 'budget-sub' + (rem < 0 ? ' over' : '');
@@ -136,7 +148,16 @@ function renderDonut() {
   const centerSub = document.getElementById('donutSpent');
   const centerLabel = document.getElementById('donutLabel');
   const rest = state.budget - spent;
-  if (!state.budget) {
+  // Diesen Monat noch nichts ausgegeben: Hinweis statt 15 Kategorien mit 0.00
+  const isEmpty = spent === 0;
+  document.getElementById('donutEmptyHint').hidden = !isEmpty;
+  document.getElementById('categoriesGrid').hidden = isEmpty;
+  centerEl.classList.toggle('is-empty', isEmpty && !state.budget);
+  if (isEmpty && !state.budget) {
+    centerEl.textContent = 'Noch keine';
+    centerLabel.textContent = 'Ausgaben im ' + new Date().toLocaleDateString('de-CH', { month: 'long' });
+    centerSub.textContent = '';
+  } else if (!state.budget) {
     centerEl.textContent = 'CHF ' + formatNum(spent);
     centerLabel.textContent = 'ausgegeben';
     centerSub.textContent = '';
@@ -213,14 +234,18 @@ function renderDonut() {
     el.classList.remove('show');
     setTimeout(() => el.remove(), 600);
   });
-  document.getElementById('categoriesGrid').innerHTML = allExpenseCats().map(c => {
-    const amt = catTotals[c.name] || 0;
-    return `<div class="cat-chip${amt ? ' used' : ''}" data-cat="${esc(c.name)}" style="${amt ? `--cat-bg:${esc(c.color)}15;--cat-border:${esc(c.color)}44` : ''}">
-      <div class="cat-dot" style="background:${amt ? esc(c.color) : '#ddd'}"></div>
+  // Nur Kategorien mit Ausgaben in diesem Monat, die grösste zuerst
+  document.getElementById('categoriesGrid').innerHTML = activeCats
+    .slice()
+    .sort((a, b) => catTotals[b.name] - catTotals[a.name])
+    .map(c => {
+      const amt = catTotals[c.name];
+      return `<div class="cat-chip used" data-cat="${esc(c.name)}" style="--cat-bg:${esc(c.color)}15;--cat-border:${esc(c.color)}44">
+      <div class="cat-dot" style="background:${esc(c.color)}"></div>
       <span class="cat-name">${catIcon(c)} ${esc(c.name)}</span>
-      ${amt ? `<span class="cat-amount expense">−${formatNum(amt)}</span>` : ''}
+      <span class="cat-amount expense">−${formatNum(amt)}</span>
     </div>`;
-  }).join('');
+    }).join('');
 }
 
 // Leerer Touch-Listener: sonst zeigt Safari auf dem iPhone den gedrückten Zustand (:active) nicht an
