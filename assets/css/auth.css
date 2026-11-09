@@ -815,3 +815,72 @@
   .auth-shell[data-step="start"] .auth-divider { display: none; }
   .auth-shell[data-step="start"] .auth-secondary { margin-top: var(--sp-sm); }
 }
+
+/* ══ EINRICHTEN VOR DER REGISTRIERUNG (Konto, Budget, dann Account) ══
+   Ganze Bildschirme statt Fenster. Oben Zurück und Fortschritt, am Handy
+   sitzt der Weiter-Knopf unten am Daumen. */
+.onb-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-md);
+}
+.onb-top .auth-back { margin-bottom: 0; }
+.onb-progress { display: flex; gap: 6px; }
+.onb-progress i {
+  width: 28px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+}
+.onb-progress i.on { background: var(--primary); }
+
+/* Zusammenfassung vor dem Registrieren: zeigt den Nutzen der Angaben */
+.onb-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: var(--sp-md) 0 var(--sp-xs);
+  padding: var(--sp-md) var(--sp-lg);
+  border-radius: var(--radius-card);
+  background: var(--primary);
+  color: #fff;
+}
+.onb-summary[hidden] { display: none; }
+.onb-summary-label { font-size: var(--fs-note); font-weight: 600; }
+.onb-summary-value { font-size: var(--fs-2xl); font-weight: 700; line-height: 1.1; }
+.onb-summary-sub { font-size: var(--fs-note); }
+.onb-summary-sub:empty { display: none; }
+
+/* Handy: jeder Schritt füllt den Bildschirm, Weiter-Knopf unten */
+@media (max-width: 767px) {
+  .auth-shell:is([data-step="account"], [data-step="budget"]) {
+    align-items: stretch;
+    padding-top: calc(var(--sp-md) + env(safe-area-inset-top));
+  }
+  .auth-shell:is([data-step="account"], [data-step="budget"]) .auth-column {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  .auth-shell:is([data-step="account"], [data-step="budget"]) .auth-mark { display: none; }
+  .onb-form { flex: 1; }
+  .onb-form .auth-submit { margin-top: auto; }
+  .auth-shell[data-step="register"] .auth-mark { display: none; }
+}
+.onb-form .auth-title { font-size: var(--fs-2xl); }
+
+/* Einloggen sieht aus wie die Einrichten-Seiten: oben beginnend, ohne Logo,
+   am Handy sitzt «Einloggen» unten am Daumen */
+.auth-shell[data-step="login"] .auth-mark { display: none; }
+@media (max-width: 767px) {
+  .auth-shell[data-step="login"] {
+    align-items: stretch;
+    padding-top: calc(var(--sp-md) + env(safe-area-inset-top));
+  }
+  .auth-shell[data-step="login"] .auth-column {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+}

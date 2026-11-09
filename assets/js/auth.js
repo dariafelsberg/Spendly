@@ -234,28 +234,29 @@ const HAS_ACCOUNT_KEY = 'spendly_hasAccount';
 function markHasAccount() { try { localStorage.setItem(HAS_ACCOUNT_KEY, '1'); } catch (e) {} }
 function hasAccountOnDevice() { try { return !!localStorage.getItem(HAS_ACCOUNT_KEY); } catch (e) { return false; } }
 
-// Ablauf wie bei Notion: zuerst "Account erstellen" mit E-Mail,
-// darunter "Registrieren" und "Einloggen". Die E-Mail wird in den
-// nächsten Schritt übernommen.
+// Ablauf: zuerst zeigen, was Spendly kann, dann einrichten (Konto, Budget),
+// und erst am Schluss registrieren. Die Angaben aus dem Einrichten werden
+// lokal gemerkt und beim ersten Login ins neue Konto übernommen.
 function showStep(step) {
-  const steps = { start: 'startForm', login: 'loginForm', register: 'registerForm' };
+  // Liste hier drin, weil showStep schon beim Laden der Seite läuft (vor späteren const)
+  const AUTH_STEPS = { start: 'startForm', account: 'accountForm', budget: 'budgetForm', login: 'loginForm', register: 'registerForm' };
   // Das Bild mit dem Handy gehört nur zum Start; CSS liest den Schritt aus data-step
   const shell = document.getElementById('authShell');
   if (shell) shell.dataset.step = step;
-  Object.entries(steps).forEach(([key, id]) => {
+  Object.entries(AUTH_STEPS).forEach(([key, id]) => {
     document.getElementById(id).style.display = key === step ? 'flex' : 'none';
   });
-  ['startError', 'loginError', 'registerError'].forEach(id => {
+  ['onbAccountError', 'onbBudgetError', 'loginError', 'registerError'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.textContent.startsWith('Zu viele')) el.textContent = '';
   });
   const notice = document.getElementById('registerExistsNotice');
   if (notice) notice.style.display = 'none';
-  // Rechtlicher Hinweis gehört nur zur Registrierung
+  // Rechtlicher Hinweis gehört nur zu Start und Registrierung
   const foot = document.querySelector('.auth-footnote');
-  if (foot) foot.style.display = step === 'login' ? 'none' : '';
+  if (foot) foot.style.display = (step === 'start' || step === 'register') ? '' : 'none';
+  window.scrollTo(0, 0);
 }
-function _startEmail() { return document.getElementById('startEmail').value.trim(); }
 function _focusFirstEmpty(ids) {
   const el = ids.map(id => document.getElementById(id)).find(i => !i.value) || document.getElementById(ids[ids.length - 1]);
   el.focus();
@@ -263,29 +264,65 @@ function _focusFirstEmpty(ids) {
 
 function handleStart(event) {
   event.preventDefault();
-  const input = document.getElementById('startEmail');
-  const errEl = document.getElementById('startError');
-  const email = _startEmail();
-  // Am Handy ist das E-Mail-Feld beim Start ausgeblendet (nur Knöpfe):
-  // dann direkt zur Registrierung, die E-Mail kommt dort ins Feld
-  if (input.offsetParent === null) {
-    showStep('register');
-    _focusFirstEmpty(['regEmail', 'regUsername', 'regPassword']);
-    return false;
-  }
-  if (!email || !input.checkValidity() || !email.includes('@')) {
-    errEl.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
-    input.focus();
-    return false;
-  }
-  document.getElementById('regEmail').value = email;
-  showStep('register');
-  _focusFirstEmpty(['regUsername', 'regPassword']);
+  showStep('account');
   return false;
 }
 
+// ── EINRICHTEN VOR DER REGISTRIERUNG ─────────────────────────
+// Gleiches Format wie in main.js (state.accounts, state.budget)
+const _onb = { account: null, budget: 0 };
+function _parseAmount(v) { return parseFloat(String(v).trim().replace(/[\s'’]/g, '').replace(',', '.')); }
+function _formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function _uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function onbAccountNext(event) {
+  if (event) event.preventDefault();
+  const name = document.getElementById('onbAccountName').value.trim();
+  const raw = document.getElementById('onbAccountBalance').value.trim();
+  const balance = raw ? _parseAmount(raw) : 0;
+  const err = document.getElementById('onbAccountError');
+  if (!name) { err.textContent = 'Gib dem Konto einen Namen, zum Beispiel Raiffeisen, oder tippe auf «Später».'; return false; }
+  if (isNaN(balance)) { err.textContent = 'Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'; return false; }
+  _onb.account = { id: (_onb.account && _onb.account.id) || _uid(), name, balance, visible: true };
+  showStep('budget');
+  return false;
+}
+function onbBudgetNext(event) {
+  if (event) event.preventDefault();
+  const val = _parseAmount(document.getElementById('onbBudget').value);
+  const err = document.getElementById('onbBudgetError');
+  if (isNaN(val) || val <= 0) { err.textContent = 'Gib einen Betrag ein, zum Beispiel 2000, oder tippe auf «Später».'; return false; }
+  _onb.budget = val;
+  showStep('register');
+  return false;
+}
+function onbSkip(which) {
+  if (which === 'account') { _onb.account = null; showStep('budget'); }
+  else { _onb.budget = 0; showStep('register'); }
+}
+
+// Nach erfolgreicher Registrierung: Angaben als lokalen Stand ablegen. main.js lädt
+// ihn beim ersten Öffnen hoch, weil das neue Konto auf dem Server noch leer ist.
+function saveOnboardingData() {
+  if (!_onb.account && !(_onb.budget > 0)) return;
+  try {
+    const state = {
+      balance: 0, budget: _onb.budget || 0, entries: [],
+      accounts: _onb.account ? [_onb.account] : [],
+      recurringIncome: [], recurringExpense: [], recurringTransfers: [],
+      appliedRecurringMonths: [], customExpenseCats: [], customIncomeCats: [],
+    };
+    localStorage.setItem('budgetApp_v2', JSON.stringify(state));
+    // Fremden lokalen Stand nicht mehr einem anderen Konto zuordnen
+    localStorage.removeItem('budgetApp_owner');
+    localStorage.removeItem('budgetApp_unsynced');
+    // Die Einrichtungs-Fenster in der App sind damit erledigt
+    localStorage.setItem('spendly_onboarded', '1');
+  } catch (e) {}
+}
+
 function goLogin() {
-  const email = _startEmail() || document.getElementById('regEmail').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
   if (email) document.getElementById('loginIdentifier').value = email;
   showStep('login');
   updateLockoutUI();
@@ -438,6 +475,7 @@ async function handleRegister(event) {
     }
 
     markHasAccount();
+    saveOnboardingData();
     if (data.session) {
         // E-Mail-Bestätigung ist ausgeschaltet → direkt angemeldet
         window.location.href = "index.html";
