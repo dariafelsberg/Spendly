@@ -239,6 +239,9 @@ function hasAccountOnDevice() { try { return !!localStorage.getItem(HAS_ACCOUNT_
 // nächsten Schritt übernommen.
 function showStep(step) {
   const steps = { start: 'startForm', login: 'loginForm', register: 'registerForm' };
+  // Das Bild mit dem Handy gehört nur zum Start; CSS liest den Schritt aus data-step
+  const shell = document.getElementById('authShell');
+  if (shell) shell.dataset.step = step;
   Object.entries(steps).forEach(([key, id]) => {
     document.getElementById(id).style.display = key === step ? 'flex' : 'none';
   });
@@ -263,6 +266,13 @@ function handleStart(event) {
   const input = document.getElementById('startEmail');
   const errEl = document.getElementById('startError');
   const email = _startEmail();
+  // Am Handy ist das E-Mail-Feld beim Start ausgeblendet (nur Knöpfe):
+  // dann direkt zur Registrierung, die E-Mail kommt dort ins Feld
+  if (input.offsetParent === null) {
+    showStep('register');
+    _focusFirstEmpty(['regEmail', 'regUsername', 'regPassword']);
+    return false;
+  }
   if (!email || !input.checkValidity() || !email.includes('@')) {
     errEl.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
     input.focus();
