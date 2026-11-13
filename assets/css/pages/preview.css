@@ -1,0 +1,5 @@
+/* ── VORSCHAU IM ONBOARDING (preview.html) ──
+   Die Startseite ohne Navigation, verkleinert im Handyrahmen auf login.html.
+   Nur ansehen: kein Scrollen, nichts antippen. */
+html, body { overflow: hidden; }
+.app-shell { padding-bottom: 0; }

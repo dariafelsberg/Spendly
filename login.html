@@ -46,11 +46,47 @@
         <button type="button" class="auth-secondary" onclick="goLogin()">Einloggen</button>
       </form>
 
-      <!-- ══ EINRICHTEN 1: Konto (ohne Login, wird lokal gemerkt) ══ -->
-      <form id="accountForm" class="auth-form onb-form" style="display:none" onsubmit="return onbAccountNext(event)" novalidate>
+      <!-- ══ EINRICHTEN 1: Ziel (fragen statt erklären, Antwort passt die Texte an) ══ -->
+      <form id="goalForm" class="auth-form onb-form" style="display:none" onsubmit="return onbGoalNext(event)" novalidate>
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('start')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
-          <span class="onb-progress" aria-label="Schritt 1 von 3"><i class="on"></i><i></i><i></i></span>
+          <span class="onb-progress" aria-label="Schritt 1 von 5"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+        </div>
+        <h1 class="auth-title">Was möchtest du mit Spendly erreichen?</h1>
+        <p class="auth-sub">Wähle, was am besten passt.</p>
+        <fieldset class="onb-goals">
+          <legend class="sr-only">Dein Ziel</legend>
+          <label class="onb-goal">
+            <input type="radio" name="onbGoal" value="ausgaben">
+            <span class="onb-goal-ico"><span class="ico ico-shoppingcart" aria-hidden="true"></span></span>
+            <span class="onb-goal-text"><b>Ausgaben im Griff haben</b><small>Sehen, wohin mein Geld geht</small></span>
+          </label>
+          <label class="onb-goal">
+            <input type="radio" name="onbGoal" value="sparen">
+            <span class="onb-goal-ico"><span class="ico ico-coin" aria-hidden="true"></span></span>
+            <span class="onb-goal-text"><b>Auf etwas sparen</b><small>Jeden Monat etwas zur Seite legen</small></span>
+          </label>
+          <label class="onb-goal">
+            <input type="radio" name="onbGoal" value="fixkosten">
+            <span class="onb-goal-ico"><span class="ico ico-bill" aria-hidden="true"></span></span>
+            <span class="onb-goal-text"><b>Fixkosten überblicken</b><small>Miete, Abos und Rechnungen im Blick</small></span>
+          </label>
+          <label class="onb-goal">
+            <input type="radio" name="onbGoal" value="konten">
+            <span class="onb-goal-ico"><span class="ico ico-bank" aria-hidden="true"></span></span>
+            <span class="onb-goal-text"><b>Alle Konten an einem Ort</b><small>Mein Guthaben auf einen Blick</small></span>
+          </label>
+        </fieldset>
+        <div class="auth-error" id="onbGoalError"></div>
+        <button class="btn-save auth-submit" type="submit">Weiter</button>
+        <button type="button" class="auth-reset-link" onclick="onbSkip('goal')">Später</button>
+      </form>
+
+      <!-- ══ EINRICHTEN 2: Konto (ohne Login, wird lokal gemerkt) ══ -->
+      <form id="accountForm" class="auth-form onb-form" style="display:none" onsubmit="return onbAccountNext(event)" novalidate>
+        <div class="onb-top">
+          <button type="button" class="auth-back" onclick="showStep('goal')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
+          <span class="onb-progress" aria-label="Schritt 2 von 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
         </div>
         <h1 class="auth-title">Wo liegt dein Geld?</h1>
         <p class="auth-sub">Trag dein Hauptkonto ein.</p>
@@ -67,11 +103,11 @@
         <button type="button" class="auth-reset-link" onclick="onbSkip('account')">Später</button>
       </form>
 
-      <!-- ══ EINRICHTEN 2: Monatsbudget ══ -->
+      <!-- ══ EINRICHTEN 3: Monatsbudget ══ -->
       <form id="budgetForm" class="auth-form onb-form" style="display:none" onsubmit="return onbBudgetNext(event)" novalidate>
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('account')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
-          <span class="onb-progress" aria-label="Schritt 2 von 3"><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="onb-progress" aria-label="Schritt 3 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
         </div>
         <h1 class="auth-title">Wie viel willst du pro Monat ausgeben?</h1>
         <p class="auth-sub">Trage dein Budget ein.</p>
@@ -82,6 +118,23 @@
         <div class="auth-error" id="onbBudgetError"></div>
         <button class="btn-save auth-submit" type="submit">Weiter</button>
         <button type="button" class="auth-reset-link" onclick="onbSkip('budget')">Später</button>
+      </form>
+
+      <!-- ══ EINRICHTEN 4: Vorschau. Die Startseite der App mit den eigenen Angaben
+           (preview.html) im Handyrahmen, bevor der Account kommt. ══ -->
+      <form id="previewForm" class="auth-form onb-form" style="display:none" onsubmit="return onbPreviewNext(event)" novalidate>
+        <div class="onb-top">
+          <button type="button" class="auth-back" onclick="showStep('budget')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
+          <span class="onb-progress" aria-label="Schritt 4 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+        </div>
+        <h1 class="auth-title">Dein Spendly ist bereit</h1>
+        <div class="onb-phone">
+          <div class="hp-notch"></div>
+          <div class="onb-phone-screen">
+            <iframe class="onb-preview-frame" id="previewFrame" title="Vorschau deiner Startseite in Spendly" scrolling="no" tabindex="-1"></iframe>
+          </div>
+        </div>
+        <button class="btn-save auth-submit" type="submit">Account erstellen und speichern</button>
       </form>
 
       <!-- ══ LOGIN ══ -->
@@ -115,8 +168,8 @@
       <!-- ══ REGISTRIEREN ══ -->
       <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
         <div class="onb-top">
-          <button type="button" class="auth-back" onclick="showStep('budget')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
-          <span class="onb-progress" aria-label="Schritt 3 von 3"><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <button type="button" class="auth-back" onclick="showStep('preview')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
+          <span class="onb-progress" aria-label="Schritt 5 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
         </div>
         <h1 class="auth-title" id="registerTitle">Dein Budget, von überall erreichbar</h1>
         <p class="auth-sub" id="registerSub">Erstelle einen Account, damit deine Angaben gespeichert bleiben und du sie auf allen Geräten siehst.</p>

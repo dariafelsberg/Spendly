@@ -854,21 +854,158 @@
 
 /* Handy: jeder Schritt füllt den Bildschirm, Weiter-Knopf unten */
 @media (max-width: 767px) {
-  .auth-shell:is([data-step="account"], [data-step="budget"]) {
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"]) {
     align-items: stretch;
     padding-top: calc(var(--sp-md) + env(safe-area-inset-top));
   }
-  .auth-shell:is([data-step="account"], [data-step="budget"]) .auth-column {
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"]) .auth-column {
     display: flex;
     flex-direction: column;
     min-height: calc(100dvh - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
-  .auth-shell:is([data-step="account"], [data-step="budget"]) .auth-mark { display: none; }
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"]) .auth-mark { display: none; }
   .onb-form { flex: 1; }
   .onb-form .auth-submit { margin-top: auto; }
   .auth-shell[data-step="register"] .auth-mark { display: none; }
 }
 .onb-form .auth-title { font-size: var(--fs-2xl); }
+
+/* Ziel-Frage: grosse Antwortkarten mit Icon, ganze Karte ist tippbar */
+.onb-goals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.onb-goal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color .15s, background-color .15s;
+}
+.onb-goal input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.onb-goal-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  background: var(--card-soft);
+  color: var(--primary-dark);
+  font-size: var(--fs-lg);
+}
+.onb-goal-text { display: flex; flex-direction: column; gap: 2px; }
+.onb-goal-text b { font-size: var(--fs-body); font-weight: 600; color: var(--text); }
+.onb-goal-text small { font-size: var(--fs-note); color: var(--muted); }
+.onb-goal:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--card-soft);
+}
+.onb-goal:has(input:checked) .onb-goal-ico { background: var(--primary); color: #fff; }
+.onb-goal:has(input:focus-visible) { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
+@media (hover: hover) {
+  .onb-goal:hover { border-color: var(--primary); }
+}
+
+/* Vorschau: die Startseite (preview.html) verkleinert im Handyrahmen wie auf
+   dem Startbild. Das iframe ist so breit wie ein Handy (--pv-vw 390px) und
+   wird mit --pv-scale auf die Bildschirmbreite im Rahmen verkleinert.
+   Am Computer wird daraus ein Laptop mit der Computer-Ansicht (siehe unten). */
+.onb-phone {
+  --pv-vw: 390px;
+  --pv-scale: .5;
+  --pv-w: calc(var(--pv-vw) * var(--pv-scale));
+  --pv-h: 424px;
+  position: relative;
+  align-self: center;
+  width: calc(var(--pv-w) + 16px);
+  height: calc(var(--pv-h) + 16px);
+  padding: 8px;
+  margin: var(--sp-lg) 0;
+  border-radius: 34px;
+  background: var(--text);
+  box-shadow: var(--shadow-float);
+}
+.onb-phone .hp-notch { top: 16px; }
+.onb-phone-screen {
+  width: var(--pv-w);
+  height: var(--pv-h);
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--bg);
+}
+.onb-preview-frame {
+  display: block;
+  width: var(--pv-vw);
+  height: calc(var(--pv-h) / var(--pv-scale));
+  border: 0;
+  transform: scale(var(--pv-scale));
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+/* Grosse Bildschirme: Handy etwas grösser, ohne Logo darüber, damit
+   «Speichern und weiter» ohne Scrollen sichtbar bleibt */
+.auth-shell[data-step="preview"] .auth-mark { display: none; }
+@media (min-width: 768px) and (min-height: 900px) {
+  .onb-phone { --pv-scale: .6; --pv-h: 484px; }
+}
+
+/* Computer: Laptop statt Handy, darin die Startseite in Computer-Breite
+   (1280px, verkleinert). Die Spalte wird dafür breiter. */
+@media (min-width: 1024px) {
+  .auth-shell[data-step="preview"] .auth-column { max-width: 640px; }
+  .onb-phone {
+    --pv-vw: 1280px;
+    --pv-scale: .45;
+    --pv-h: 360px;
+    padding: 14px 10px 10px;
+    margin-bottom: calc(var(--sp-lg) + 14px);
+    border-radius: 16px 16px 4px 4px;
+    box-shadow: none;
+  }
+  .onb-phone .hp-notch { top: 5px; width: 5px; height: 5px; }
+  .onb-phone-screen { border-radius: 4px; }
+  /* Unterteil des Laptops */
+  .onb-phone::after {
+    content: '';
+    position: absolute;
+    left: -36px;
+    right: -36px;
+    bottom: -14px;
+    height: 14px;
+    border-radius: 2px 2px 14px 14px;
+    background: var(--text);
+    box-shadow: var(--shadow-float);
+  }
+}
+@media (min-width: 1024px) and (min-height: 900px) {
+  .onb-phone { --pv-scale: .5; --pv-h: 400px; }
+}
+
+/* Nur für Screenreader sichtbar */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 
 /* Einloggen sieht aus wie die Einrichten-Seiten: oben beginnend, ohne Logo,
    am Handy sitzt «Einloggen» unten am Daumen */

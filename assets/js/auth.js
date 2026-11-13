@@ -239,14 +239,14 @@ function hasAccountOnDevice() { try { return !!localStorage.getItem(HAS_ACCOUNT_
 // lokal gemerkt und beim ersten Login ins neue Konto übernommen.
 function showStep(step) {
   // Liste hier drin, weil showStep schon beim Laden der Seite läuft (vor späteren const)
-  const AUTH_STEPS = { start: 'startForm', account: 'accountForm', budget: 'budgetForm', login: 'loginForm', register: 'registerForm' };
+  const AUTH_STEPS = { start: 'startForm', goal: 'goalForm', account: 'accountForm', budget: 'budgetForm', preview: 'previewForm', login: 'loginForm', register: 'registerForm' };
   // Das Bild mit dem Handy gehört nur zum Start; CSS liest den Schritt aus data-step
   const shell = document.getElementById('authShell');
   if (shell) shell.dataset.step = step;
   Object.entries(AUTH_STEPS).forEach(([key, id]) => {
     document.getElementById(id).style.display = key === step ? 'flex' : 'none';
   });
-  ['onbAccountError', 'onbBudgetError', 'loginError', 'registerError'].forEach(id => {
+  ['onbGoalError', 'onbAccountError', 'onbBudgetError', 'loginError', 'registerError'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.textContent.startsWith('Zu viele')) el.textContent = '';
   });
@@ -264,16 +264,26 @@ function _focusFirstEmpty(ids) {
 
 function handleStart(event) {
   event.preventDefault();
-  showStep('account');
+  showStep('goal');
   return false;
 }
 
 // ── EINRICHTEN VOR DER REGISTRIERUNG ─────────────────────────
 // Gleiches Format wie in main.js (state.accounts, state.budget)
-const _onb = { account: null, budget: 0 };
+const _onb = { goal: '', account: null, budget: 0 };
+window._onb = _onb; // liest die Vorschau (preview.html) im iframe
 function _parseAmount(v) { return parseFloat(String(v).trim().replace(/[\s'’]/g, '').replace(',', '.')); }
 function _formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function _uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function onbGoalNext(event) {
+  if (event) event.preventDefault();
+  const picked = document.querySelector('input[name="onbGoal"]:checked');
+  if (!picked) { document.getElementById('onbGoalError').textContent = 'Wähle ein Ziel aus oder tippe auf «Später».'; return false; }
+  _onb.goal = picked.value;
+  showStep('account');
+  return false;
+}
 
 function onbAccountNext(event) {
   if (event) event.preventDefault();
@@ -293,17 +303,59 @@ function onbBudgetNext(event) {
   const err = document.getElementById('onbBudgetError');
   if (isNaN(val) || val <= 0) { err.textContent = 'Gib einen Betrag ein, zum Beispiel 2000, oder tippe auf «Später».'; return false; }
   _onb.budget = val;
-  showStep('register');
+  showPreview();
   return false;
 }
 function onbSkip(which) {
-  if (which === 'account') { _onb.account = null; showStep('budget'); }
-  else { _onb.budget = 0; showStep('register'); }
+  if (which === 'goal') {
+    _onb.goal = '';
+    document.querySelectorAll('input[name="onbGoal"]').forEach(r => { r.checked = false; });
+    showStep('account');
+  }
+  else if (which === 'account') { _onb.account = null; showStep('budget'); }
+  else { _onb.budget = 0; showPreview(); }
+}
+
+// Vorschau: die Startseite der App mit den eigenen Angaben (preview.html im
+// iframe). Erst beim ersten Zeigen laden; danach nur neu zeichnen.
+function showPreview() {
+  const frame = document.getElementById('previewFrame');
+  if (!frame.getAttribute('src')) frame.src = 'preview.html';
+  else { try { frame.contentWindow.renderPreview(); } catch (e) {} }
+  showStep('preview');
+  fitPreviewPhone();
+}
+// Handy und Tablet: das Handy im Rahmen so gross machen, dass es den Platz bis
+// zum Knopf füllt (gleiches Seitenverhältnis), auf kleinen Handys kleiner. Am Computer gilt der Laptop aus auth.css.
+const PV_RATIO = 390 / 848; // Breite zu Höhe des Bildschirms im Handy
+function fitPreviewPhone() {
+  const phone = document.querySelector('.onb-phone');
+  if (!phone) return;
+  phone.style.removeProperty('--pv-h');
+  phone.style.removeProperty('--pv-scale');
+  if (window.innerWidth >= 1024 || document.getElementById('authShell').dataset.step !== 'preview') return;
+  const btn = document.querySelector('#previewForm .auth-submit');
+  const screenH = phone.querySelector('.onb-phone-screen').getBoundingClientRect().height;
+  const gap = btn.getBoundingClientRect().top - phone.getBoundingClientRect().bottom - 32; // 24 Abstand + 8 Knopf
+  // Ragt die Seite über den Bildschirm hinaus (kleines Handy), um so viel kleiner
+  const overflow = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const colW = phone.parentElement.getBoundingClientRect().width - 16;
+  // Kleine Handys: auch kleiner werden (min. 300px), damit der Knopf sichtbar bleibt
+  const h = Math.max(300, Math.min(screenH + gap - overflow, 620, colW / PV_RATIO));
+  phone.style.setProperty('--pv-h', Math.round(h) + 'px');
+  phone.style.setProperty('--pv-scale', (h * PV_RATIO / 390).toFixed(4));
+}
+window.addEventListener('resize', fitPreviewPhone);
+function onbPreviewNext(event) {
+  if (event) event.preventDefault();
+  showStep('register');
+  return false;
 }
 
 // Nach erfolgreicher Registrierung: Angaben als lokalen Stand ablegen. main.js lädt
 // ihn beim ersten Öffnen hoch, weil das neue Konto auf dem Server noch leer ist.
 function saveOnboardingData() {
+  if (_onb.goal) { try { localStorage.setItem('spendly_goal', _onb.goal); } catch (e) {} }
   if (!_onb.account && !(_onb.budget > 0)) return;
   try {
     const state = {
@@ -452,7 +504,7 @@ async function handleRegister(event) {
             password,
             options: {
                 // Benutzername nur als Anzeigename, angemeldet wird mit E-Mail
-                data: { username },
+                data: _onb.goal ? { username, goal: _onb.goal } : { username },
                 emailRedirectTo: window.location.origin + '/index.html'
             }
         });

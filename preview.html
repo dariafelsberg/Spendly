@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<!-- Vorschau im Onboarding (vor der Registrierung): zeigt die Startseite der App
+     mit den eben eingegebenen Angaben. login.html zeigt sie verkleinert in einem
+     Handyrahmen (iframe). Ohne Login-Seite rundherum geht es direkt zu login.html.
+     Markup wie index.html (ohne Navigation), damit die Vorschau genau wie die
+     echte Startseite aussieht. -->
+<head>
+  <meta charset="UTF-8">
+  <script>if (window.top === window) location.replace('login.html');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Vorschau - Spendly</title>
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/pages/index.css">
+  <link rel="stylesheet" href="assets/css/pages/preview.css">
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- ── TOPBAR (ohne Zahnrad) ── -->
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-label">Gesamtguthaben</div>
+        <div class="total-balance">
+          <span class="currency">CHF </span><span id="totalBalanceDisplay">0.00</span>
+        </div>
+      </div>
+      <div class="topbar-inner-accounts">
+        <div class="account-pills" id="accountPills" style="display: flex;"></div>
+      </div>
+    </div>
+
+    <!-- ── MAIN (nur ansehen, nichts antippen) ── -->
+    <div class="main" inert>
+
+      <h2 class="month-title" id="monthLabel"></h2>
+
+      <div class="card budget-section">
+        <div class="budget-icon"><span class="ico ico-wallet"></span></div>
+        <div class="budget-info">
+          <div class="section-label">Monatsbudget</div>
+          <div class="budget-amount" id="budgetDisplay"></div>
+          <div class="budget-sub" id="budgetSub"></div>
+        </div>
+      </div>
+
+      <div class="card donut-wrapper">
+        <div class="donut-container">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="72" fill="none" style="stroke:var(--donut-track)" stroke-width="28" />
+          </svg>
+          <div class="donut-center">
+            <div class="donut-center-budget" id="donutBudget"></div>
+            <div class="donut-center-label" id="donutLabel"></div>
+            <div class="donut-center-spent" id="donutSpent"></div>
+          </div>
+        </div>
+        <p class="donut-empty-hint">Erfasse deine erste Ausgabe mit «Eintrag hinzufügen». Hier siehst du dann, wofür du dein Geld ausgibst.</p>
+      </div>
+
+      <div class="card transactions-section">
+        <div class="tx-header">
+          <div class="tx-header-left">
+            <span class="tx-title">Einträge</span>
+            <span class="tx-count">0</span>
+          </div>
+          <span class="tx-chevron ico ico-arrow-down"></span>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+
+  </div><!-- /app-shell -->
+
+  <script src="assets/js/pages/preview.js"></script>
+</body>
+
+</html>
