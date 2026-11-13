@@ -297,13 +297,26 @@ function onbGoalNext(event) {
   return false;
 }
 
+// Antippen einer Ziel-Karte wählt sie und geht nach einem kurzen Moment weiter
+// (die Auswahl soll noch sichtbar sein). Tastatur: Pfeiltasten wählen nur aus.
+let _goalTimer = null;
+document.addEventListener('click', e => {
+  const card = e.target.closest && e.target.closest('.onb-goal');
+  if (!card || e.detail === 0) return; // detail 0 = Tastatur, nicht weiterspringen
+  clearTimeout(_goalTimer);
+  _goalTimer = setTimeout(() => {
+    if (document.getElementById('authShell').dataset.step === 'goal') onbGoalNext();
+  }, 250);
+});
+
 function onbAccountNext(event) {
   if (event) event.preventDefault();
   const name = document.getElementById('onbAccountName').value.trim();
   const raw = document.getElementById('onbAccountBalance').value.trim();
-  const balance = raw ? _parseAmount(raw) : 0;
+  const balance = _parseAmount(raw);
   const err = document.getElementById('onbAccountError');
   if (!name) { err.textContent = 'Gib dem Konto einen Namen, zum Beispiel Raiffeisen, oder tippe auf «Später».'; return false; }
+  if (!raw) { err.textContent = 'Gib das aktuelle Guthaben ein, zum Beispiel 1250.50, oder tippe auf «Später».'; return false; }
   if (isNaN(balance)) { err.textContent = 'Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'; return false; }
   _onb.account = { id: (_onb.account && _onb.account.id) || _uid(), name, balance, visible: true };
   showStep('budget');
@@ -318,6 +331,25 @@ function onbBudgetNext(event) {
   showPreview();
   return false;
 }
+// Budget-Vorschläge: Antippen füllt das Feld, gewählter Chip in Pink-hell
+document.addEventListener('click', e => {
+  const chip = e.target.closest('.onb-chip');
+  if (!chip) return;
+  const input = document.getElementById('onbBudget');
+  input.value = chip.dataset.amount;
+  document.getElementById('onbBudgetError').textContent = '';
+  syncBudgetChips();
+});
+function syncBudgetChips() {
+  const v = _parseAmount(document.getElementById('onbBudget').value);
+  document.querySelectorAll('.onb-chip').forEach(c => {
+    const on = Number(c.dataset.amount) === v;
+    c.classList.toggle('on', on);
+    c.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+document.addEventListener('input', e => { if (e.target.id === 'onbBudget') syncBudgetChips(); });
+
 function onbSkip(which) {
   if (which === 'goal') {
     _onb.goal = '';
@@ -358,6 +390,14 @@ function fitPreviewPhone() {
   phone.style.setProperty('--pv-scale', (h * PV_RATIO / 390).toFixed(4));
 }
 window.addEventListener('resize', fitPreviewPhone);
+
+// Tastatur am Handy: die Höhe des sichtbaren Bereichs als --vvh setzen, damit
+// die Knöpfe unten über der Tastatur stehen bleiben (iPhone verkleinert die Seite nicht)
+if (window.visualViewport) {
+  const setVvh = () => document.documentElement.style.setProperty('--vvh', Math.round(window.visualViewport.height) + 'px');
+  window.visualViewport.addEventListener('resize', setVvh);
+  setVvh();
+}
 function onbPreviewNext(event) {
   if (event) event.preventDefault();
   showStep('register');
@@ -401,27 +441,46 @@ function togglePw(inputId, btn) {
 }
 
 function updatePwStrength() { showPwStrength('regPassword', 'pwStrength'); }
+// Passwortstärke als Balken aus 4 Teilen, die sich fliessend füllen («Flow Fill»).
+// Links die Stärke, rechts der nächste Tipp. Ohne Eingabe bleibt das Feld leer.
 function showPwStrength(inputId, outputId) {
   const val = document.getElementById(inputId).value;
   const el = document.getElementById(outputId);
-  if (!val) { el.textContent = ''; el.className = 'pw-strength'; return; }
+  if (!val) { el.innerHTML = ''; el.className = 'pw-strength'; return; }
   let score = 0;
   if (val.length >= 8) score++;
   if (val.length >= 12) score++;
-  if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
-  if (/[0-9]/.test(val)) score++;
-  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const mixed = /[A-Z]/.test(val) && /[a-z]/.test(val);
+  const digit = /[0-9]/.test(val);
+  const special = /[^A-Za-z0-9]/.test(val);
+  if (mixed) score++;
+  if (digit) score++;
+  if (special) score++;
   const levels = [
-    { label: 'Sehr schwach', cls: 'weak' },
-    { label: 'Schwach', cls: 'weak' },
-    { label: 'Okay', cls: 'medium' },
-    { label: 'Gut', cls: 'medium' },
-    { label: 'Stark', cls: 'strong' },
-    { label: 'Sehr stark', cls: 'strong' },
+    { label: 'Sehr schwach', cls: 'weak', bars: 1 },
+    { label: 'Schwach', cls: 'weak', bars: 1 },
+    { label: 'Okay', cls: 'medium', bars: 2 },
+    { label: 'Gut', cls: 'medium', bars: 3 },
+    { label: 'Stark', cls: 'strong', bars: 4 },
+    { label: 'Sehr stark', cls: 'strong', bars: 4 },
   ];
   const lvl = levels[Math.min(score, levels.length - 1)];
-  el.textContent = lvl.label;
-  el.className = 'pw-strength ' + lvl.cls;
+  const tip = val.length < 8 ? 'Mindestens 8 Zeichen'
+    : !digit ? 'Füge eine Zahl hinzu'
+    : !mixed ? 'Gross- und Kleinbuchstaben mischen'
+    : !special ? 'Füge ein Sonderzeichen hinzu'
+    : val.length < 12 ? 'Länger ist noch sicherer' : '';
+  if (!el.querySelector('.pw-bars')) {
+    el.innerHTML = '<div class="pw-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>'
+      + '<div class="pw-meta"><span class="pw-label"></span><span class="pw-tip"></span></div>';
+  }
+  el.className = 'pw-strength ' + lvl.cls + ' b' + lvl.bars;
+  el.querySelectorAll('.pw-bars i').forEach((b, i) => {
+    b.classList.toggle('on', i < lvl.bars);
+    b.classList.toggle('head', i === lvl.bars - 1);
+  });
+  el.querySelector('.pw-label').textContent = lvl.label;
+  el.querySelector('.pw-tip').textContent = tip;
 }
 
 function updateLockoutUI() {
@@ -496,16 +555,10 @@ async function handleRegister(event) {
     const username = document.getElementById("regUsername").value.trim();
     const email = document.getElementById("regEmail").value.trim();
     const password = document.getElementById("regPassword").value;
-    const passwordConfirm = document.getElementById("regPasswordConfirm").value;
     const errEl = document.getElementById("registerError");
     const notice = document.getElementById('registerExistsNotice');
     if (notice) notice.style.display = 'none';
     errEl.textContent = '';
-
-    if (password !== passwordConfirm) {
-        errEl.textContent = "Passwörter stimmen nicht überein.";
-        return;
-    }
 
     setRememberLogin(true);
 
@@ -540,6 +593,8 @@ async function handleRegister(event) {
 
     markHasAccount();
     saveOnboardingData();
+    // Neue Nutzer: auf der Startseite Hinweis zum ersten Eintrag zeigen
+    try { localStorage.setItem('spendly_firstEntryHint', '1'); } catch (_) {}
     if (data.session) {
         // E-Mail-Bestätigung ist ausgeschaltet → direkt angemeldet
         window.location.href = "index.html";

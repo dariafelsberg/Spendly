@@ -175,16 +175,73 @@
   background: var(--card-soft);
 }
 
+/* Farben aus dem Corporate Design: der erste Teil ist immer volles Spendly-Pink,
+   jeder weitere Teil ist etwas heller (Richtung Pink-hell) */
 .pw-strength {
-  margin-top: 8px;
+  margin-top: var(--sp-xs);
   font-size: var(--fs-note);
-  font-weight: 600;
   min-height: 14px;
 }
+.pw-bars i { --pw-fill: var(--primary); }
+.pw-bars i:nth-child(2) { --pw-fill: color-mix(in srgb, var(--primary) 75%, var(--primary-light)); }
+.pw-bars i:nth-child(3) { --pw-fill: color-mix(in srgb, var(--primary) 55%, var(--primary-light)); }
+.pw-bars i:nth-child(4) { --pw-fill: color-mix(in srgb, var(--primary) 38%, var(--primary-light)); }
 
-.pw-strength.weak { color: var(--danger-text); }
-.pw-strength.medium { color: var(--warning-text); }
-.pw-strength.strong { color: var(--income-text); }
+/* Flow Fill: 4 Teile auf einer hellen Spur, die Füllung gleitet von links hinein */
+.pw-bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.pw-bars i {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+}
+.pw-bars i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--pw-fill);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1), background .3s;
+}
+.pw-bars i:nth-child(2)::after { transition-delay: .05s; }
+.pw-bars i:nth-child(3)::after { transition-delay: .1s; }
+.pw-bars i:nth-child(4)::after { transition-delay: .15s; }
+.pw-bars i.on::after { transform: scaleX(1); }
+/* leuchtender Punkt am Ende der Füllung */
+.pw-bars i.head::before {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--pw-fill);
+  box-shadow: 0 0 8px var(--pw-fill);
+  z-index: 1;
+  animation: pw-head .35s cubic-bezier(.2, .8, .2, 1) both;
+}
+@keyframes pw-head { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+.pw-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-sm);
+  margin-top: 6px;
+  line-height: 1.3;
+}
+.pw-label { font-weight: 700; color: var(--primary-dark); }
+.pw-tip { color: var(--muted); text-align: right; }
+@media (prefers-reduced-motion: reduce) {
+  .pw-bars i::after { transition: none; }
+  .pw-bars i.head::before { animation: none; }
+}
 
 .remember-row {
   display: flex;
@@ -861,7 +918,7 @@
   .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) .auth-column {
     display: flex;
     flex-direction: column;
-    min-height: calc(100dvh - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: calc(var(--vvh, 100dvh) - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
   .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) .auth-mark { display: none; }
   .onb-form { flex: 1; }
@@ -1028,6 +1085,28 @@
   .step-in-next, .step-in-back { animation-duration: .01s; }
 }
 
+/* Handy: Balken oben links, «Später» oben rechts, «Zurück» unten als Knopf
+   unter dem Hauptknopf. Am Computer bleibt Zurück oben und Später unten. */
+.onb-skip-top, .onb-back-bottom { display: none; }
+.onb-actions { display: contents; }
+@media (max-width: 767px) {
+  .auth-form:has(.onb-actions) { flex: 1; }
+  .auth-form:has(.onb-actions) .onb-top .auth-back { display: none; }
+  .auth-form:has(.onb-actions) .onb-top { min-height: 36px; }
+  .onb-skip-top { display: inline-flex; align-items: center; justify-content: flex-end; min-width: 44px; min-height: 44px; margin: -4px -12px -4px 0; padding: 8px 12px; }
+  .onb-skip-bottom { display: none; }
+  /* Hauptknopf oben, Zurück darunter (im HTML steht Zurück zuerst) */
+  .onb-actions {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--sp-xs);
+    margin-top: auto;
+    padding-top: var(--sp-xs);
+  }
+  .onb-actions .auth-submit { flex: none; width: 100%; margin-top: 0; }
+  .onb-back-bottom { display: block; width: 100%; }
+}
+
 /* Nur für Screenreader sichtbar */
 .sr-only {
   position: absolute;
@@ -1049,6 +1128,46 @@
   .auth-shell[data-step="login"] .auth-column {
     display: flex;
     flex-direction: column;
-    min-height: calc(100dvh - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: calc(var(--vvh, 100dvh) - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
+}
+
+/* Hinweis unter einem Feld («Du kannst es jederzeit ändern.») */
+.onb-hint {
+  margin: var(--sp-xs) 0 0;
+  font-size: var(--fs-note);
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* Budget-Vorschläge zum Antippen */
+.onb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-xs);
+  margin-top: var(--sp-xs);
+}
+/* unauffällig: kleine Schrift, weisse Fläche, kein Rand */
+.onb-chip {
+  position: relative;
+  padding: var(--sp-2xs) var(--sp-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--fs-note);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+/* grössere Tippfläche, ohne dass der Chip grösser aussieht */
+.onb-chip::before { content: ""; position: absolute; inset: -8px -4px; }
+.onb-chip.on {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+@media (hover: hover) {
+  .onb-chip:hover:not(.on) { color: var(--text); }
 }

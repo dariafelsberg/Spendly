@@ -623,3 +623,62 @@
   .donut-wrapper { grid-row: 2/span 16; }
   .transactions-section { grid-row: 4/span 3; }
 }
+
+/* ── Hinweis zum ersten Eintrag (nach der Registrierung, solange es keine Einträge gibt).
+   Sitzt direkt über «Eintrag hinzufügen»; bottom und left setzt index.js aus der Lage des Knopfs. */
+.first-entry-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 160px;
+  transform: translateX(-50%);
+  z-index: 61;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xs);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: var(--sp-sm) var(--sp-xs) var(--sp-sm) var(--sp-md);
+  background: var(--text);
+  color: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-float);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.35;
+  animation: hint-bob 1.6s ease-in-out infinite;
+}
+.first-entry-hint[hidden] { display: none; }
+/* Pfeil nach unten zum Knopf */
+.first-entry-hint::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-bottom: 0;
+  border-top-color: var(--text);
+}
+.first-entry-hint-close {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  margin: -4px 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: var(--fs-lg);
+  line-height: 1;
+  cursor: pointer;
+}
+.first-entry-hint-close:hover { background: rgba(255, 255, 255, .15); }
+@keyframes hint-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .first-entry-hint { animation: none; }
+}

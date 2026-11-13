@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#e91e63">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -42,7 +42,7 @@
         <h1 class="auth-title">Behalte dein Geld im Blick</h1>
         <p class="auth-sub">Budget, Konten und Ausgaben an einem Ort. Gratis und ohne Werbung, auf Handy, Tablet und Computer.</p>
         <button class="btn-save auth-submit" type="submit">Los geht’s</button>
-        <div class="auth-divider"><span>Schon ein Konto?</span></div>
+        <div class="auth-divider"><span>Schon einen Account?</span></div>
         <button type="button" class="auth-secondary" onclick="goLogin()">Einloggen</button>
       </form>
 
@@ -51,6 +51,7 @@
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('start')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 1 von 5"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+          <button type="button" class="auth-reset-link onb-skip-top" onclick="onbSkip('goal')">Später</button>
         </div>
         <h1 class="auth-title">Was möchtest du mit Spendly erreichen?</h1>
         <p class="auth-sub">Wähle, was am besten passt.</p>
@@ -78,8 +79,11 @@
           </label>
         </fieldset>
         <div class="auth-error" id="onbGoalError"></div>
-        <button class="btn-save auth-submit" type="submit">Weiter</button>
-        <button type="button" class="auth-reset-link" onclick="onbSkip('goal')">Später</button>
+        <div class="onb-actions">
+          <button type="button" class="auth-secondary onb-back-bottom" onclick="showStep('start')">Zurück</button>
+          <button class="btn-save auth-submit" type="submit">Weiter</button>
+        </div>
+        <button type="button" class="auth-reset-link onb-skip-bottom" onclick="onbSkip('goal')">Später</button>
       </form>
 
       <!-- ══ EINRICHTEN 2: Konto (ohne Login, wird lokal gemerkt) ══ -->
@@ -87,20 +91,25 @@
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('goal')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 2 von 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+          <button type="button" class="auth-reset-link onb-skip-top" onclick="onbSkip('account')">Später</button>
         </div>
         <h1 class="auth-title">Wo liegt dein Geld?</h1>
         <p class="auth-sub">Trag dein Hauptkonto ein.</p>
         <div class="form-group">
           <label class="form-label" for="onbAccountName">Kontoname</label>
-          <input class="form-input" type="text" id="onbAccountName" maxlength="40" placeholder="z.B. Raiffeisen" autocomplete="off">
+          <input class="form-input" type="text" id="onbAccountName" enterkeyhint="next" maxlength="40" placeholder="z.B. Raiffeisen" autocomplete="off">
         </div>
         <div class="form-group">
           <label class="form-label" for="onbAccountBalance">Aktuelles Guthaben (CHF)</label>
-          <input class="form-input" type="text" inputmode="decimal" id="onbAccountBalance" maxlength="15" placeholder="0.00" autocomplete="off">
+          <input class="form-input" type="text" inputmode="decimal" id="onbAccountBalance" enterkeyhint="next" maxlength="15" placeholder="0.00" autocomplete="off" aria-describedby="onbAccountHint">
+          <p class="onb-hint" id="onbAccountHint">Du kannst es jederzeit ändern.</p>
         </div>
         <div class="auth-error" id="onbAccountError"></div>
-        <button class="btn-save auth-submit" type="submit">Weiter</button>
-        <button type="button" class="auth-reset-link" onclick="onbSkip('account')">Später</button>
+        <div class="onb-actions">
+          <button type="button" class="auth-secondary onb-back-bottom" onclick="showStep('goal')">Zurück</button>
+          <button class="btn-save auth-submit" type="submit">Weiter</button>
+        </div>
+        <button type="button" class="auth-reset-link onb-skip-bottom" onclick="onbSkip('account')">Später</button>
       </form>
 
       <!-- ══ EINRICHTEN 3: Monatsbudget ══ -->
@@ -108,16 +117,26 @@
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('account')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 3 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <button type="button" class="auth-reset-link onb-skip-top" onclick="onbSkip('budget')">Später</button>
         </div>
         <h1 class="auth-title">Wie viel willst du pro Monat ausgeben?</h1>
         <p class="auth-sub">Trage dein Budget ein.</p>
         <div class="form-group">
           <label class="form-label" for="onbBudget">Budget pro Monat (CHF)</label>
-          <input class="form-input" type="text" inputmode="decimal" id="onbBudget" maxlength="15" placeholder="z.B. 2000" autocomplete="off">
+          <input class="form-input" type="text" inputmode="decimal" id="onbBudget" enterkeyhint="next" maxlength="15" placeholder="z.B. 2000" autocomplete="off" aria-describedby="onbBudgetHint">
+          <div class="onb-chips" role="group" aria-label="Vorschläge">
+            <button type="button" class="onb-chip" data-amount="500">CHF 500</button>
+            <button type="button" class="onb-chip" data-amount="1000">CHF 1'000</button>
+            <button type="button" class="onb-chip" data-amount="2000">CHF 2'000</button>
+          </div>
+          <p class="onb-hint" id="onbBudgetHint">Du kannst es jederzeit ändern.</p>
         </div>
         <div class="auth-error" id="onbBudgetError"></div>
-        <button class="btn-save auth-submit" type="submit">Weiter</button>
-        <button type="button" class="auth-reset-link" onclick="onbSkip('budget')">Später</button>
+        <div class="onb-actions">
+          <button type="button" class="auth-secondary onb-back-bottom" onclick="showStep('account')">Zurück</button>
+          <button class="btn-save auth-submit" type="submit">Weiter</button>
+        </div>
+        <button type="button" class="auth-reset-link onb-skip-bottom" onclick="onbSkip('budget')">Später</button>
       </form>
 
       <!-- ══ EINRICHTEN 4: Vorschau. Die Startseite der App mit den eigenen Angaben
@@ -134,7 +153,10 @@
             <iframe class="onb-preview-frame" id="previewFrame" title="Vorschau deiner Startseite in Spendly" scrolling="no" tabindex="-1"></iframe>
           </div>
         </div>
-        <button class="btn-save auth-submit" type="submit">Account erstellen und speichern</button>
+        <div class="onb-actions">
+          <button type="button" class="auth-secondary onb-back-bottom" onclick="showStep('budget')">Zurück</button>
+          <button class="btn-save auth-submit" type="submit">Account erstellen und speichern</button>
+        </div>
       </form>
 
       <!-- ══ LOGIN ══ -->
@@ -178,34 +200,28 @@
           <button type="button" class="auth-inline-link" onclick="goLogin()">Stattdessen einloggen</button>
         </div>
         <div class="form-group">
-          <label class="form-label" for="regEmail">E-Mail</label>
-          <input class="form-input" type="email" id="regEmail" autocomplete="email" required>
+          <label class="form-label" for="regUsername">Benutzername</label>
+          <input class="form-input" type="text" id="regUsername" enterkeyhint="next" maxlength="30" autocomplete="username" required minlength="3">
         </div>
         <div class="form-group">
-          <label class="form-label" for="regUsername">Benutzername</label>
-          <input class="form-input" type="text" id="regUsername" maxlength="30" autocomplete="username" required minlength="3">
+          <label class="form-label" for="regEmail">E-Mail</label>
+          <input class="form-input" type="email" id="regEmail" enterkeyhint="next" autocomplete="email" required>
         </div>
         <div class="form-group">
           <label class="form-label" for="regPassword">Passwort</label>
           <div class="password-wrap">
-            <input class="form-input" type="password" id="regPassword" autocomplete="new-password" required
+            <input class="form-input" type="password" id="regPassword" enterkeyhint="done" autocomplete="new-password" required
               minlength="8">
             <button type="button" class="pw-toggle" onclick="togglePw('regPassword', this)"
               aria-label="Passwort anzeigen"><span class="ico ico-eye_open"></span></button>
           </div>
           <div class="pw-strength" id="pwStrength"></div>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="regPasswordConfirm">Passwort bestätigen</label>
-          <div class="password-wrap">
-            <input class="form-input" type="password" id="regPasswordConfirm" autocomplete="new-password" required
-              minlength="8">
-            <button type="button" class="pw-toggle" onclick="togglePw('regPasswordConfirm', this)"
-              aria-label="Passwort anzeigen"><span class="ico ico-eye_open"></span></button>
-          </div>
-        </div>
         <div class="auth-error" id="registerError"></div>
-        <button class="btn-save auth-submit" type="submit">Account erstellen</button>
+        <div class="onb-actions">
+          <button type="button" class="auth-secondary onb-back-bottom" onclick="showStep('preview')">Zurück</button>
+          <button class="btn-save auth-submit" type="submit">Account erstellen</button>
+        </div>
       </form>
 
       <p class="auth-footnote">

@@ -95,6 +95,12 @@
 
     </div><!-- /main -->
 
+    <!-- ── Hinweis zum ersten Eintrag (nur neue Nutzer ohne Einträge) ── -->
+    <div class="first-entry-hint" id="firstEntryHint" role="status" hidden>
+      <span>Trag hier deine erste Ausgabe ein</span>
+      <button type="button" class="first-entry-hint-close" onclick="dismissFirstEntryHint()" aria-label="Hinweis schliessen">&times;</button>
+    </div>
+
     <!-- ── FAB ── -->
     <button class="fab" onclick="openEntryModal()">
       <span class="fab-icon ico ico-plus" aria-hidden="true"></span>

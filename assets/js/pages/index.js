@@ -19,11 +19,38 @@ function initHome() {
 
 // Solange der Ladebildschirm zu sehen ist, nichts zeichnen: main.js ruft
 // render() auf, sobald alle Daten da sind (dann rollen auch die Ziffern)
-function render() { if (!dataReady) return; renderTopBar(); renderBudgetCard(); renderDonut(); renderTransactions(); maybeStartOnboarding(); }
+function render() { if (!dataReady) return; renderTopBar(); renderBudgetCard(); renderDonut(); renderTransactions(); maybeStartOnboarding(); updateFirstEntryHint(); }
 
 // ── ONBOARDING: beim ersten Start ohne Konten, Budget und Einträge
 // Erst wenn der Server-Stand da ist (serverLoaded), sonst könnte ein leerer
 // lokaler Stand fälschlich als "neues Konto" gelten. Pro Gerät nur einmal.
+// Hinweis mit Pfeil zu «Eintrag hinzufügen»: nur direkt nach der Registrierung
+// (auth.js setzt spendly_firstEntryHint) und solange noch kein Eintrag existiert.
+function firstEntryHintWanted() {
+  try { return localStorage.getItem('spendly_firstEntryHint') === '1'; } catch (_) { return false; }
+}
+function placeFirstEntryHint() {
+  const hint = document.getElementById('firstEntryHint');
+  const fab = document.querySelector('.fab');
+  if (!hint || hint.hidden || !fab) return;
+  const r = fab.getBoundingClientRect();
+  hint.style.left = (r.left + r.width / 2) + 'px';
+  hint.style.bottom = (window.innerHeight - r.top + 14) + 'px';
+}
+function updateFirstEntryHint() {
+  const hint = document.getElementById('firstEntryHint');
+  if (!hint) return;
+  if (state.entries.length) { dismissFirstEntryHint(); return; }
+  hint.hidden = !firstEntryHintWanted();
+  placeFirstEntryHint();
+}
+function dismissFirstEntryHint() {
+  try { localStorage.removeItem('spendly_firstEntryHint'); } catch (_) {}
+  const hint = document.getElementById('firstEntryHint');
+  if (hint) hint.hidden = true;
+}
+window.addEventListener('resize', placeFirstEntryHint);
+
 function maybeStartOnboarding() {
   if (!serverLoaded || maybeStartOnboarding.done) return;
   let seen = false;
@@ -397,6 +424,7 @@ function trySetTransferType() {
   setEntryType('transfer');
 }
 function openEntryModal(editId = null) {
+  if (!editId) dismissFirstEntryHint();
   state.editId = editId;
   document.getElementById('entryModalTitle').textContent = editId ? 'Eintrag bearbeiten' : 'Eintrag hinzufügen';
   if (editId) {
