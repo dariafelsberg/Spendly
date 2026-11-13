@@ -912,9 +912,10 @@
 .onb-goal-text { display: flex; flex-direction: column; gap: 2px; }
 .onb-goal-text b { font-size: var(--fs-body); font-weight: 600; color: var(--text); }
 .onb-goal-text small { font-size: var(--fs-note); color: var(--muted); }
+/* Ausgewählt: pink-hell aus dem Corporate Design, klar anders als der Hintergrund */
 .onb-goal:has(input:checked) {
   border-color: var(--primary);
-  background: var(--card-soft);
+  background: var(--primary-light);
 }
 .onb-goal:has(input:checked) .onb-goal-ico { background: var(--primary); color: #fff; }
 .onb-goal:has(input:focus-visible) { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
@@ -995,6 +996,23 @@
 }
 @media (min-width: 1024px) and (min-height: 900px) {
   .onb-phone { --pv-scale: .5; --pv-h: 400px; }
+}
+
+/* Computer: jeder Schritt passt ohne Scrollen auf einen Bildschirm.
+   Kein Logo über den Schritten, weniger Rand, kleinerer Titel bei der Registrierung. */
+@media (min-width: 768px) {
+  .auth-shell:not([data-step="start"]) {
+    padding-top: var(--sp-lg);
+    padding-bottom: var(--sp-lg);
+  }
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="register"]) .auth-mark { display: none; }
+  #registerForm .auth-title { font-size: var(--fs-2xl); }
+  #registerForm .auth-sub { margin-bottom: var(--sp-lg); }
+  .auth-shell[data-step="register"] .auth-footnote { margin-top: var(--sp-md); }
+  /* Registrierung etwas breiter, damit Texte weniger Zeilen brauchen */
+  .auth-shell[data-step="register"] .auth-column { max-width: 420px; }
+  #registerForm .pw-strength:empty { display: none; }
+  #registerForm .auth-error:empty { min-height: 0; margin-top: var(--sp-xs); }
 }
 
 /* Nur für Screenreader sichtbar */
