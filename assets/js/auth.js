@@ -242,10 +242,22 @@ function showStep(step) {
   const AUTH_STEPS = { start: 'startForm', goal: 'goalForm', account: 'accountForm', budget: 'budgetForm', preview: 'previewForm', login: 'loginForm', register: 'registerForm' };
   // Das Bild mit dem Handy gehört nur zum Start; CSS liest den Schritt aus data-step
   const shell = document.getElementById('authShell');
+  const prev = shell ? shell.dataset.step : '';
   if (shell) shell.dataset.step = step;
   Object.entries(AUTH_STEPS).forEach(([key, id]) => {
     document.getElementById(id).style.display = key === step ? 'flex' : 'none';
   });
+  // Übergang: vorwärts kommt der neue Schritt von rechts, zurück von links.
+  // Nicht beim ersten Laden der Seite (dann ist prev der Startwert aus dem HTML).
+  const ORDER = ['start', 'goal', 'account', 'budget', 'preview', 'register'];
+  const el = document.getElementById(AUTH_STEPS[step]);
+  if (el && prev && prev !== step && document.readyState === 'complete') {
+    const back = ORDER.indexOf(step) < ORDER.indexOf(prev) || (step === 'start' && prev === 'login');
+    el.classList.remove('step-in-next', 'step-in-back');
+    void el.offsetWidth; // Animation neu starten
+    el.classList.add(back ? 'step-in-back' : 'step-in-next');
+    el.addEventListener('animationend', () => el.classList.remove('step-in-next', 'step-in-back'), { once: true });
+  }
   ['onbGoalError', 'onbAccountError', 'onbBudgetError', 'loginError', 'registerError'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.textContent.startsWith('Zu viele')) el.textContent = '';

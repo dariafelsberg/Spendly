@@ -1015,6 +1015,16 @@
   #registerForm .auth-error:empty { min-height: 0; margin-top: var(--sp-xs); }
 }
 
+/* Übergang zwischen den Schritten: kurz einblenden und seitlich hineingleiten */
+@keyframes step-in-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
+@keyframes step-in-back { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
+.step-in-next { animation: step-in-next .28s cubic-bezier(.2, .8, .2, 1); }
+.step-in-back { animation: step-in-back .28s cubic-bezier(.2, .8, .2, 1); }
+.auth-shell { overflow-x: clip; } /* kein seitliches Scrollen während des Gleitens */
+@media (prefers-reduced-motion: reduce) {
+  .step-in-next, .step-in-back { animation-duration: .01s; }
+}
+
 /* Nur für Screenreader sichtbar */
 .sr-only {
   position: absolute;
