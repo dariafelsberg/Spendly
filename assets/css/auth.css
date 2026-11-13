@@ -854,16 +854,16 @@
 
 /* Handy: jeder Schritt füllt den Bildschirm, Weiter-Knopf unten */
 @media (max-width: 767px) {
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"]) {
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) {
     align-items: stretch;
     padding-top: calc(var(--sp-md) + env(safe-area-inset-top));
   }
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"]) .auth-column {
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) .auth-column {
     display: flex;
     flex-direction: column;
     min-height: calc(100dvh - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"]) .auth-mark { display: none; }
+  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) .auth-mark { display: none; }
   .onb-form { flex: 1; }
   .onb-form .auth-submit { margin-top: auto; }
   .auth-shell[data-step="register"] .auth-mark { display: none; }
@@ -1001,8 +1001,11 @@
 /* Computer: jeder Schritt passt ohne Scrollen auf einen Bildschirm.
    Kein Logo über den Schritten, weniger Rand, kleinerer Titel bei der Registrierung. */
 @media (min-width: 768px) {
+  /* Zurück, Balken und Titel stehen bei jedem Schritt auf gleicher Höhe:
+     oben beginnen statt senkrecht zentrieren */
   .auth-shell:not([data-step="start"]) {
-    padding-top: var(--sp-lg);
+    align-items: flex-start;
+    padding-top: clamp(20px, 4vh, 64px);
     padding-bottom: var(--sp-lg);
   }
   .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="register"]) .auth-mark { display: none; }
@@ -1016,10 +1019,10 @@
 }
 
 /* Übergang zwischen den Schritten: kurz einblenden und seitlich hineingleiten */
-@keyframes step-in-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
-@keyframes step-in-back { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
-.step-in-next { animation: step-in-next .28s cubic-bezier(.2, .8, .2, 1); }
-.step-in-back { animation: step-in-back .28s cubic-bezier(.2, .8, .2, 1); }
+@keyframes step-in-next { from { opacity: 0; transform: translateX(48px); } to { opacity: 1; transform: none; } }
+@keyframes step-in-back { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
+.step-in-next { animation: step-in-next .35s cubic-bezier(.2, .8, .2, 1); }
+.step-in-back { animation: step-in-back .35s cubic-bezier(.2, .8, .2, 1); }
 .auth-shell { overflow-x: clip; } /* kein seitliches Scrollen während des Gleitens */
 @media (prefers-reduced-motion: reduce) {
   .step-in-next, .step-in-back { animation-duration: .01s; }
