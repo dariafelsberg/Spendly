@@ -299,7 +299,7 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="customCatModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
     <div class="modal-title" id="customCatModalTitle">Eigene Kategorie hinzufügen</div>
-    <div class="auth-tabs" style="margin-bottom: 16px;">
+    <div class="auth-tabs" id="customCatTabs" style="margin-bottom: 16px;">
       <button class="auth-tab active" id="customCatTabExpense" onclick="switchCustomCatType('expense')"><span class="ico ico-shoppingcart"></span> Ausgabe</button>
       <button class="auth-tab" id="customCatTabIncome" onclick="switchCustomCatType('income')"><span class="ico ico-coin"></span> Einnahme</button>
     </div>
@@ -310,10 +310,17 @@
     <div class="form-group">
       <label class="form-label" id="customCatIconLabel">Symbol</label>
       <div class="emoji-pick-grid" id="customCatIconPicker" role="group" aria-labelledby="customCatIconLabel"></div>
+      <label class="form-label" for="customCatEmoji" style="margin-top:14px">Emoji</label>
+      <div class="emoji-tile" id="customCatEmojiTile">
+        <span class="ico ico-smiley" aria-hidden="true"></span>
+        <span class="emoji-tile-value" id="customCatEmojiValue" aria-hidden="true"></span>
+        <input type="text" id="customCatEmoji" class="emoji-tile-input" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Eigenes Emoji eingeben" oninput="onCustomCatEmojiInput()">
+      </div>
+      <div class="emoji-tile-hint">Am Computer: Windows-Taste + Punkt (Mac: Ctrl + Cmd + Leertaste)</div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomCatModal()">Abbrechen</button>
-      <button class="btn-save" onclick="saveCustomCat()">Hinzufügen</button>
+      <button class="btn-save" id="customCatSaveBtn" onclick="saveCustomCat()">Hinzufügen</button>
     </div>
   </div>
 </div>

@@ -180,7 +180,8 @@ function renderCustomCatList() {
           <div class="settings-item-name">${catIcon(c)} ${esc(c.name)}</div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}',${jsArg(c.id)})"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openCustomCatModal('${groupType}',${jsArg(c.id)})" aria-label="Kategorie bearbeiten"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}',${jsArg(c.id)})" aria-label="Kategorie löschen"><span class="ico ico-trash"></span></button>
         </div>
       </div>`).join('');
     return header + items;
@@ -188,9 +189,15 @@ function renderCustomCatList() {
   el.innerHTML = renderGroup('expense', iconHtml('shoppingcart') + ' Ausgaben', expenseList) + renderGroup('income', iconHtml('coin') + ' Einnahmen', incomeList);
 }
 
-function openCustomCatModal(type) {
+function openCustomCatModal(type, editId = null) {
   // Standard: 'expense', falls kein Typ übergeben; Tab-UI zurücksetzen
   const initialType = type || 'expense';
+  state.customCatEditId = editId;
+  const editCat = editId ? (initialType === 'expense' ? state.customExpenseCats : state.customIncomeCats).find(c => c.id === editId) : null;
+  document.getElementById('customCatModalTitle').textContent = editCat ? 'Kategorie bearbeiten' : 'Eigene Kategorie hinzufügen';
+  document.getElementById('customCatSaveBtn').textContent = editCat ? 'Speichern' : 'Hinzufügen';
+  // Beim Bearbeiten bleibt Ausgabe/Einnahme fix (Einträge hängen daran)
+  document.getElementById('customCatTabs').hidden = !!editCat;
   state.customCatType = initialType;
   const modal = document.getElementById('customCatModal');
   modal.dataset.catType = initialType;
@@ -199,22 +206,55 @@ function openCustomCatModal(type) {
   const tabInc = document.getElementById('customCatTabIncome');
   if (tabExp) tabExp.classList.toggle('active', initialType === 'expense');
   if (tabInc) tabInc.classList.toggle('active', initialType === 'income');
-  document.getElementById('customCatName').value = '';
+  document.getElementById('customCatName').value = editCat ? editCat.name : '';
+  document.getElementById('customCatEmoji').value = '';
+  showCustomCatEmoji('');
   // Symbol-Auswahl rendern
   const picker = document.getElementById('customCatIconPicker');
   picker.innerHTML = CUSTOM_CAT_ICONS.map(i =>
     `<button type="button" class="emoji-pick-btn" data-icon="${i.icon}" title="${i.label}" aria-label="${i.label}" aria-pressed="false" onclick="selectCustomCatIcon('${i.icon}')">${iconHtml(i.icon)}</button>`
   ).join('');
-  selectCustomCatIcon('universal'); // Standard: allgemeines Symbol
+  if (editCat && editCat.emoji && !editCat.icon) {
+    selectCustomCatIcon(null);
+    document.getElementById('customCatEmoji').value = editCat.emoji;
+    showCustomCatEmoji(editCat.emoji);
+  } else {
+    selectCustomCatIcon(editCat && editCat.icon ? editCat.icon : 'universal'); // Standard: allgemeines Symbol
+  }
   modal.classList.add('show');
 }
 
 function closeCustomCatModal() {
   document.getElementById('customCatModal').classList.remove('show');
+  state.customCatEditId = null;
+}
+
+// Eigenes Emoji: nur das erste Zeichen (Graphem) behalten; ein Emoji ersetzt das gewählte Symbol
+function firstGrapheme(str) {
+  if (window.Intl && Intl.Segmenter) {
+    const it = new Intl.Segmenter('de', { granularity: 'grapheme' }).segment(str)[Symbol.iterator]().next();
+    return it.done ? '' : it.value.segment;
+  }
+  return Array.from(str)[0] || '';
+}
+// Gewähltes Emoji in der Kachel zeigen (statt des grauen Smileys)
+function showCustomCatEmoji(emoji) {
+  document.getElementById('customCatEmojiValue').textContent = emoji;
+  document.getElementById('customCatEmojiTile').classList.toggle('has-emoji', !!emoji);
+}
+function onCustomCatEmojiInput() {
+  const input = document.getElementById('customCatEmoji');
+  const g = firstGrapheme(input.value.trim());
+  if (input.value !== g) input.value = g;
+  showCustomCatEmoji(g);
+  if (g) { selectCustomCatIcon(null); input.blur(); }
+  else if (!selectedCustomCatIcon) selectCustomCatIcon('universal');
 }
 
 function selectCustomCatIcon(icon) {
   selectedCustomCatIcon = icon;
+  const emojiInput = document.getElementById('customCatEmoji');
+  if (icon && emojiInput) { emojiInput.value = ''; showCustomCatEmoji(''); }
   document.querySelectorAll('#customCatIconPicker .emoji-pick-btn').forEach(b => {
     const on = b.dataset.icon === icon;
     b.classList.toggle('selected', on);
@@ -225,20 +265,46 @@ function selectCustomCatIcon(icon) {
 function saveCustomCat() {
   const name = document.getElementById('customCatName').value.trim();
   if (!name || name.length < 2) { showError('Kategorie nicht gespeichert', 'Der Name ist zu kurz. Er braucht mindestens 2 Zeichen.', 'customCatName'); return; }
-  const icon = selectedCustomCatIcon;
-  if (!CUSTOM_CAT_ICONS.some(i => i.icon === icon)) { showError('Kategorie nicht gespeichert', 'Es fehlt ein Symbol. Wähle eines aus der Liste.'); return; }
+  const icon  = selectedCustomCatIcon;
+  const emoji = document.getElementById('customCatEmoji').value.trim();
+  const validIcon  = CUSTOM_CAT_ICONS.some(i => i.icon === icon);
+  const validEmoji = emoji && /\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(emoji);
+  if (emoji && !validEmoji) { showError('Kategorie nicht gespeichert', 'Das ist kein Emoji. Füge ein Emoji ein oder wähle ein Symbol.', 'customCatEmoji'); return; }
+  if (!validIcon && !validEmoji) { showError('Kategorie nicht gespeichert', 'Es fehlt ein Symbol. Wähle eines aus der Liste oder füge ein Emoji ein.'); return; }
   // Typ aus der Tab-Auswahl im Modal lesen
   const modal = document.getElementById('customCatModal');
   state.customCatType = modal.dataset.catType || state.customCatType;
   const list = state.customCatType === 'expense' ? state.customExpenseCats : state.customIncomeCats;
   const builtIn = state.customCatType === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
-  const allNames = [...builtIn, ...list].map(c => c.name.toLowerCase());
+  const editId = state.customCatEditId;
+  const allNames = [...builtIn, ...list.filter(c => c.id !== editId)].map(c => c.name.toLowerCase());
   if (allNames.includes(name.toLowerCase())) { showError('Kategorie nicht gespeichert', 'Diese Kategorie gibt es schon. Wähle einen anderen Namen.', 'customCatName'); return; }
-  const color = `hsl(${Math.floor(Math.random()*360)},65%,55%)`;
-  list.push({ id: uid(), name, icon, color });
+  const look = validEmoji ? { emoji } : { icon };
+  const cat = editId ? list.find(c => c.id === editId) : null;
+  if (cat) {
+    const oldName = cat.name;
+    delete cat.icon; delete cat.emoji;
+    Object.assign(cat, { name }, look);
+    if (oldName !== name) renameCategoryEverywhere(state.customCatType, oldName, name);
+  } else {
+    const color = `hsl(${Math.floor(Math.random()*360)},65%,55%)`;
+    list.push({ id: uid(), name, color, ...look });
+  }
   saveState();
   renderCustomCatList();
   closeCustomCatModal();
+}
+
+// Einträge und wiederkehrende Buchungen hängen am Kategorienamen → beim Umbenennen mitziehen
+function renameCategoryEverywhere(type, oldName, newName) {
+  // Gibt es den alten Namen auch auf der anderen Seite (Einnahme/Ausgabe), nur Einträge dieses Typs ändern
+  const other = type === 'expense' ? allIncomeCats() : allExpenseCats();
+  const nameAlsoOther = other.some(c => c.name === oldName);
+  (state.entries || []).forEach(e => {
+    if (e.category === oldName && (!nameAlsoOther || e.type === type)) e.category = newName;
+  });
+  const rec = type === 'expense' ? state.recurringExpense : state.recurringIncome;
+  (rec || []).forEach(r => { if (r.category === oldName) r.category = newName; });
 }
 
 function deleteCustomCat(type, id) {

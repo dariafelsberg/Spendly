@@ -1261,6 +1261,7 @@ button {
 /* Symbole für eigene Kategorien + Abos */
 .ico-subscription  { --ico: url(../icons/ui/subscription.svg); }
 .ico-universal     { --ico: url(../icons/ui/universal.svg); }
+.ico-smiley        { --ico: url(../icons/ui/smiley.svg); }
 .ico-bar           { --ico: url(../icons/ui/bar.svg); }
 .ico-takeaway      { --ico: url(../icons/ui/takeaway.svg); }
 .ico-sofa          { --ico: url(../icons/ui/sofa.svg); }
