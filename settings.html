@@ -305,12 +305,11 @@
     </div>
     <div class="form-group">
       <label class="form-label" for="customCatName">Name</label>
-      <input class="form-input" type="text" id="customCatName" placeholder="z.B. Hobbys, Reisen…" maxlength="30">
+      <input class="form-input" type="text" id="customCatName" placeholder="z.B. Hobbys, Ferien…" maxlength="30">
     </div>
     <div class="form-group">
-      <label class="form-label">Emoji auswählen</label>
-      <div class="emoji-pick-grid" id="customCatEmojiPicker"></div>
-      <div style="margin-top:8px; font-size:var(--fs-note); color:var(--muted);">Ausgewählt: <span id="customCatSelectedEmoji" style="font-size:1.1rem">🏷️</span></div>
+      <label class="form-label" id="customCatIconLabel">Symbol</label>
+      <div class="emoji-pick-grid" id="customCatIconPicker" role="group" aria-labelledby="customCatIconLabel"></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCustomCatModal()">Abbrechen</button>

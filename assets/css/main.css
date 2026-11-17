@@ -1258,6 +1258,41 @@ button {
 .ico-check         { --ico: url(../icons/ui/check.svg); }
 .ico-plus          { --ico: url(../icons/ui/plus.svg); }
 .ico-wifi-off      { --ico: url(../icons/ui/wifi-off.svg); }
+/* Symbole für eigene Kategorien + Abos */
+.ico-subscription  { --ico: url(../icons/ui/subscription.svg); }
+.ico-universal     { --ico: url(../icons/ui/universal.svg); }
+.ico-bar           { --ico: url(../icons/ui/bar.svg); }
+.ico-takeaway      { --ico: url(../icons/ui/takeaway.svg); }
+.ico-sofa          { --ico: url(../icons/ui/sofa.svg); }
+.ico-key           { --ico: url(../icons/ui/key.svg); }
+.ico-plant         { --ico: url(../icons/ui/plant.svg); }
+.ico-bike          { --ico: url(../icons/ui/bike.svg); }
+.ico-fuel          { --ico: url(../icons/ui/fuel.svg); }
+.ico-taxi          { --ico: url(../icons/ui/taxi.svg); }
+.ico-health        { --ico: url(../icons/ui/health.svg); }
+.ico-medical       { --ico: url(../icons/ui/medical.svg); }
+.ico-tooth         { --ico: url(../icons/ui/tooth.svg); }
+.ico-glasses       { --ico: url(../icons/ui/glasses.svg); }
+.ico-film          { --ico: url(../icons/ui/film.svg); }
+.ico-music         { --ico: url(../icons/ui/music.svg); }
+.ico-gamepad       { --ico: url(../icons/ui/gamepad.svg); }
+.ico-book          { --ico: url(../icons/ui/book.svg); }
+.ico-travel        { --ico: url(../icons/ui/travel.svg); }
+.ico-ticket        { --ico: url(../icons/ui/ticket.svg); }
+.ico-kids          { --ico: url(../icons/ui/kids.svg); }
+.ico-baby          { --ico: url(../icons/ui/baby.svg); }
+.ico-school        { --ico: url(../icons/ui/school.svg); }
+.ico-piggy         { --ico: url(../icons/ui/piggy.svg); }
+.ico-insurance     { --ico: url(../icons/ui/insurance.svg); }
+.ico-tax           { --ico: url(../icons/ui/tax.svg); }
+.ico-card          { --ico: url(../icons/ui/card.svg); }
+.ico-growth        { --ico: url(../icons/ui/growth.svg); }
+.ico-briefcase     { --ico: url(../icons/ui/briefcase.svg); }
+.ico-sideincome    { --ico: url(../icons/ui/sideincome.svg); }
+.ico-refund        { --ico: url(../icons/ui/refund.svg); }
+.ico-shirt         { --ico: url(../icons/ui/shirt.svg); }
+.ico-scissors      { --ico: url(../icons/ui/scissors.svg); }
+.ico-donation      { --ico: url(../icons/ui/donation.svg); }
 .tx-btn .ico {
   width: 1.4em;
   height: 1.4em;

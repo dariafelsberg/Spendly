@@ -21,6 +21,7 @@ const EXPENSE_CATEGORIES = [
   { name: 'ÖV',              icon: 'oev', color: '#f87171' },
   { name: 'Hygieneartikel',  icon: 'hygiene', color: '#a3e635' },
   { name: 'Shopping',         icon: 'shoppingbag', color: '#7c3aed' },
+  { name: 'Abos',             icon: 'subscription', color: '#6366f1' },
 ];
 const INCOME_CATEGORIES = [
   { name: 'Lohn',      icon: 'wallet', color: '#16a34a' },
@@ -28,14 +29,19 @@ const INCOME_CATEGORIES = [
   { name: 'Sonstiges', icon: 'tag', color: '#4ade80' },
 ];
 // ALL_CATS ist ein dynamischer Getter (berücksichtigt eigene Kategorien)
-function allExpenseCats() { return [...EXPENSE_CATEGORIES, ...(state.customExpenseCats || [])]; }
-function allIncomeCats()  { return [...INCOME_CATEGORIES,  ...(state.customIncomeCats  || [])]; }
+// Eigene Kategorien, die gleich heissen wie eine fixe (z.B. ein früher selbst erstelltes «Abos»), nicht doppelt zeigen
+function withoutBuiltInNames(list, builtIn) {
+  const names = builtIn.map(c => c.name.toLowerCase());
+  return (list || []).filter(c => !names.includes(String(c.name).toLowerCase()));
+}
+function allExpenseCats() { return [...EXPENSE_CATEGORIES, ...withoutBuiltInNames(state.customExpenseCats, EXPENSE_CATEGORIES)]; }
+function allIncomeCats()  { return [...INCOME_CATEGORIES,  ...withoutBuiltInNames(state.customIncomeCats,  INCOME_CATEGORIES)]; }
 function allCats()        { return [...allExpenseCats(), ...allIncomeCats()]; }
 // ALL_CATS bleibt als Alias für Stellen erhalten, die es referenzieren (Kalender, Buchungen)
 Object.defineProperty(window, 'ALL_CATS', { get: allCats });
 
-// Icon einer Kategorie: Standard-Kategorien haben ein SVG-Icon (assets/icons/ui),
-// eigene Kategorien behalten ihr gewähltes Emoji.
+// Icon einer Kategorie: Standard-Kategorien und neue eigene Kategorien haben ein SVG-Icon (assets/icons/ui).
+// Ältere eigene Kategorien haben noch ein Emoji, das weiterhin angezeigt wird.
 function iconHtml(name, color) {
   return `<span class="ico ico-${esc(name)}"${color ? ` style="color:${esc(color)}"` : ''}></span>`;
 }

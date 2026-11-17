@@ -123,7 +123,43 @@ function renderRecurringList(type) {
 }
 
 // ── EIGENE KATEGORIEN
-const PRESET_EMOJIS = ['🏷️','🎯','⭐','🔖','💡','🧩','🎪','🌟','🔑','💎','🎠','🌈','🎭','🧸','🎲','🎸','🏋️','🌿','🍀','🦋','🐝','🌸','🎁','🔮','🎡'];
+// Symbole, die man für eigene Kategorien wählen kann (eigene Zeichnungen, assets/icons/ui)
+const CUSTOM_CAT_ICONS = [
+  { icon: 'universal', label: 'Allgemein' },
+  { icon: 'bar', label: 'Ausgang' },
+  { icon: 'takeaway', label: 'Take-away' },
+  { icon: 'sofa', label: 'Möbel' },
+  { icon: 'key', label: 'Miete' },
+  { icon: 'plant', label: 'Garten' },
+  { icon: 'bike', label: 'Velo' },
+  { icon: 'fuel', label: 'Tanken' },
+  { icon: 'taxi', label: 'Taxi' },
+  { icon: 'health', label: 'Arzt' },
+  { icon: 'medical', label: 'Krankenkasse' },
+  { icon: 'tooth', label: 'Zahnarzt' },
+  { icon: 'glasses', label: 'Brille' },
+  { icon: 'film', label: 'Kino' },
+  { icon: 'music', label: 'Musik' },
+  { icon: 'gamepad', label: 'Games' },
+  { icon: 'book', label: 'Bücher' },
+  { icon: 'travel', label: 'Reisen' },
+  { icon: 'ticket', label: 'Events' },
+  { icon: 'kids', label: 'Kinder' },
+  { icon: 'baby', label: 'Baby' },
+  { icon: 'school', label: 'Ausbildung' },
+  { icon: 'piggy', label: 'Sparen' },
+  { icon: 'insurance', label: 'Versicherungen' },
+  { icon: 'tax', label: 'Steuern' },
+  { icon: 'card', label: 'Kreditkarte' },
+  { icon: 'growth', label: 'Vorsorge' },
+  { icon: 'briefcase', label: 'Arbeit' },
+  { icon: 'sideincome', label: 'Nebenverdienst' },
+  { icon: 'refund', label: 'Rückzahlung' },
+  { icon: 'shirt', label: 'Kleider' },
+  { icon: 'scissors', label: 'Coiffeur' },
+  { icon: 'donation', label: 'Spenden' },
+];
+let selectedCustomCatIcon = null;
 
 function renderCustomCatList() {
   const el = document.getElementById('customIncomeCatList');
@@ -164,12 +200,12 @@ function openCustomCatModal(type) {
   if (tabExp) tabExp.classList.toggle('active', initialType === 'expense');
   if (tabInc) tabInc.classList.toggle('active', initialType === 'income');
   document.getElementById('customCatName').value = '';
-  // Emoji-Picker rendern
-  const picker = document.getElementById('customCatEmojiPicker');
-  picker.innerHTML = PRESET_EMOJIS.map(e =>
-    `<button type="button" class="emoji-pick-btn" onclick="selectEmoji('${e}')">${e}</button>`
+  // Symbol-Auswahl rendern
+  const picker = document.getElementById('customCatIconPicker');
+  picker.innerHTML = CUSTOM_CAT_ICONS.map(i =>
+    `<button type="button" class="emoji-pick-btn" data-icon="${i.icon}" title="${i.label}" aria-label="${i.label}" aria-pressed="false" onclick="selectCustomCatIcon('${i.icon}')">${iconHtml(i.icon)}</button>`
   ).join('');
-  selectEmoji('🏷️');
+  selectCustomCatIcon('universal'); // Standard: allgemeines Symbol
   modal.classList.add('show');
 }
 
@@ -177,19 +213,20 @@ function closeCustomCatModal() {
   document.getElementById('customCatModal').classList.remove('show');
 }
 
-function selectEmoji(emoji) {
-  document.querySelectorAll('.emoji-pick-btn').forEach(b => b.classList.toggle('selected', b.textContent === emoji));
-  document.getElementById('customCatSelectedEmoji').textContent = emoji;
-}
-
-function getSelectedEmoji() {
-  return document.getElementById('customCatSelectedEmoji').textContent || '🏷️';
+function selectCustomCatIcon(icon) {
+  selectedCustomCatIcon = icon;
+  document.querySelectorAll('#customCatIconPicker .emoji-pick-btn').forEach(b => {
+    const on = b.dataset.icon === icon;
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
 }
 
 function saveCustomCat() {
   const name = document.getElementById('customCatName').value.trim();
   if (!name || name.length < 2) { showError('Kategorie nicht gespeichert', 'Der Name ist zu kurz. Er braucht mindestens 2 Zeichen.', 'customCatName'); return; }
-  const emoji = getSelectedEmoji();
+  const icon = selectedCustomCatIcon;
+  if (!CUSTOM_CAT_ICONS.some(i => i.icon === icon)) { showError('Kategorie nicht gespeichert', 'Es fehlt ein Symbol. Wähle eines aus der Liste.'); return; }
   // Typ aus der Tab-Auswahl im Modal lesen
   const modal = document.getElementById('customCatModal');
   state.customCatType = modal.dataset.catType || state.customCatType;
@@ -198,7 +235,7 @@ function saveCustomCat() {
   const allNames = [...builtIn, ...list].map(c => c.name.toLowerCase());
   if (allNames.includes(name.toLowerCase())) { showError('Kategorie nicht gespeichert', 'Diese Kategorie gibt es schon. Wähle einen anderen Namen.', 'customCatName'); return; }
   const color = `hsl(${Math.floor(Math.random()*360)},65%,55%)`;
-  list.push({ id: uid(), name, emoji, color });
+  list.push({ id: uid(), name, icon, color });
   saveState();
   renderCustomCatList();
   closeCustomCatModal();

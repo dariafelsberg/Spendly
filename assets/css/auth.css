@@ -519,7 +519,7 @@
   cursor: not-allowed;
 }
 
-/* ── EMOJI PICKER (Eigene Kategorien) ── */
+/* ── SYMBOL-AUSWAHL (Eigene Kategorien) ── */
 .emoji-pick-grid {
   display: flex;
   flex-wrap: wrap;
@@ -540,6 +540,15 @@
   justify-content: center;
   transition: border-color .15s, background .15s;
   padding: 0;
+}
+
+.emoji-pick-btn .ico {
+  width: 24px;
+  height: 24px;
+  color: var(--text);
+}
+.emoji-pick-btn.selected .ico {
+  color: var(--primary);
 }
 
 .emoji-pick-btn.selected {
