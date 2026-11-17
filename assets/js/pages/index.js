@@ -396,7 +396,8 @@ function populateCategorySelect(type) {
 function populateAccountSelect(selectedId = '') {
   const sel = document.getElementById('entryAccount');
   if (!sel) return;
-  sel.innerHTML = `<option value="" ${!selectedId ? 'selected' : ''}>Kein Konto</option>` +
+  // Konto ist Pflicht, sobald es Konten gibt: statt "Kein Konto" steht "Konto auswählen"
+  sel.innerHTML = `<option value="" disabled ${!selectedId ? 'selected' : ''}>Konto auswählen</option>` +
     state.accounts.map(a => `<option value="${esc(a.id)}" ${a.id === selectedId ? 'selected' : ''}>${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
   const grp = document.getElementById('accountSelectGroup');
   if (grp) grp.style.display = state.accounts.length ? '' : 'none';

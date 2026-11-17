@@ -986,6 +986,17 @@ button {
   border-color: var(--primary-dark);
   box-shadow: 0 0 0 1.5px var(--primary-dark);
 }
+/* Meldung unter einem ausgelassenen Pflichtfeld */
+.form-input.is-invalid,
+.form-input.is-invalid:focus {
+  border-color: var(--danger-text);
+  box-shadow: 0 0 0 1.5px var(--danger-text);
+}
+.field-error {
+  margin-top: 6px;
+  font-size: var(--fs-note);
+  color: var(--danger-text);
+}
 .cat-select-btn.is-empty { color: var(--muted); }
 .cat-select-ico {
   flex: 0 0 22px;

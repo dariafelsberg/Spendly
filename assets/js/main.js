@@ -746,6 +746,7 @@ function showError(title, text, focusId) {
   showToast(title, { text, type: 'error', key: 'error' }); // derselbe Fehler nochmals: ersetzen statt stapeln
   if (focusId) {
     const el = document.getElementById(focusId);
+    if (el && text) setFieldError(el, text);
     // Versteckte Kategorie-Auswahl: den sichtbaren Knopf fokussieren
     (el && el._catSelect ? document.getElementById(focusId + 'Btn') : el)?.focus();
   }
@@ -921,4 +922,70 @@ document.addEventListener('keydown', e => {
   const next = Math.max(0, cur + (e.key === 'ArrowUp' ? 0.5 : -0.5));
   inp.value = (Math.round(next * 100) / 100).toFixed(2);
   inp.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
+// ── PFLICHTFELDER: Meldung direkt unter dem Feld, sobald man es auslässt
+// Felder mit data-required ("value", "amount" oder "name") und data-error (Text der Meldung).
+// Springt man zu einem späteren Feld im selben Fenster, werden leere Pflichtfelder davor markiert.
+// Die Meldung verschwindet, sobald das Feld gültig ist.
+function _fieldControl(el) { return el._catSelect ? document.getElementById(el.id + 'Btn') : el; }
+function _fieldValid(el) {
+  const v = String(el.value || '').trim();
+  if (el.dataset.required === 'amount') { const n = parseAmount(v); return !isNaN(n) && n > 0; }
+  if (el.dataset.required === 'name') return v.length >= 2;
+  return v !== '';
+}
+function setFieldError(el, msg) {
+  const ctrl = _fieldControl(el);
+  if (!ctrl) return;
+  const id = el.id + 'Error';
+  let box = document.getElementById(id);
+  if (!box) {
+    box = document.createElement('div');
+    box.className = 'field-error';
+    box.id = id;
+    box.setAttribute('role', 'alert');
+    ctrl.after(box);
+  }
+  box.textContent = msg;
+  ctrl.classList.add('is-invalid');
+  ctrl.setAttribute('aria-invalid', 'true');
+  ctrl.setAttribute('aria-describedby', id);
+}
+function clearFieldError(el) {
+  const ctrl = _fieldControl(el);
+  document.getElementById(el.id + 'Error')?.remove();
+  if (ctrl) { ctrl.classList.remove('is-invalid'); ctrl.removeAttribute('aria-invalid'); ctrl.removeAttribute('aria-describedby'); }
+}
+function clearFieldErrors(scope) {
+  (scope || document).querySelectorAll('[data-required]').forEach(clearFieldError);
+}
+function _checkSkipped(target) {
+  const modal = target.closest && target.closest('.modal');
+  if (!modal || target.classList.contains('btn-cancel')) return;
+  modal.querySelectorAll('[data-required]').forEach(el => {
+    const ctrl = _fieldControl(el);
+    if (!ctrl || ctrl === target || ctrl.offsetParent === null) return; // versteckte Felder (z.B. Kategorie bei Überweisung) auslassen
+    const before = ctrl.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING;
+    if (before && !_fieldValid(el)) setFieldError(el, el.dataset.error);
+  });
+}
+document.addEventListener('focusin', e => _checkSkipped(e.target));
+document.addEventListener('pointerdown', e => {
+  // Klick auf "Speichern" usw. fokussiert nicht auf allen Geräten → hier auch prüfen
+  const t = e.target.closest && e.target.closest('.modal button, .modal input, .modal select, .modal label');
+  if (t) _checkSkipped(t);
+}, true);
+['input', 'change'].forEach(type => document.addEventListener(type, e => {
+  const el = e.target;
+  if (!el.id || !document.getElementById(el.id + 'Error')) return;
+  const ok = el.dataset.required ? _fieldValid(el) : String(el.value || '').trim() !== '';
+  if (ok) clearFieldError(el);
+}));
+// Fenster neu geöffnet → alte Meldungen weg
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.modal-overlay').forEach(ov => new MutationObserver(() => {
+    if (ov.classList.contains('show') && !ov._fieldsCleared) { clearFieldErrors(ov); ov._fieldsCleared = true; }
+    if (!ov.classList.contains('show')) ov._fieldsCleared = false;
+  }).observe(ov, { attributes: true, attributeFilter: ['class'] }));
 });

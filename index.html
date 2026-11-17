@@ -201,17 +201,17 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="entryAmount">Betrag (CHF)</label>
-          <input class="form-input amount-step" type="text" inputmode="decimal" id="entryAmount" maxlength="15" placeholder="0.00" autocomplete="off">
+          <input class="form-input amount-step" type="text" inputmode="decimal" id="entryAmount" data-required="amount" data-error="Der Betrag fehlt. Gib einen Betrag über 0 ein." maxlength="15" placeholder="0.00" autocomplete="off">
         </div>
         <div class="form-group" id="entryCategoryGroup">
           <label class="form-label" for="entryCategory">Kategorie</label>
-          <select class="form-input form-select cat-select" id="entryCategory"></select>
+          <select class="form-input form-select cat-select" id="entryCategory" data-required="value" data-error="Die Kategorie fehlt. Wähle eine Kategorie aus."></select>
         </div>
       </div>
       <div class="form-group" id="accountSelectGroup">
-        <label class="form-label" for="entryAccount">Konto (optional)</label>
-        <select class="form-input form-select" id="entryAccount">
-          <option value="">Kein Konto</option>
+        <label class="form-label" for="entryAccount">Konto</label>
+        <select class="form-input form-select" id="entryAccount" data-required="value" data-error="Das Konto fehlt. Wähle ein Konto aus.">
+          <option value="" disabled selected>Konto auswählen</option>
         </select>
       </div>
       <div class="form-row" id="transferAccountsGroup" style="display:none;">
