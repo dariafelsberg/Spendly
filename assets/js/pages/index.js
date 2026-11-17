@@ -373,12 +373,7 @@ function setEntryType(type) {
     if (transferGroup) transferGroup.style.display = 'none';
     // "Nur Konto" verwendet Ausgaben-Kategorien (bleibt eine Abbuchung, zählt nur nicht ins Budget)
     populateCategorySelect(type === 'income' ? 'income' : 'expense');
-    // Neuer Eintrag: zuletzt verwendete Kategorie dieses Typs vorauswählen
-    if (!state.editId) {
-      const lastCat = (lastEntryPrefs().cat || {})[type === 'income' ? 'income' : 'expense'];
-      const sel = document.getElementById('entryCategory');
-      if (lastCat && sel && [...sel.options].some(o => o.value === lastCat)) sel.value = lastCat;
-    }
+    // Neuer Eintrag: keine Kategorie vorauswählen, es steht "Kategorie auswählen" (Daria)
     populateAccountSelect(document.getElementById('entryAccount')?.value || '');
   }
 }
@@ -394,7 +389,8 @@ function moveTypeIndicator(type) {
 function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
   if (!sel) return;
-  sel.innerHTML = (type === 'income' ? allIncomeCats() : allExpenseCats())
+  sel.innerHTML = '<option value="" selected disabled>Kategorie auswählen</option>' +
+    (type === 'income' ? allIncomeCats() : allExpenseCats())
     .map(c => `<option value="${esc(c.name)}">${catOptionLabel(c)}</option>`).join('');
 }
 function populateAccountSelect(selectedId = '') {

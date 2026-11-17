@@ -744,7 +744,11 @@ function hideToast(key) {
 // Fehler beim Speichern: Meldung zeigen und den Cursor ins betroffene Feld setzen
 function showError(title, text, focusId) {
   showToast(title, { text, type: 'error', key: 'error' }); // derselbe Fehler nochmals: ersetzen statt stapeln
-  if (focusId) document.getElementById(focusId)?.focus();
+  if (focusId) {
+    const el = document.getElementById(focusId);
+    // Versteckte Kategorie-Auswahl: den sichtbaren Knopf fokussieren
+    (el && el._catSelect ? document.getElementById(focusId + 'Btn') : el)?.focus();
+  }
 }
 // Sofort löschen und "Rückgängig" anbieten (statt vorher nachzufragen).
 // doDelete ändert state; Rückgängig setzt den ganzen Stand von vorher wieder ein.
@@ -783,3 +787,138 @@ function uid() { return Date.now().toString(36) + Math.random().toString(36).sli
 
 // ── START: Daten laden (die Seitendatei folgt danach)
 loadState();
+
+// ── KATEGORIE-AUSWAHL MIT SYMBOLEN
+// Ein <select> kann keine SVG-Symbole zeigen. Darum wird jedes <select class="cat-select">
+// durch einen Knopf mit aufklappbarer Liste ersetzt. Das <select> bleibt versteckt im Formular
+// und hält den Wert, damit der übrige Code (sel.value, innerHTML mit <option>) gleich bleibt.
+function enhanceCatSelect(sel) {
+  if (!sel || sel._catSelect) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'form-input form-select cat-select-btn';
+  btn.id = sel.id + 'Btn';
+  btn.setAttribute('aria-haspopup', 'listbox');
+  btn.setAttribute('aria-expanded', 'false');
+  const label = document.querySelector(`label[for="${sel.id}"]`);
+  if (label) { label.htmlFor = btn.id; label.id = label.id || sel.id + 'Label'; btn.setAttribute('aria-labelledby', label.id + ' ' + btn.id); }
+  const list = document.createElement('div');
+  list.className = 'cat-select-list';
+  list.id = sel.id + 'List';
+  list.setAttribute('role', 'listbox');
+  list.hidden = true;
+  btn.setAttribute('aria-controls', list.id);
+  sel.hidden = true;
+  sel.after(btn);
+  (sel.closest('.modal-overlay') || document.body).appendChild(list);
+  let active = -1;
+
+  const catFor = name => allCats().find(c => c.name === name) || null;
+  // Symbole hier ohne Kategoriefarbe (Daria); Emojis bleiben, wie sie sind
+  const look = name => { const c = catFor(name); return !c ? '' : c.icon ? iconHtml(c.icon) : esc(c.emoji || ''); };
+  const renderBtn = () => {
+    const opt = sel.options[sel.selectedIndex];
+    btn.classList.toggle('is-empty', !opt || !opt.value);
+    btn.innerHTML = opt && opt.value ? `<span class="cat-select-ico">${look(opt.value)}</span><span class="cat-select-name">${esc(opt.value)}</span>` : '<span class="cat-select-name">Kategorie auswählen</span>';
+  };
+  const renderList = () => {
+    // Platzhalter ("Kategorie auswählen", value="") nicht in der Liste zeigen
+    list.innerHTML = [...sel.options].map((o, i) => !o.value ? '' :
+      `<div class="cat-select-item${o.selected ? ' selected' : ''}" role="option" id="${sel.id}Opt${i}" data-i="${i}" aria-selected="${o.selected}">` +
+      `<span class="cat-select-ico">${look(o.value)}</span><span class="cat-select-name">${esc(o.value)}</span></div>`).join('');
+  };
+  const setActive = i => {
+    const items = list.children;
+    if (!items.length) return;
+    active = Math.max(0, Math.min(items.length - 1, i));
+    [...items].forEach((el, j) => el.classList.toggle('active', j === active));
+    // active zählt die sichtbaren Einträge; data-i ist der Index im <select>
+    btn.setAttribute('aria-activedescendant', items[active].id);
+    items[active].scrollIntoView({ block: 'nearest' });
+  };
+  const place = () => {
+    const r = btn.getBoundingClientRect();
+    const below = window.innerHeight - r.bottom - 12, above = r.top - 12;
+    const up = below < 220 && above > below;
+    const max = Math.min(320, up ? above : below);
+    list.style.left = r.left + 'px';
+    list.style.width = r.width + 'px';
+    list.style.maxHeight = max + 'px';
+    list.style.top = up ? (r.top - 4 - Math.min(max, list.scrollHeight)) + 'px' : (r.bottom + 4) + 'px';
+  };
+  const open = () => {
+    renderList();
+    list.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    place();
+    const cur = [...list.children].findIndex(el => +el.dataset.i === sel.selectedIndex);
+    setActive(cur < 0 ? 0 : cur);
+  };
+  const close = () => {
+    if (list.hidden) return;
+    list.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.removeAttribute('aria-activedescendant');
+  };
+  const choose = i => {
+    if (i < 0 || i >= sel.options.length) return;
+    sel.selectedIndex = i;
+    renderBtn();
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    close();
+  };
+  btn.addEventListener('click', () => (list.hidden ? open() : close()));
+  btn.addEventListener('keydown', e => {
+    if (list.hidden) {
+      if (['ArrowDown', 'ArrowUp'].includes(e.key)) { e.preventDefault(); open(); }
+      return;
+    }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+    else if (e.key === 'End') { e.preventDefault(); setActive(list.children.length - 1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); const it = list.children[active]; if (it) choose(+it.dataset.i); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
+    else if (e.key === 'Tab') close();
+  });
+  list.addEventListener('mousedown', e => e.preventDefault()); // Fokus bleibt auf dem Knopf
+  list.addEventListener('click', e => {
+    const item = e.target.closest('.cat-select-item');
+    if (item) choose(+item.dataset.i);
+  });
+  document.addEventListener('pointerdown', e => {
+    if (!list.hidden && !list.contains(e.target) && !btn.contains(e.target)) close();
+  }, true);
+  window.addEventListener('resize', close);
+  const modal = sel.closest('.modal');
+  if (modal) modal.addEventListener('scroll', close, { passive: true });
+  const overlay = sel.closest('.modal-overlay');
+  if (overlay) new MutationObserver(() => { if (!overlay.classList.contains('show')) close(); })
+    .observe(overlay, { attributes: true, attributeFilter: ['class'] });
+
+  // Neue Optionen (innerHTML) oder ein per Code gesetzter Wert (sel.value = …) → Knopf aktualisieren
+  new MutationObserver(renderBtn).observe(sel, { childList: true });
+  const desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  Object.defineProperty(sel, 'value', {
+    get() { return desc.get.call(this); },
+    set(v) { desc.set.call(this, v); renderBtn(); },
+  });
+  sel.addEventListener('change', renderBtn);
+  sel._catSelect = { refresh: renderBtn };
+  renderBtn();
+}
+document.querySelectorAll('select.cat-select').forEach(enhanceCatSelect);
+
+// ── BETRAG MIT PFEILTASTEN: Pfeil hoch/runter ändert den Betrag um 50 Rappen
+document.addEventListener('keydown', e => {
+  const inp = e.target;
+  if (!inp.classList || !inp.classList.contains('amount-step')) return;
+  if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  e.preventDefault();
+  const cur = parseAmount(inp.value);
+  if (isNaN(cur)) { inp.value = '0.00'; inp.dispatchEvent(new Event('input', { bubbles: true })); return; } // leeres Feld startet bei 0.00
+  const next = Math.max(0, cur + (e.key === 'ArrowUp' ? 0.5 : -0.5));
+  inp.value = (Math.round(next * 100) / 100).toFixed(2);
+  inp.dispatchEvent(new Event('input', { bubbles: true }));
+});
