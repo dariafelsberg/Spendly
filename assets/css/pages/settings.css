@@ -469,3 +469,145 @@ html.embed-modal-open body {
   /* Budget-Feld mit dem gleichen Rahmen wie alle anderen Eingabefelder */
   .budget-inline-field { border-width: 1px; border-radius: var(--radius-sm); }
 }
+
+/* ══ HANDY UND TABLET (bis 1023px, auch im Einstellungs-Fenster): gleicher Aufbau wie
+   auf dem Computer, nur enger gesetzt. Stift und Papierkorb bleiben immer sichtbar. ══ */
+@media (max-width: 1023px) {
+  /* Reihenfolge: Anmeldung, Budget, Konten, Wiederkehrend, Kategorien */
+  .settings-main,
+  html.embed-mode .settings-main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .settings-main > .settings-section,
+  html.embed-mode .settings-main > .settings-section { order: 2; margin-bottom: 0; }
+  .settings-main > .settings-auth,
+  html.embed-mode .settings-main > .settings-auth { order: 0; }
+  .settings-main > .settings-budget,
+  html.embed-mode .settings-main > .settings-budget { order: 1; }
+  .settings-main > .legal-links { order: 3; }
+
+  /* Leere Bereiche zeigen nur den Hinzufügen-Knopf */
+  .settings-main .empty-tx { display: none; }
+
+  /* Budget direkt im Feld */
+  .settings-budget .budget-setting-row { display: none; }
+  .settings-budget .budget-inline { display: flex; align-items: center; }
+  .budget-inline-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+  }
+  .budget-inline-field:focus-within { border-color: var(--primary-dark); }
+  .budget-inline-cur { color: var(--muted); font-size: var(--fs-body); }
+  .budget-inline-field .form-input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    padding: 10px 0;
+    background: transparent;
+    font-size: var(--fs-xl);
+    color: var(--primary-dark);
+    box-shadow: none;
+    outline: none;
+  }
+
+  /* Konten und Wiederkehrend: ruhige Liste mit feinen Linien */
+  .settings-accounts .settings-list,
+  .settings-recurring .settings-list { gap: 0; }
+  .acc-row,
+  .rec-row {
+    background: transparent;
+    border-radius: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .acc-row:last-child,
+  .rec-row:last-child { border-bottom: 0; }
+  .acc-row .settings-item-val,
+  .rec-row .settings-item-val { display: none; }
+
+  /* Konto: Name, darunter «sichtbar»; Guthaben rechts */
+  .acc-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "n b x" "v b x";
+    column-gap: 12px;
+    row-gap: 2px;
+    align-items: center;
+  }
+  .acc-row .settings-item-info { grid-area: n; }
+  .acc-row .acc-bal { display: block; grid-area: b; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .acc-row .acc-vis { display: flex; grid-area: v; align-items: center; gap: 4px; font-size: var(--fs-note); color: var(--muted); }
+  .acc-row .settings-item-actions { grid-area: x; }
+
+  /* Wiederkehrend: Reiter wie im Eintrag-Fenster, ohne Symbole (zu wenig Platz) */
+  .settings-recurring .rec-tabs {
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    margin-bottom: 8px;
+    background: var(--card-soft);
+    border-radius: var(--radius-sm);
+  }
+  .rec-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 2px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    font-family: inherit;
+    font-size: var(--fs-note);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .rec-tab .ico,
+  .rec-tab .rec-count { display: none; }
+  .rec-tab.income { color: var(--income-text); }
+  .rec-tab.expense { color: var(--danger-text); }
+  .rec-tab.transfer { color: var(--transfer-text); }
+  .rec-tab.active { background: var(--card); box-shadow: var(--shadow-raised); }
+  .rec-tab:focus-visible { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
+  .settings-recurring .rec-panel { display: none; }
+  .settings-recurring .rec-panel.active { display: block; }
+  .settings-recurring .rec-panel + .rec-panel { margin-top: 0; }
+  .settings-recurring .rec-panel-title { display: none; }
+
+  /* Zeile: Symbol, Name, Betrag rechts; darunter «am 1. · Konto» */
+  .rec-row {
+    display: grid;
+    grid-template-columns: 24px auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "i n n a x" "i d c c x";
+    column-gap: 12px;
+    row-gap: 2px;
+    align-items: center;
+  }
+  .rec-row .rec-icon { display: flex; grid-area: i; justify-content: center; font-size: 1.2rem; }
+  .rec-row .settings-item-info { grid-area: n; }
+  .rec-row .rec-amt { display: block; grid-area: a; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .rec-row .rec-day,
+  .rec-row .rec-acc {
+    display: block;
+    font-size: var(--fs-note);
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rec-row .rec-day { grid-area: d; }
+  .rec-row .rec-acc { grid-area: c; margin-left: -8px; }
+  .rec-row .rec-acc::before { content: "· "; }
+  .rec-row .settings-item-actions { grid-area: x; }
+}
