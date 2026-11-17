@@ -200,6 +200,7 @@ html.embed-modal-open body {
    Budget direkt bearbeitbar). Auf dem Handy und im eingebetteten Fenster sieht
    alles aus wie bisher: die Zusatzspalten und Reiter sind dort ausgeblendet. ══ */
 .acc-head,
+.rec-head,
 .acc-bal,
 .acc-vis,
 .rec-tabs,
@@ -425,4 +426,30 @@ html.embed-modal-open body {
 /* Ohne Konten keine leere Tabellenüberschrift */
 @media (min-width: 1024px) {
   html:not(.embed-mode) .settings-accounts .acc-head:has(+ .settings-list .empty-tx) { display: none; }
+}
+
+/* Spaltentitel über den wiederkehrenden Einträgen (wie bei den Konten) */
+@media (min-width: 1024px) {
+  html:not(.embed-mode) .settings-recurring .rec-head {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 120px 70px 160px 88px;
+    column-gap: 16px;
+    padding: 0 4px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: var(--fs-note);
+    color: var(--muted);
+  }
+  html:not(.embed-mode) .settings-recurring .rec-head span:nth-child(3) { text-align: right; }
+  html:not(.embed-mode) .settings-recurring .rec-head:has(+ .settings-list .empty-tx) { display: none; }
+}
+/* Mehr Abstand zwischen Betrag und Tag */
+@media (min-width: 1024px) {
+  html:not(.embed-mode) .rec-row,
+  html:not(.embed-mode) .settings-recurring .rec-head {
+    grid-template-columns: 24px minmax(0, 1fr) 120px 110px 160px 88px;
+  }
+  html:not(.embed-mode) .rec-row .rec-day,
+  html:not(.embed-mode) .settings-recurring .rec-head span:nth-child(4) {
+    padding-left: 40px;
+  }
 }
