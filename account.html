@@ -48,6 +48,25 @@
     <button class="auth-delete-btn" onclick="openDeleteAccountModal()">Account löschen</button>
   </main>
 
+  <!-- Seitenleiste nur auf dem Computer (auf dem Handy hat diese Unterseite keine Navigation) -->
+  <nav class="bottom-nav nav-desktop-only">
+    <a class="nav-btn" href="index.html">
+      <span class="nav-icon"><span class="ico ico-home"></span></span>
+      <span class="nav-label">Home</span>
+    </a>
+    <a class="nav-btn" href="calendar.html">
+      <span class="nav-icon"><span class="ico ico-calendar"></span></span>
+      <span class="nav-label">Kalender</span>
+    </a>
+    <a class="nav-btn" href="analyse.html">
+      <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
+      <span class="nav-label">Analyse</span>
+    </a>
+    <a class="nav-btn nav-settings active" href="settings.html" aria-label="Einstellungen" title="Einstellungen">
+      <span class="nav-icon"><span class="ico ico-settings"></span></span>
+    </a>
+  </nav>
+
 </div><!-- /app-shell -->
 
 <!-- ══ MODAL: PASSWORT ÄNDERN ══ -->

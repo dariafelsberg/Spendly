@@ -98,7 +98,7 @@
     <!-- ── Hinweis zum ersten Eintrag (nur neue Nutzer ohne Einträge) ── -->
     <div class="first-entry-hint" id="firstEntryHint" role="status" hidden>
       <span>Trag hier deine erste Ausgabe ein</span>
-      <button type="button" class="first-entry-hint-close" onclick="dismissFirstEntryHint()" aria-label="Hinweis schliessen">&times;</button>
+      <button type="button" class="first-entry-hint-close" onclick="dismissFirstEntryHint()" aria-label="Hinweis schliessen"><span class="ico ico-close"></span></button>
     </div>
 
     <!-- ── FAB ── -->
@@ -254,7 +254,6 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle" tabindex="-1">
       <div class="modal-handle"></div>
       <div class="modal-title" id="budgetModalTitle">Monatsbudget</div>
-      <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
       <div class="form-group">
         <label class="form-label" for="budgetInput">Budget (CHF)</label>
         <input class="form-input" type="text" inputmode="decimal" id="budgetInput" maxlength="15" placeholder="z.B. 3000" autocomplete="off">

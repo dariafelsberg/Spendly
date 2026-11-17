@@ -63,7 +63,6 @@
         <span class="settings-section-icon"><span class="ico ico-bank"></span></span>
         <div>
           <div class="settings-section-title">Konten</div>
-          <div class="settings-section-sub">Konten verwalten und im Guthaben anzeigen</div>
         </div>
       </div>
       <!-- Spaltenköpfe: nur auf dem Computer (Konten als Tabelle) -->
@@ -116,7 +115,6 @@
         <span class="settings-section-icon"><span class="ico ico-tag"></span></span>
         <div>
           <div class="settings-section-title">Eigene Kategorien</div>
-          <div class="settings-section-sub">Individuelle Kategorien verwalten</div>
         </div>
       </div>
       <div id="customIncomeCatList" class="settings-list"></div>
@@ -129,12 +127,11 @@
         <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
         <div>
           <div class="settings-section-title">Monatsbudget</div>
-          <div class="settings-section-sub">Wird jeden Monat automatisch wiederholt</div>
         </div>
       </div>
       <div class="budget-setting-row">
         <div class="budget-setting-val" id="budgetSettingDisplay">CHF 0.00</div>
-        <button class="icon-btn" onclick="openBudgetModal()" aria-label="Budget bearbeiten"><span class="ico ico-pencil"></span></button>
+        <button class="tx-btn" onclick="openBudgetModal()" aria-label="Budget bearbeiten"><span class="ico ico-pencil"></span></button>
       </div>
       <!-- Computer: Budget direkt im Feld ändern, gespeichert beim Verlassen des Feldes oder mit Enter -->
       <div class="budget-inline">
@@ -143,7 +140,6 @@
           <input class="form-input" type="text" inputmode="decimal" id="budgetInlineInput" maxlength="15" placeholder="z.B. 2000" autocomplete="off"
                  aria-label="Monatsbudget in CHF" onchange="saveBudgetInline()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
         </label>
-        <span class="budget-inline-hint">pro Monat, wird beim Verlassen des Feldes gespeichert</span>
       </div>
     </div>
 
@@ -195,7 +191,6 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
     <div class="modal-title" id="budgetModalTitle">Monatsbudget</div>
-    <div class="modal-sub">Wird jeden Monat automatisch übernommen</div>
     <div class="form-group">
       <label class="form-label" for="budgetInput">Budget (CHF)</label>
       <input class="form-input" type="text" inputmode="decimal" id="budgetInput" maxlength="15" placeholder="z.B. 3000" autocomplete="off">

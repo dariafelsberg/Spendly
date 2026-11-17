@@ -177,7 +177,7 @@ html.embed-modal-open body {
 .legal-links a {
   font-size: var(--fs-note);
   color: var(--muted);
-  text-decoration: none;
+  text-decoration: underline; /* Handy: immer unterstrichen */
 }
 
 /* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
@@ -185,6 +185,7 @@ html.embed-modal-open body {
   .settings-add-btn:hover {
     background: var(--primary-light);
   }
+  .legal-links a { text-decoration: none; }
   .legal-links a:hover {
     text-decoration: underline;
   }
@@ -452,4 +453,19 @@ html.embed-modal-open body {
   html:not(.embed-mode) .settings-recurring .rec-head span:nth-child(4) {
     padding-left: 40px;
   }
+}
+/* Reiter wie die Auswahl Ausgabe/Einnahme/Überweisung im Eintrag-Fenster */
+@media (min-width: 1024px) {
+  html:not(.embed-mode) .settings-recurring .rec-tabs {
+    background: var(--card-soft);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    gap: 3px;
+  }
+  .rec-tab { border-radius: 8px; padding: 8px; font-weight: 600; }
+  .rec-tab.income { color: var(--income-text); }
+  .rec-tab.expense { color: var(--danger-text); }
+  .rec-tab.transfer { color: var(--transfer-text); }
+  /* Budget-Feld mit dem gleichen Rahmen wie alle anderen Eingabefelder */
+  .budget-inline-field { border-width: 1px; border-radius: var(--radius-sm); }
 }

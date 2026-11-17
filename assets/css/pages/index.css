@@ -667,10 +667,10 @@
   display: grid;
   place-items: center;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-sm); /* gleich wie das Kreuz in den Meldungen */
   background: transparent;
-  color: #fff;
-  font-size: var(--fs-lg);
+  color: rgba(255, 255, 255, .7);
+  font-size: 1rem;
   line-height: 1;
   cursor: pointer;
 }

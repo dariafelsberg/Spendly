@@ -1205,7 +1205,7 @@ button {
   border: none;
   border-radius: var(--radius-sm);
   background: var(--card-soft);
-  color: var(--primary);
+  color: var(--primary-dark);
   font-size: 1.3rem;
   font-weight: 700;
   cursor: pointer;
