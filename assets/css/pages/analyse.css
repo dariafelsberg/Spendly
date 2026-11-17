@@ -74,20 +74,19 @@
   font-weight: 700;
 }
 
-/* ── EINTRÄGE NACH KATEGORIE (aufklappbar) */
+/* ── EINTRÄGE NACH KATEGORIE (aufklappbar)
+   Ruhige Liste: weisse Zeilen mit feiner Linie dazwischen statt rosa Kästchen */
 .insights-cat-group {
-  border-radius: var(--radius);
-  background: var(--card-soft);
-  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 .insights-cat-group:last-child {
-  margin-bottom: 0;
+  border-bottom: 0;
 }
 .insights-cat-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 12px;
+  padding: 12px 4px;
   cursor: pointer;
   user-select: none;
 }
@@ -101,18 +100,22 @@
   white-space: nowrap;
 }
 .insights-cat-count {
-  background: var(--primary-light);
-  color: var(--primary-dark);
+  color: var(--muted);
   font-size: var(--fs-note);
-  font-weight: 600;
-  padding: 1px 8px;
-  border-radius: 999px;
+  font-weight: 500;
   flex-shrink: 0;
+  min-width: 2ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .insights-cat-total {
   font-weight: 700;
   font-size: var(--fs-body);
   flex-shrink: 0;
+  /* feste Spalte, damit Anzahl und Beträge in jeder Zeile untereinander stehen */
+  min-width: 8ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .insights-cat-chevron {
   color: var(--muted);
@@ -125,13 +128,17 @@
 }
 .insights-cat-body {
   display: none;
-  padding: 0 8px 8px;
+  padding: 0 0 8px 24px;
 }
 .insights-cat-group.open .insights-cat-body {
   display: block;
 }
 .insights-cat-body .tx-item {
-  background: var(--card);
+  background: transparent;
+  border-radius: 0;
+  margin-bottom: 0;
+  padding: 12px 4px;
+  border-top: 1px solid var(--border);
 }
 
 /* ── CALENDAR */

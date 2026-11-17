@@ -166,10 +166,11 @@ function renderInsightsChart() {
     const barH = Math.max((Math.abs(d.net) / range) * INSIGHTS_TRACK_HEIGHT, d.net !== 0 ? 2 : 0);
     const barTop = isNeg ? zeroTop : zeroTop - barH;
     const barCls = `insights-bar${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
+    // Leere Monate (Bilanz 0) ohne Zahl, damit man sofort sieht, wo es Daten gibt.
     const valCls = `insights-bar-value${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
     return `
       <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${monthNames[d.month]} ${d.year}: ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}" title="${monthNames[d.month]} ${d.year} · ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}">
-        <div class="${valCls}">${formatSignedCompactChf(d.net)}</div>
+        <div class="${valCls}"${d.net === 0 ? ' aria-hidden="true"' : ''}>${d.net === 0 ? '&nbsp;' : formatSignedCompactChf(d.net)}</div>
         <div class="insights-bar-track">
           <div class="insights-bar-zero-line" style="top:${zeroTop}px"></div>
           <div class="${barCls}" style="top:${barTop}px; height:${barH}px"></div>

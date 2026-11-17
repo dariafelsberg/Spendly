@@ -16,22 +16,55 @@ function renderSettings() {
   renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
   if (sd) showBudgetSetting(sd);
+  showRecurringTab(recurringTab);
 }
 // Ohne Budget kein 'CHF 0.00', sondern ein Hinweis
 function showBudgetSetting(sd) {
   sd.textContent = state.budget ? 'CHF ' + formatNum(state.budget) : 'Noch kein Budget';
   sd.classList.toggle('is-empty', !state.budget);
+  // Computer: dasselbe Budget im Eingabefeld (nicht überschreiben, während man tippt)
+  const inp = document.getElementById('budgetInlineInput');
+  if (inp && document.activeElement !== inp) inp.value = state.budget ? formatNum(state.budget) : '';
+}
+// Computer: Budget direkt im Feld ändern (gespeichert bei "change", also beim Verlassen oder mit Enter)
+function saveBudgetInline() {
+  const inp = document.getElementById('budgetInlineInput');
+  const raw = inp.value.trim();
+  const val = raw === '' ? 0 : parseAmount(raw);
+  if (isNaN(val) || val < 0) {
+    showError('Budget nicht gespeichert', 'Gib einen Betrag ein, zum Beispiel 2000.', 'budgetInlineInput');
+    return;
+  }
+  if (val === (state.budget || 0)) { showBudgetSetting(document.getElementById('budgetSettingDisplay')); return; }
+  state.budget = val; saveState();
+  showBudgetSetting(document.getElementById('budgetSettingDisplay'));
+  showToast('Budget gespeichert', { text: val ? `Ab sofort CHF ${formatNum(val)} pro Monat.` : 'Du hast kein Monatsbudget mehr festgelegt.' });
+}
+
+// Wiederkehrend: welcher Reiter auf dem Computer offen ist (auf dem Handy stehen alle untereinander)
+let recurringTab = 'expense';
+function showRecurringTab(type) {
+  recurringTab = type;
+  ['income', 'expense', 'transfer'].forEach(t => {
+    const on = t === type;
+    const tab = document.getElementById('recTab-' + t);
+    const panel = document.getElementById('recPanel-' + t);
+    if (tab) { tab.classList.toggle('active', on); tab.setAttribute('aria-selected', on); tab.tabIndex = on ? 0 : -1; }
+    if (panel) panel.classList.toggle('active', on);
+  });
 }
 function renderAccountsList() {
   const el = document.getElementById('accountsList');
   el.innerHTML = !state.accounts.length
     ? '<div class="empty-tx">Noch keine Konten hinzugefügt.</div>'
     : state.accounts.map(a => `
-      <div class="settings-item">
+      <div class="settings-item acc-row">
         <div class="settings-item-info">
           <div class="settings-item-name">${esc(a.name)}</div>
           <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt'}</span></div>
         </div>
+        <span class="acc-bal">CHF ${formatNum(a.balance)}</span>
+        <span class="acc-vis">${a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt'}</span>
         <div class="settings-item-actions">
           <button class="tx-btn" onclick="openAccountModal(${jsArg(a.id)})"><span class="ico ico-pencil"></span></button>
           <button class="tx-btn delete" onclick="deleteAccount(${jsArg(a.id)})"><span class="ico ico-trash"></span></button>
@@ -50,24 +83,37 @@ function renderRecurringList(type) {
   const list = recurringListFor(type);
   const sign = type === 'income' ? '+' : type === 'transfer' ? '' : '−';
   const col  = type === 'income' ? 'var(--income-text)' : type === 'transfer' ? 'var(--transfer-text)' : 'var(--danger-text)';
+  const count = document.getElementById('recCount-' + type);
+  if (count) count.textContent = list.length ? list.length : '';
   el.innerHTML = !list.length
     ? '<div class="empty-tx">Noch keine Einträge.</div>'
     : list.map(r => {
-        let detail;
+        let detail, icon, account;
+        // Symbol in der Farbe der Kategorie (Überweisung: Pfeile in Blau), Tag im Monat, Konto
+        const day = r.createdAt ? new Date(r.createdAt + 'T00:00:00').getDate() : 1;
         if (type === 'transfer') {
           const fromAcc = state.accounts.find(a => a.id === r.fromAccountId);
           const toAcc   = state.accounts.find(a => a.id === r.toAccountId);
           detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}`;
+          icon = iconHtml('transfer', 'var(--transfer)');
+          account = `${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}`;
         } else {
           const acc = r.accountId ? state.accounts.find(a => a.id === r.accountId) : null;
+          const cat = allCats().find(c => c.name === r.category);
+          icon = cat ? catIcon(cat) : '';
+          account = acc ? esc(acc.name) : '';
           detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${esc(r.category)}${acc ? ' · ' + iconHtml('bank') + ' ' + esc(acc.name) : ''}${r.accountOnly ? ' · ' + iconHtml('banned') + ' Budget' : ''}`;
         }
         return `
-      <div class="settings-item">
+      <div class="settings-item rec-row">
+        <span class="rec-icon" aria-hidden="true">${icon}</span>
         <div class="settings-item-info">
           <div class="settings-item-name">${esc(r.name)}</div>
           <div class="settings-item-val" style="color:${col}">${detail}</div>
         </div>
+        <span class="rec-amt" style="color:${col}">${sign}${formatNum(r.amount)}</span>
+        <span class="rec-day">am ${day}.</span>
+        <span class="rec-acc">${account}</span>
         <div class="settings-item-actions">
           <button class="tx-btn" onclick="openRecurringModal('${type}',${jsArg(r.id)})"><span class="ico ico-pencil"></span></button>
           <button class="tx-btn delete" onclick="deleteRecurring('${type}',${jsArg(r.id)})"><span class="ico ico-trash"></span></button>

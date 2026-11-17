@@ -13,14 +13,14 @@ const EXPENSE_CATEGORIES = [
   { name: 'Restaurants',     icon: 'restaurant', color: '#f59e42' },
   { name: 'Lebensmittel',    icon: 'shoppingbasket', color: '#34d399' },
   { name: 'Geschenke',       icon: 'gift', color: '#f472b6' },
-  { name: 'Gesundheit',      icon: 'pill', color: '#60a5fa' },
+  { name: 'Gesundheit',      icon: 'pill', color: '#0e7490' },
   { name: 'Wohnen',          icon: 'house', color: '#fb923c' },
   { name: 'Online Shopping', icon: 'package', color: '#c084fc' },
   { name: 'Haustiere',       icon: 'paw', color: '#4ade80' },
   { name: 'Sport',           icon: 'sport', color: '#38bdf8' },
   { name: 'ÖV',              icon: 'oev', color: '#f87171' },
   { name: 'Hygieneartikel',  icon: 'hygiene', color: '#a3e635' },
-  { name: 'Shopping',         icon: 'shoppingbag', color: '#f472b6' },
+  { name: 'Shopping',         icon: 'shoppingbag', color: '#7c3aed' },
 ];
 const INCOME_CATEGORIES = [
   { name: 'Lohn',      icon: 'wallet', color: '#16a34a' },

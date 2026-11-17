@@ -195,3 +195,234 @@ html.embed-modal-open body {
   font-size: var(--fs-body);
   color: var(--muted);
 }
+
+/* ══ EINSTELLUNGEN AUF DEM COMPUTER (Konten-Tabelle, Wiederkehrend mit Reitern,
+   Budget direkt bearbeitbar). Auf dem Handy und im eingebetteten Fenster sieht
+   alles aus wie bisher: die Zusatzspalten und Reiter sind dort ausgeblendet. ══ */
+.acc-head,
+.acc-bal,
+.acc-vis,
+.rec-tabs,
+.rec-icon,
+.rec-amt,
+.rec-day,
+.rec-acc,
+.budget-inline {
+  display: none;
+}
+/* Handy: die drei Listen untereinander in einer Karte, je mit Zwischentitel */
+.rec-panel + .rec-panel {
+  margin-top: var(--sp-md);
+}
+.rec-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  color: var(--muted);
+}
+.rec-panel-title.income .ico { color: var(--income-text); }
+.rec-panel-title.expense .ico { color: var(--danger-text); }
+.rec-panel-title.transfer .ico { color: var(--transfer-text); }
+
+@media (min-width: 1024px) {
+  /* Reihenfolge: Anmeldung, Budget, Konten, Wiederkehrend, Kategorien */
+  html:not(.embed-mode) .settings-main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-md);
+  }
+  html:not(.embed-mode) .settings-main > .settings-section { order: 2; margin-bottom: 0; }
+  html:not(.embed-mode) .settings-main > .settings-auth { order: 0; }
+  html:not(.embed-mode) .settings-main > .settings-budget { order: 1; }
+  html:not(.embed-mode) .settings-main > .legal-links { order: 3; }
+
+  /* Leere Bereiche zeigen nur den Hinzufügen-Knopf */
+  html:not(.embed-mode) .settings-main .empty-tx { display: none; }
+
+  /* ── Budget direkt im Feld ändern */
+  html:not(.embed-mode) .settings-budget .budget-setting-row { display: none; }
+  html:not(.embed-mode) .settings-budget .budget-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-md);
+    flex-wrap: wrap;
+  }
+  .budget-inline-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 220px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+  }
+  .budget-inline-field:focus-within {
+    border-color: var(--primary-dark);
+  }
+  .budget-inline-cur {
+    color: var(--muted);
+    font-size: var(--fs-body);
+  }
+  .budget-inline-field .form-input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    padding: 10px 0;
+    background: transparent;
+    font-size: var(--fs-xl);
+    color: var(--primary-dark);
+    box-shadow: none;
+    outline: none;
+  }
+  .budget-inline-hint {
+    font-size: var(--fs-note);
+    color: var(--muted);
+  }
+
+  /* ── Konten als Tabelle */
+  html:not(.embed-mode) .settings-accounts .acc-head,
+  html:not(.embed-mode) .settings-accounts .acc-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px 140px 88px;
+    column-gap: 56px;
+    align-items: center;
+  }
+  html:not(.embed-mode) .settings-accounts .acc-head {
+    padding: 0 4px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: var(--fs-note);
+    color: var(--muted);
+  }
+  html:not(.embed-mode) .settings-accounts .acc-head span:nth-child(2) { text-align: right; }
+  html:not(.embed-mode) .settings-accounts .settings-list { gap: 0; }
+  html:not(.embed-mode) .acc-row,
+  html:not(.embed-mode) .rec-row {
+    background: transparent;
+    border-radius: 0;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  html:not(.embed-mode) .acc-row:last-child,
+  html:not(.embed-mode) .rec-row:last-child { border-bottom: 0; }
+  html:not(.embed-mode) .acc-row .settings-item-val,
+  html:not(.embed-mode) .rec-row .settings-item-val { display: none; }
+  html:not(.embed-mode) .acc-row .acc-bal {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  html:not(.embed-mode) .acc-row .acc-vis {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-note);
+    color: var(--muted);
+  }
+  html:not(.embed-mode) .acc-row .settings-item-actions,
+  html:not(.embed-mode) .rec-row .settings-item-actions { justify-content: flex-end; }
+
+  /* ── Wiederkehrend: Reiter mit Symbol und Farbe der Art */
+  html:not(.embed-mode) .settings-recurring .rec-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 12px;
+    background: var(--bg);
+    border-radius: var(--radius);
+  }
+  .rec-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    font-family: inherit;
+    font-size: var(--fs-note);
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .rec-tab.income .ico { color: var(--income-text); }
+  .rec-tab.expense .ico { color: var(--danger-text); }
+  .rec-tab.transfer .ico { color: var(--transfer-text); }
+  .rec-tab.active {
+    background: var(--card);
+    box-shadow: var(--shadow-raised);
+    font-weight: 600;
+  }
+  .rec-tab.income.active { color: var(--income-text); }
+  .rec-tab.expense.active { color: var(--danger-text); }
+  .rec-tab.transfer.active { color: var(--transfer-text); }
+  .rec-count { color: var(--muted); font-weight: 500; }
+  .rec-tab:focus-visible { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
+
+  html:not(.embed-mode) .settings-recurring .rec-panel { display: none; }
+  html:not(.embed-mode) .settings-recurring .rec-panel.active { display: block; }
+  html:not(.embed-mode) .settings-recurring .rec-panel + .rec-panel { margin-top: 0; }
+  html:not(.embed-mode) .settings-recurring .rec-panel-title { display: none; }
+  html:not(.embed-mode) .settings-recurring .settings-list { gap: 0; }
+
+  html:not(.embed-mode) .rec-row {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 120px 70px 160px 88px;
+    column-gap: 16px;
+    align-items: center;
+  }
+  html:not(.embed-mode) .rec-row .rec-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+  html:not(.embed-mode) .rec-row .rec-amt {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  html:not(.embed-mode) .rec-row .rec-day,
+  html:not(.embed-mode) .rec-row .rec-acc {
+    display: block;
+    font-size: var(--fs-note);
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Bearbeiten/Löschen erst beim Darüberfahren oder mit der Tastatur */
+  html:not(.embed-mode) .acc-row .settings-item-actions,
+  html:not(.embed-mode) .rec-row .settings-item-actions {
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  html:not(.embed-mode) .acc-row:hover .settings-item-actions,
+  html:not(.embed-mode) .rec-row:hover .settings-item-actions,
+  html:not(.embed-mode) .acc-row:focus-within .settings-item-actions,
+  html:not(.embed-mode) .rec-row:focus-within .settings-item-actions {
+    opacity: 1;
+  }
+  html:not(.embed-mode) .acc-row:hover,
+  html:not(.embed-mode) .rec-row:hover {
+    background: var(--card-soft);
+  }
+}
+/* Geräte ohne Maus (grosses iPad): Knöpfe immer sichtbar */
+@media (min-width: 1024px) and (hover: none) {
+  html:not(.embed-mode) .acc-row .settings-item-actions,
+  html:not(.embed-mode) .rec-row .settings-item-actions { opacity: 1; }
+}
+/* Ohne Konten keine leere Tabellenüberschrift */
+@media (min-width: 1024px) {
+  html:not(.embed-mode) .settings-accounts .acc-head:has(+ .settings-list .empty-tx) { display: none; }
+}

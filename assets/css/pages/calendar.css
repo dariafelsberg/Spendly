@@ -112,3 +112,15 @@
 .calendar-weekdays > div:is(:nth-child(6), :nth-child(7)) {
   font-weight: 700;
 }
+
+/* Einträge des gewählten Tages: ruhige Liste mit feiner Linie statt rosa Kästchen */
+.day-detail .tx-item {
+  background: transparent;
+  border-radius: 0;
+  margin-bottom: 0;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.day-detail .tx-item:last-child {
+  border-bottom: 0;
+}

@@ -185,7 +185,7 @@ function confirmDeleteAccount() {
       window.top.location.href = 'login.html';
     })
     .catch(() => {
-      errEl.textContent = 'Das Konto konnte nicht gelöscht werden. Bitte prüfe deine Verbindung und versuche es erneut.';
+      errEl.textContent = 'Der Account konnte nicht gelöscht werden. Bitte prüfe deine Verbindung und versuche es erneut.';
       btn.disabled = false;
     });
 }

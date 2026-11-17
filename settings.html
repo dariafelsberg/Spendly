@@ -39,12 +39,12 @@
   <div class="settings-main">
 
     <!-- ANMELDUNG -->
-    <div class="settings-section" id="authProfile">
+    <div class="settings-section settings-auth" id="authProfile">
       <div class="settings-section-header">
         <span class="settings-section-icon"><span class="ico ico-user"></span></span>
         <div>
           <div class="settings-section-title">Anmeldung</div>
-          <div class="settings-section-sub">Dein Login für dieses Gerät</div>
+          <div class="settings-section-sub">Angemeldet als</div>
         </div>
       </div>
       <div class="auth-profile-row">
@@ -58,44 +58,53 @@
     </div>
 
     <!-- KONTEN -->
-    <div class="settings-section">
+    <div class="settings-section settings-accounts">
       <div class="settings-section-header">
         <span class="settings-section-icon"><span class="ico ico-bank"></span></span>
         <div>
           <div class="settings-section-title">Konten</div>
-          <div class="settings-section-sub">Konten verwalten &amp; im Guthaben anzeigen</div>
+          <div class="settings-section-sub">Konten verwalten und im Guthaben anzeigen</div>
         </div>
       </div>
+      <!-- Spaltenköpfe: nur auf dem Computer (Konten als Tabelle) -->
+      <div class="acc-head" aria-hidden="true"><span>Konto</span><span>Guthaben</span><span>Anzeige</span><span></span></div>
       <div id="accountsList" class="settings-list"></div>
       <button class="settings-add-btn" onclick="openAccountModal()"><span class="ico ico-plus" aria-hidden="true"></span>Konto hinzufügen</button>
     </div>
 
-    <!-- MONATLICHE EINNAHMEN -->
-    <div class="settings-section settings-section-half">
+    <!-- WIEDERKEHREND: eine Karte. Computer: Reiter Einnahmen / Ausgaben / Überweisungen.
+         Handy: alle drei Listen untereinander, je mit Zwischentitel. -->
+    <div class="settings-section settings-recurring">
       <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-coin"></span></span>
+        <span class="settings-section-icon"><span class="ico ico-calendar"></span></span>
         <div>
-          <div class="settings-section-title">Monatliche Einnahmen</div>
-          <div class="settings-section-sub">Wiederkehrende Einnahmen verwalten</div>
+          <div class="settings-section-title">Wiederkehrend</div>
+          <div class="settings-section-sub">Wird jeden Monat automatisch gebucht</div>
         </div>
       </div>
-      <div id="recurringIncomeList" class="settings-list"></div>
-      <button class="settings-add-btn" onclick="openRecurringModal('income')"><span class="ico ico-plus" aria-hidden="true"></span>Einnahme hinzufügen</button>
-    </div>
-
-    <!-- MONATLICHE AUSGABEN -->
-    <div class="settings-section settings-section-half">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-shoppingcart"></span></span>
-        <div>
-          <div class="settings-section-title">Monatliche Ausgaben</div>
-          <div class="settings-section-sub">Wiederkehrende Ausgaben verwalten</div>
-        </div>
+      <div class="rec-tabs" role="tablist" aria-label="Wiederkehrende Buchungen">
+        <button class="rec-tab income" role="tab" id="recTab-income" aria-controls="recPanel-income" onclick="showRecurringTab('income')">
+          <span class="ico ico-coin" aria-hidden="true"></span>Einnahmen <span class="rec-count" id="recCount-income"></span></button>
+        <button class="rec-tab expense" role="tab" id="recTab-expense" aria-controls="recPanel-expense" onclick="showRecurringTab('expense')">
+          <span class="ico ico-shoppingcart" aria-hidden="true"></span>Ausgaben <span class="rec-count" id="recCount-expense"></span></button>
+        <button class="rec-tab transfer" role="tab" id="recTab-transfer" aria-controls="recPanel-transfer" onclick="showRecurringTab('transfer')">
+          <span class="ico ico-transfer" aria-hidden="true"></span>Überweisungen <span class="rec-count" id="recCount-transfer"></span></button>
       </div>
-      <div id="recurringExpenseList" class="settings-list"></div>
-      <button class="settings-add-btn" onclick="openRecurringModal('expense')"><span class="ico ico-plus" aria-hidden="true"></span>Ausgabe hinzufügen</button>
-      <div id="recurringTransferList" class="settings-list" style="margin-top:10px;"></div>
-      <button class="settings-add-btn" onclick="openRecurringModal('transfer')"><span class="ico ico-plus" aria-hidden="true"></span>Überweisung hinzufügen</button>
+      <div class="rec-panel" id="recPanel-income" role="tabpanel" aria-labelledby="recTab-income">
+        <div class="rec-panel-title income"><span class="ico ico-coin" aria-hidden="true"></span>Monatliche Einnahmen</div>
+        <div id="recurringIncomeList" class="settings-list"></div>
+        <button class="settings-add-btn" onclick="openRecurringModal('income')"><span class="ico ico-plus" aria-hidden="true"></span>Einnahme hinzufügen</button>
+      </div>
+      <div class="rec-panel" id="recPanel-expense" role="tabpanel" aria-labelledby="recTab-expense">
+        <div class="rec-panel-title expense"><span class="ico ico-shoppingcart" aria-hidden="true"></span>Monatliche Ausgaben</div>
+        <div id="recurringExpenseList" class="settings-list"></div>
+        <button class="settings-add-btn" onclick="openRecurringModal('expense')"><span class="ico ico-plus" aria-hidden="true"></span>Ausgabe hinzufügen</button>
+      </div>
+      <div class="rec-panel" id="recPanel-transfer" role="tabpanel" aria-labelledby="recTab-transfer">
+        <div class="rec-panel-title transfer"><span class="ico ico-transfer" aria-hidden="true"></span>Monatliche Überweisungen</div>
+        <div id="recurringTransferList" class="settings-list"></div>
+        <button class="settings-add-btn" onclick="openRecurringModal('transfer')"><span class="ico ico-plus" aria-hidden="true"></span>Überweisung hinzufügen</button>
+      </div>
     </div>
 
     <!-- EIGENE KATEGORIEN: KOMBINIERT -->
@@ -111,8 +120,8 @@
       <button class="settings-add-btn" onclick="openCustomCatModal(null)"><span class="ico ico-plus" aria-hidden="true"></span>Kategorie hinzufügen</button>
     </div>
 
-    <!-- BUDGET -->
-    <div class="settings-section">
+    <!-- BUDGET (auf dem Computer direkt unter der Anmeldung) -->
+    <div class="settings-section settings-budget">
       <div class="settings-section-header">
         <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
         <div>
@@ -123,6 +132,15 @@
       <div class="budget-setting-row">
         <div class="budget-setting-val" id="budgetSettingDisplay">CHF 0.00</div>
         <button class="icon-btn" onclick="openBudgetModal()" aria-label="Budget bearbeiten"><span class="ico ico-pencil"></span></button>
+      </div>
+      <!-- Computer: Budget direkt im Feld ändern, gespeichert beim Verlassen des Feldes oder mit Enter -->
+      <div class="budget-inline">
+        <label class="budget-inline-field">
+          <span class="budget-inline-cur">CHF</span>
+          <input class="form-input" type="text" inputmode="decimal" id="budgetInlineInput" maxlength="15" placeholder="z.B. 2000" autocomplete="off"
+                 aria-label="Monatsbudget in CHF" onchange="saveBudgetInline()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+        </label>
+        <span class="budget-inline-hint">pro Monat, wird beim Verlassen des Feldes gespeichert</span>
       </div>
     </div>
 
@@ -159,6 +177,10 @@
   <a class="nav-btn" href="analyse.html">
     <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
     <span class="nav-label">Analyse</span>
+  </a>
+  <!-- Einstellungen: nur auf dem Computer, als Symbol unten links in der Seitenleiste -->
+  <a class="nav-btn nav-settings active" href="settings.html" aria-label="Einstellungen" title="Einstellungen" aria-current="page">
+    <span class="nav-icon"><span class="ico ico-settings"></span></span>
   </a>
   </nav>
 

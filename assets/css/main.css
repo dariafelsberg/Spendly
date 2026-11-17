@@ -1445,6 +1445,25 @@ button {
   }
 }
 
+/* ── EINSTELLUNGEN ALS SYMBOL unten links in der Seitenleiste (nur Computer).
+   Auf dem Handy und im eingebetteten Fenster bleibt das Zahnrad oben rechts. */
+.nav-settings { display: none; }
+@media (min-width: 1024px) {
+  html:not(.embed-mode) .bottom-nav .nav-settings {
+    display: flex;
+    margin-top: auto;
+    align-self: flex-start;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  /* Das Zahnrad oben rechts braucht es auf dem Computer nicht mehr */
+  html:not(.embed-mode) body:has(.nav-settings) .menu-toggle-btn {
+    display: none;
+  }
+}
+
 /* hidden-Attribut gewinnt immer, auch gegen display aus einer Klasse
    (sonst bleiben z. B. "Budget festlegen" oder die Kategorien sichtbar) */
 [hidden] { display: none !important; }
