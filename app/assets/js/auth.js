@@ -123,7 +123,8 @@ async function savePassword() {
   const btn = document.getElementById('passwordSaveBtn');
   errEl.textContent = '';
   if (!current) { errEl.textContent = 'Bitte gib dein aktuelles Passwort ein.'; return; }
-  if (password.length < 8) { errEl.textContent = 'Passwort muss mindestens 8 Zeichen lang sein.'; return; }
+  const pwMiss = pwMissing(password);
+  if (pwMiss.length) { errEl.textContent = pwMissingText('Nicht gespeichert', pwMiss); return; }
   if (password !== confirm) { errEl.textContent = 'Passwörter stimmen nicht überein.'; return; }
   btn.disabled = true;
   try {
@@ -440,6 +441,19 @@ function togglePw(inputId, btn) {
   btn.innerHTML = `<span class="ico ico-${show ? 'eye_closed' : 'eye_open'}"></span>`;
 }
 
+// Passwortvorgaben (gleich wie die Liste unter dem Balken). Gibt zurück, was noch fehlt.
+function pwMissing(val) {
+  const miss = [];
+  if (val.length < 8) miss.push('mindestens 8 Zeichen');
+  if (!(/[A-Z]/.test(val) && /[a-z]/.test(val))) miss.push('Gross- und Kleinbuchstaben');
+  if (!/[0-9]/.test(val)) miss.push('eine Zahl');
+  if (!/[^A-Za-z0-9]/.test(val)) miss.push('ein Sonderzeichen');
+  return miss;
+}
+function pwMissingText(what, miss) {
+  return what + ', weil dem Passwort noch ' + (miss.length > 1 ? miss.slice(0, -1).join(', ') + ' und ' + miss[miss.length - 1] : miss[0]) + ' fehlt. Ergänze es, bis alle Vorgaben grün sind.';
+}
+
 function updatePwStrength() { showPwStrength('regPassword', 'pwStrength'); }
 // Passwortstärke als Balken aus 4 Teilen, die sich fliessend füllen («Flow Fill»).
 // Links die Stärke, rechts der nächste Tipp. Ohne Eingabe bleibt das Feld leer.
@@ -465,15 +479,11 @@ function showPwStrength(inputId, outputId) {
     { label: 'Sehr stark', cls: 'strong', bars: 4 },
   ];
   const lvl = levels[Math.min(score, levels.length - 1)];
-  const tip = val.length < 8 ? ''
-    : !digit ? 'Füge eine Zahl hinzu'
-    : !mixed ? 'Gross- und Kleinbuchstaben mischen'
-    : !special ? 'Füge ein Sonderzeichen hinzu'
-    : val.length < 12 ? 'Länger ist noch sicherer' : '';
+  const tip = val.length >= 8 && mixed && digit && special && val.length < 12 ? 'Länger ist noch sicherer' : '';
   if (!el.querySelector('.pw-bars')) {
     el.innerHTML = '<div class="pw-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>'
       + '<div class="pw-meta"><span class="pw-label"></span><span class="pw-tip"></span></div>'
-    + '<p class="pw-req" aria-live="polite"><span aria-hidden="true"></span><span class="pw-req-text"></span></p>';
+    + '<ul class="pw-reqs" aria-live="polite"></ul>';
   }
   el.className = 'pw-strength ' + lvl.cls + ' b' + lvl.bars;
   el.querySelectorAll('.pw-bars i').forEach((b, i) => {
@@ -482,14 +492,15 @@ function showPwStrength(inputId, outputId) {
   });
   el.querySelector('.pw-label').textContent = lvl.label;
   el.querySelector('.pw-tip').textContent = tip;
-  // Was noch fehlt, damit das Passwort angenommen wird (Pflicht: mindestens 8 Zeichen)
-  const missing = 8 - val.length;
-  const req = el.querySelector('.pw-req');
-  req.classList.toggle('ok', missing <= 0);
-  req.firstElementChild.className = missing <= 0 ? 'ico ico-check' : 'ico ico-close';
-  req.querySelector('.pw-req-text').textContent = missing <= 0
-    ? 'Mindestens 8 Zeichen'
-    : 'Mindestens 8 Zeichen';
+  // Alle Passwortvorgaben als Liste: rot mit ×, solange eine fehlt, grün mit Häkchen, wenn erfüllt
+  const reqs = [
+    [val.length >= 8, 'Mindestens 8 Zeichen'],
+    [mixed, 'Gross- und Kleinbuchstaben'],
+    [digit, 'Mindestens eine Zahl'],
+    [special, 'Mindestens ein Sonderzeichen'],
+  ];
+  el.querySelector('.pw-reqs').innerHTML = reqs.map(([ok, text]) =>
+    `<li class="pw-req${ok ? ' ok' : ''}"><span class="ico ico-${ok ? 'check' : 'close'}" aria-hidden="true"></span>${text}<span class="sr-only">${ok ? ', erfüllt' : ', fehlt'}</span></li>`).join('');
 }
 
 function updateLockoutUI() {
@@ -568,6 +579,8 @@ async function handleRegister(event) {
     const notice = document.getElementById('registerExistsNotice');
     if (notice) notice.style.display = 'none';
     errEl.textContent = '';
+    const pwMiss = pwMissing(password);
+    if (pwMiss.length) { errEl.textContent = pwMissingText('Account nicht erstellt', pwMiss); document.getElementById('regPassword').focus(); return; }
 
     setRememberLogin(true);
 

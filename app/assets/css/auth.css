@@ -238,16 +238,30 @@
 }
 .pw-label { font-weight: 700; color: var(--primary-dark); }
 .pw-tip { color: var(--muted); text-align: right; }
-/* Was noch fehlt, damit das Passwort angenommen wird */
+/* Alle Passwortvorgaben: rot mit ×, solange eine fehlt, grün mit Häkchen, wenn erfüllt */
+.pw-reqs {
+  list-style: none;
+  margin: var(--sp-xs) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2xs);
+}
 .pw-req {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: var(--sp-xs) 0 0;
   color: var(--danger-text);
   line-height: 1.3;
 }
 .pw-req .ico { width: 14px; height: 14px; flex: none; }
+.pw-req .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 .pw-req.ok { color: var(--income-text); }
 @media (prefers-reduced-motion: reduce) {
   .pw-bars i::after { transition: none; }
