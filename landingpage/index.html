@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Spendly Landingpage</title>
-<meta name="description" content="Spendly ist deine Budget-App für den Alltag. Du erfasst Ausgaben in Sekunden und siehst immer, wie viel vom Monat noch übrig ist.">
+<meta name="description" content="Spendly ist deine Budget-App für den Alltag. Du erfasst deine Ausgaben und siehst immer, wie viel vom Monat noch übrig ist.">
 <meta property="og:title" content="Spendly – Wohin geht eigentlich dein Geld?">
 <meta property="og:description" content="Die Budget-App für den Alltag in der Schweiz. Gratis, ohne Werbung, auf Handy, Tablet und Computer.">
 <meta property="og:locale" content="de_CH">
@@ -219,7 +219,7 @@ a:has(> .logo){text-decoration:none}
 
 /* Ehrlich gesagt */
 .honest{display:grid;gap:32px}
-@media (min-width:860px){.honest{grid-template-columns:1fr 1fr;gap:72px;align-items:center}}
+@media (min-width:860px){.honest{grid-template-columns:1fr 1fr;gap:72px;align-items:start}}
 .honest dl{margin:0;display:grid;gap:12px}
 .honest dl div{background:#fff;border-radius:var(--r-karte);padding:20px 22px}
 .honest dt{font-weight:600;font-size:18px}
@@ -237,12 +237,10 @@ a:has(> .logo){text-decoration:none}
 
 /* Schluss */
 .final{position:relative;overflow:hidden;background:var(--pink);color:#fff;border-radius:var(--r-karte);padding:64px 24px;text-align:center}
-.final::before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-140px;top:-180px;background:rgba(255,255,255,.07)}
-.final::after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;left:-90px;bottom:-110px;background:rgba(255,255,255,.05)}
 .final > *{position:relative;z-index:1}
-.final h2{font-size:40px;line-height:1.1;max-width:14ch;margin:0 auto}
+.final h2{font-size:40px;line-height:1.1;max-width:20ch;margin:0 auto;text-wrap:balance}
 @media (min-width:640px){.final h2{font-size:56px}}
-.final p{font-size:24px;line-height:1.35;margin:16px auto 32px;max-width:24ch}
+.final p{font-size:24px;line-height:1.35;margin:16px auto 32px;max-width:40ch}
 
 .foot{padding:56px 0 40px;display:flex;flex-wrap:wrap;gap:24px 40px;align-items:center;justify-content:space-between;font-size:13.2px;color:var(--grau-rose)}
 .foot .logo{font-size:22px}.foot .logo svg{width:30px;height:30px}
@@ -272,7 +270,7 @@ a:has(> .logo){text-decoration:none}
 <section class="wrap hero">
   <div>
     <h1>Wohin geht eigentlich dein Geld?</h1>
-    <p class="lead">Spendly ist deine Budget-App für den Alltag. Du erfasst Ausgaben in Sekunden und siehst immer, wie viel vom Monat noch übrig ist.</p>
+    <p class="lead">Spendly ist deine Budget-App für den Alltag. Du erfasst deine Ausgaben und siehst immer, wie viel vom Monat noch übrig ist.</p>
     <div class="hero-cta">
       <a class="btn btn-primary btn-lg" href="https://app.spendly.ch/">Gratis ausprobieren</a>
       <p class="hero-note">Ohne Anmeldung starten. Einen Account brauchst du erst, wenn du speichern willst.</p>
@@ -320,10 +318,10 @@ a:has(> .logo){text-decoration:none}
   <div class="wrap">
     <div class="sec-head">
       <h2>In zwei Minuten startklar</h2>
-      <p>Spendly fragt dich kurz, was du vorhast, und richtet alles für dich ein. Zuerst schaust du dir dein Spendly an, erst danach erstellst du einen Account.</p>
+      <p>Spendly fragt dich kurz, was du vorhast, und richtet alles für dich ein.</p>
     </div>
     <ol class="steps">
-      <li><h3>Ziel wählen</h3><p>Sparen, den Überblick behalten oder herausfinden, wohin das Geld geht. Spendly passt sich an.</p><span class="q">«Wofür möchtest du Spendly nutzen?»</span></li>
+      <li><h3>Ziel wählen</h3><p>Sparen, den Überblick behalten oder herausfinden, wohin das Geld geht.</p><span class="q">«Wofür möchtest du Spendly nutzen?»</span></li>
       <li><h3>Konto eintragen</h3><p>Gib dein Konto und dein aktuelles Guthaben ein. Weitere Konten kannst du später hinzufügen.</p></li>
       <li><h3>Budget festlegen</h3><p>Lege fest, wie viel du pro Monat ausgeben willst. Spendly schlägt dir passende Beträge vor.</p></li>
       <li><h3>Vorschau ansehen</h3><p>Du siehst dein fertiges Spendly. Gefällt es dir, speicherst du es mit einem Account.</p></li>
@@ -334,16 +332,16 @@ a:has(> .logo){text-decoration:none}
 <section class="sec features" id="funktionen">
   <div class="wrap feat-grid">
     <div class="sec-head">
-      <h2>Alles, was ein Budget braucht. Mehr nicht.</h2>
-      <p>Spendly ist bewusst einfach. Du trägst ein, was du ausgibst, und siehst, was das für deinen Monat heisst.</p>
+      <h2>Was Spendly kann</h2>
+      <p>Du trägst ein, was du ausgibst, und siehst, was das für deinen Monat heisst.</p>
     </div>
     <ul class="feat-list">
       <li><span class="ibox"><span class="ico ico-coin"></span></span><div><h3>Monatsbudget</h3><p>Du siehst jederzeit, wie viel vom Monat noch verfügbar ist, auf den Franken genau.</p></div></li>
       <li><span class="ibox"><span class="ico ico-bank"></span></span><div><h3>Alle Konten an einem Ort</h3><p>Privatkonto, Sparkonto, Bargeld: Spendly zählt alles zu einem Gesamtguthaben zusammen. Überweisungen zwischen deinen Konten erfasst du mit einem Tipp.</p></div></li>
-      <li><span class="ibox"><span class="ico ico-clock"></span></span><div><h3>Wiederkehrende Einträge</h3><p>Miete, Lohn, Handy-Abo: Was jeden Monat gleich ist, trägt Spendly für dich ein.</p></div></li>
+      <li><span class="ibox"><span class="ico ico-clock"></span></span><div><h3>Wiederkehrende Einträge</h3><p>Trag Miete, Lohn und Abos einmal ein. Danach erfasst Spendly sie jeden Monat für dich.</p></div></li>
       <li><span class="ibox"><span class="ico ico-calendar"></span></span><div><h3>Kalender</h3><p>Sieh nach, an welchem Tag du was ausgegeben hast.</p></div></li>
       <li><span class="ibox"><span class="ico ico-combo-chart"></span></span><div><h3>Analyse</h3><p>Vergleiche deine Monate und finde heraus, welche Kategorie am meisten kostet.</p></div></li>
-      <li><span class="ibox"><span class="ico ico-tag"></span></span><div><h3>Kategorien wie dein Alltag</h3><p>Erstelle eigene Kategorien mit Farbe und Symbol.</p>
+      <li><span class="ibox"><span class="ico ico-tag"></span></span><div><h3>Eigene Kategorien</h3><p>Erstelle eigene Kategorien mit Farbe und Symbol.</p>
         <div class="cats" aria-hidden="true"><span class="cat" style="--c:#16a34a"><span class="ico ico-k-piggy"></span>Sparen</span><span class="cat" style="--c:#4e8cf5"><span class="ico ico-k-travel"></span>Reisen</span><span class="cat" style="--c:#f59e42"><span class="ico ico-k-takeaway"></span>Take-away</span><span class="cat" style="--c:#a78bfa"><span class="ico ico-k-subscription"></span>Abos</span><span class="cat" style="--c:#38bdf8"><span class="ico ico-k-bike"></span>Velo</span><span class="cat" style="--c:#4ade80"><span class="ico ico-k-plant"></span>Pflanzen</span><span class="cat" style="--c:#f472b6"><span class="ico ico-k-scissors"></span>Coiffeur</span><span class="cat" style="--c:#e8533a"><span class="ico ico-k-insurance"></span>Versicherung</span></div></div></li>
     </ul>
   </div>
@@ -353,12 +351,12 @@ a:has(> .logo){text-decoration:none}
   <div class="wrap honest">
     <div class="sec-head">
       <h2>Deine Zahlen gehören dir</h2>
-      <p>Spendly ist ein kleines Projekt aus der Schweiz. Damit du weisst, worauf du dich einlässt, hier das Wichtigste auf einen Blick.</p>
+      <p>Spendly ist ein kleines Projekt aus der Schweiz.</p>
     </div>
     <dl>
-      <div><dt>Kein Zugriff auf dein Bankkonto</dt><dd>Spendly verbindet sich nicht mit deiner Bank. Du trägst selbst ein, was du ausgibst, und genau das macht dir bewusst, wohin dein Geld geht.</dd></div>
+      <div><dt>Kein Zugriff auf dein Bankkonto</dt><dd>Spendly verbindet sich nicht mit deiner Bank. Du trägst selbst ein, was du ausgibst, und siehst so, wohin dein Geld geht.</dd></div>
       <div><dt>Keine Werbung</dt><dd>Spendly zeigt keine Werbung und verkauft keine Daten.</dd></div>
-      <div><dt>Gespeichert in Europa</dt><dd>Deine Einträge liegen auf Servern in Frankfurt und werden verschlüsselt übertragen. Nur du siehst deine Daten.</dd></div>
+      <div><dt>Gespeichert in Frankfurt (EU)</dt><dd>Deine Einträge liegen auf Servern in Frankfurt und werden verschlüsselt übertragen.</dd></div>
     </dl>
   </div>
 </section>
@@ -367,11 +365,11 @@ a:has(> .logo){text-decoration:none}
   <div class="wrap">
     <div class="sec-head" style="margin-bottom:32px"><h2>Häufige Fragen</h2></div>
     <div class="faq">
-      <details><summary>Was kostet Spendly?<span class="ico ico-arrow-down"></span></summary><p>Nichts. Spendly ist gratis und ohne Werbung.</p></details>
+      <details><summary>Was kostet Spendly?<span class="ico ico-arrow-down"></span></summary><p>Nichts. Spendly ist ein privates Projekt, es gibt kein Abo und keine Werbung.</p></details>
       <details><summary>Muss ich eine App herunterladen?<span class="ico ico-arrow-down"></span></summary><p>Nein. Spendly läuft im Browser auf Handy, Tablet und Computer. Du öffnest einfach app.spendly.ch. Apps für den App Store und Google Play sind geplant.</p></details>
       <details><summary>Brauche ich einen Account?<span class="ico ico-arrow-down"></span></summary><p>Zum Ausprobieren nicht. Du richtest Spendly ein und siehst eine Vorschau. Erst wenn du deine Einträge speichern willst, erstellst du einen Account mit deiner E-Mail-Adresse.</p></details>
-      <details><summary>Kann ich Spendly mit meiner Bank verbinden?<span class="ico ico-arrow-down"></span></summary><p>Nein, und das ist Absicht. Du erfasst deine Ausgaben selbst, das dauert nur ein paar Sekunden. So bleibt dein Bankzugang bei dir.</p></details>
-      <details><summary>Wo sind meine Daten gespeichert?<span class="ico ico-arrow-down"></span></summary><p>Auf Servern in der EU (Frankfurt). Die Details findest du in der <a href="https://app.spendly.ch/datenschutz.html">Datenschutzerklärung</a>.</p></details>
+      <details><summary>Kann ich Spendly mit meiner Bank verbinden?<span class="ico ico-arrow-down"></span></summary><p>Nein. Du erfasst deine Ausgaben selbst, dein Bankzugang bleibt bei dir.</p></details>
+      <details><summary>Wo sind meine Daten gespeichert?<span class="ico ico-arrow-down"></span></summary><p>Auf Servern in Frankfurt (EU). Die Details findest du in der <a href="https://app.spendly.ch/datenschutz.html">Datenschutzerklärung</a>.</p></details>
     </div>
   </div>
 </section>
@@ -379,7 +377,7 @@ a:has(> .logo){text-decoration:none}
 <section class="wrap">
   <div class="final">
     <h2>Fang diesen Monat an</h2>
-    <p>Richte Spendly in zwei Minuten ein. Gratis, ohne Werbung.</p>
+    <p>Richte Spendly ein und sieh, wo dein Geld diesen Monat hingeht.</p>
     <a class="btn btn-white btn-lg" href="https://app.spendly.ch/">Gratis ausprobieren</a>
   </div>
 </section>
