@@ -6,29 +6,34 @@ Persönliche Finanz-PWA (Budget, Kalender, Analyse, Einstellungen) als statische
 
 ```
 Spendly/
-├── index.html              Startseite (Einstiegspunkt der PWA, muss im Root bleiben)
-├── calendar.html           Kalender
-├── analyse.html            Analyse
-├── settings.html           Einstellungen
-├── login.html              Login / Registrierung
-├── reset-password.html     Passwort zurücksetzen (Link verschickt Supabase Auth)
-├── manifest.json           PWA-Manifest
-├── .gitignore
+├── app/                    Die App (Vercel-Projekt spendly-app, Root Directory «app», app.spendly.ch)
+│   ├── index.html          Startseite (Einstiegspunkt der PWA, muss in app/ ganz oben bleiben)
+│   ├── calendar.html       Kalender
+│   ├── analyse.html        Analyse
+│   ├── settings.html       Einstellungen
+│   ├── account.html        Account
+│   ├── login.html          Login / Registrierung
+│   ├── reset-password.html Passwort zurücksetzen (Link verschickt Supabase Auth)
+│   ├── datenschutz.html · impressum.html · nutzungsbedingungen.html
+│   ├── manifest.json       PWA-Manifest
+│   ├── vercel.json         Sicherheits-Header und täglicher Keepalive (Cron)
+│   ├── api/keepalive.js    Supabase-Wecker
+│   └── assets/
+│       ├── css/            main.css, auth.css, fonts.css, pages/
+│       ├── js/             main.js, supabase.js, auth.js, pages/
+│       ├── fonts/          DM Sans, DM Serif Display (lokal)
+│       └── icons/          PWA-Icons, Logo, ui/
+│
+├── landingpage/            Werbeseite für spendly.ch (eigenes Vercel-Projekt, Root Directory «landingpage»)
+│   ├── index.html
+│   ├── vercel.json
+│   └── assets/fonts/
 │
 ├── supabase/
-│   └── schema.sql          Tabelle user_data, RLS-Regeln und RPC save_user_data (einmal im SQL Editor ausführen)
+│   ├── schema.sql          Tabelle user_data, RLS-Regeln und RPC save_user_data (einmal im SQL Editor ausführen)
+│   └── email-templates/
 │
-└── assets/
-    ├── css/
-    │   ├── main.css        gemeinsame Styles (Tokens, Reset, App-Shell, Menü, Karten, Listen, Modals, Breakpoints)
-    │   ├── auth.css        Login / Reset / Profil
-    │   └── pages/          index.css · calendar.css · analyse.css · settings.css
-    ├── js/
-    │   ├── main.js         gemeinsamer Code (State, Speichern/Laden, Wiederkehrendes, App-Menü, Helper)
-    │   ├── supabase.js     Supabase-Client (URL + anon-Key), requireLogin()
-    │   ├── auth.js         Login, Registrierung, Passwort-Reset
-    │   └── pages/          index.js · calendar.js · analyse.js · settings.js
-    └── icons/              PWA-Icons
+└── .github/workflows/backup.yml   Wöchentliches verschlüsseltes Backup
 ```
 
 ## Ladereihenfolge
@@ -40,12 +45,12 @@ Die Seitendatei meldet ihre Render-Funktion mit `registerPageRender(...)` an, da
 ## Regeln
 
 - Gilt ein Style oder eine Funktion für mehrere Seiten, gehört sie in `main.*`, sonst in `pages/<seite>.*`.
-- Neue Seite: `<name>.html` im Root, dazu `assets/css/pages/<name>.css` und `assets/js/pages/<name>.js`.
+- Neue Seite: `app/<name>.html`, dazu `app/assets/css/pages/<name>.css` und `app/assets/js/pages/<name>.js`.
 - Die App-Seiten laden im `<head>` zuerst supabase-js (jsDelivr) und `assets/js/supabase.js` und rufen `requireLogin()` auf.
 
 ## Supabase einrichten
 
 1. `supabase/schema.sql` im Supabase-Dashboard unter **SQL Editor** ausführen.
-2. In `assets/js/supabase.js` `SUPABASE_URL` und `SUPABASE_ANON_KEY` eintragen (Project Settings → API).
+2. In `app/assets/js/supabase.js` `SUPABASE_URL` und `SUPABASE_ANON_KEY` eintragen (Project Settings → API).
 3. **Authentication → URL Configuration**: Site URL `https://app.spendly.ch`, Redirect URLs `https://app.spendly.ch/**` und die `*.vercel.app`-URL.
 4. Alte Daten vom PHP-Server: Import-Skript (aus der alten `database.sqlite` erzeugt, nicht im Repo) im SQL Editor ausführen. Beim ersten Login mit bestätigter, gleicher E-Mail-Adresse übernimmt `claim_legacy_data()` die Daten ins neue Konto.
