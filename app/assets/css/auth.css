@@ -238,6 +238,17 @@
 }
 .pw-label { font-weight: 700; color: var(--primary-dark); }
 .pw-tip { color: var(--muted); text-align: right; }
+/* Was noch fehlt, damit das Passwort angenommen wird */
+.pw-req {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--sp-xs) 0 0;
+  color: var(--danger-text);
+  line-height: 1.3;
+}
+.pw-req .ico { width: 14px; height: 14px; flex: none; }
+.pw-req.ok { color: var(--income-text); }
 @media (prefers-reduced-motion: reduce) {
   .pw-bars i::after { transition: none; }
   .pw-bars i.head::before { animation: none; }
