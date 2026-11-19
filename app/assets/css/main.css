@@ -52,6 +52,10 @@
   --header: var(--primary);   /* Kopfzeile */
   --btn: var(--primary-dark); /* Fläche von Buttons mit weisser Schrift */
   --ink: #2d1b24;             /* dunkle Fläche: Meldungen (Toasts), Hinweise */
+  --raised: var(--card);      /* Fenster und Menüs über den Karten */
+  --donut-track: var(--surface); /* leerer Ring im Donut */
+  --field-border: var(--primary-light); /* Rahmen von Eingabefeldern */
+  --logo: url(../icons/logo_spendly.svg);
   color-scheme: light;
 }
 
@@ -60,7 +64,12 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #160d12;
-  --card: #22151c;
+  /* Höhe zeigen mit helleren Flächen statt Schatten: Hintergrund, Karte, Fenster */
+  --card: #2a1a23;
+  --raised: #33222b;
+  --donut-track: #54404a;     /* leerer Donut-Ring, auf der Karte gut sichtbar */
+  --field-border: #93627a;    /* Eingabefelder 3.4:1 auf der Karte, damit man sie als Feld erkennt */
+  --logo: url(../icons/logo_spendly-weiss.svg); /* auf dunklem Grund ganz weiss (CD) */
   --surface: #1d1218;
   --primary-light: #4a1f33;   /* aktive Fläche und Linien */
   --primary-dark: #ff6fa0;    /* Pink als Schrift: 6.9:1 auf Karte */
@@ -104,6 +113,18 @@ body {
 a {
   text-decoration: none;
   color: inherit;
+  text-underline-offset: .18em;
+}
+/* Browser-Details im Spendly-Look: markierter Text, Eingabestrich, Titelumbruch */
+::selection {
+  background: var(--primary-light);
+  color: var(--text);
+}
+input, textarea {
+  caret-color: var(--primary-dark);
+}
+h1, h2, h3 {
+  text-wrap: balance;
 }
 button {
   font-family: inherit;
@@ -646,7 +667,7 @@ button {
   transition: background .15s;
 }
 .tx-btn:active {
-  background: rgba(0, 0, 0, .06);
+  background: var(--surface);
 }
 .tx-btn.delete:active {
   background: var(--danger-light);
@@ -918,7 +939,7 @@ button {
   transition: opacity .2s ease, visibility 0s;
 }
 .modal {
-  background: var(--card);
+  background: var(--raised);
   width: 100%;
   max-width: 540px;
   border-radius: var(--radius-card) var(--radius-card) 0 0;
@@ -977,7 +998,7 @@ button {
 .form-input {
   width: 100%;
   padding: 12px 12px;
-  border: 1.5px solid var(--primary-light);
+  border: 1.5px solid var(--field-border);
   border-radius: var(--radius-sm);
   font-family: inherit;
   font-size: var(--fs-body);
@@ -1043,7 +1064,7 @@ button {
   z-index: 10001;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--card, #fff);
+  background: var(--raised, #fff);
   border: 1.5px solid var(--primary-light);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-float);
@@ -1479,7 +1500,7 @@ button {
     background: var(--primary-light);
   }
   .tx-btn:hover {
-    background: rgba(0, 0, 0, .05);
+    background: var(--surface);
   }
   .tx-btn.delete:hover {
     background: var(--danger-light);
@@ -1543,7 +1564,7 @@ button {
     height: 40px;
     padding-left: 48px;
     margin: 0 0 24px 8px;
-    background: url(../icons/logo_spendly.svg) no-repeat left center / 36px 36px;
+    background: var(--logo) no-repeat left center / 36px 36px;
     font-family: 'DM Serif Display', serif;
     font-size: var(--fs-xl);
     color: var(--text);
@@ -1647,7 +1668,7 @@ html.theme-anim *::after {
   gap: 6px;
   min-height: 48px;
   padding: 7px 10px;
-  border: 1.5px solid var(--primary-light);
+  border: 1.5px solid var(--field-border);
   border-radius: var(--radius-sm);
   background: var(--card);
   cursor: text;
@@ -1708,3 +1729,13 @@ html.theme-anim *::after {
 /* hidden-Attribut gewinnt immer, auch gegen display aus einer Klasse
    (sonst bleiben z. B. "Budget festlegen" oder die Kategorien sichtbar) */
 [hidden] { display: none !important; }
+
+/* Dunkelmodus: Logo-Bild ganz weiss, helle App-Bilder leicht abgedunkelt (weniger Blendung) */
+:root[data-theme="dark"] .auth-mark { content: var(--logo); }
+:root[data-theme="dark"] .hp-screen { filter: brightness(.82); }
+/* Dunkelmodus: Symbole in den rosa Kacheln weiss statt pink (Daria) */
+:root[data-theme="dark"] .budget-icon,
+:root[data-theme="dark"] .settings-section-icon,
+:root[data-theme="dark"] .profile-avatar {
+  color: #fff;
+}

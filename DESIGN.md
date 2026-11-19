@@ -29,7 +29,9 @@ Acht Grundfarben. Neue Grau- oder Rosatöne kommen nicht dazu.
 
 **Kategorienfarben** (`kat-…`) nur für Punkte, Balken, Donut und Icons, nie für Schrift. Shopping #7C3AED, Gesundheit #0E7490, Abos #6366F1, Geschenke #F472B6.
 
-**Dunkelmodus (nur App):** `:root[data-theme="dark"]` in `app/assets/css/main.css`. Hintergrund #160D12, Karte #22151C, Fläche #1D1218, Linien #4A1F33, Text #F6E9EF, pinker Text #FF6FA0, Kopfbereich #8F1240. Neue Farben immer für beide Modi festlegen.
+**Dunkelmodus (nur App):** `:root[data-theme="dark"]` in `app/assets/css/main.css`. Hintergrund #160D12, Karte #2A1A23, Fenster und Menüs (`--raised`) #33222B, Fläche #1D1218, Linien #4A1F33, Feldrahmen (`--field-border`) #93627A, Text #F6E9EF (kein reines Weiss), pinker Text #FF6FA0, Kopfbereich #8F1240. Neue Farben immer für beide Modi festlegen.
+
+Regeln für dunkel: kein reines Schwarz und kein reines Weiss; Höhe über hellere Flächen zeigen, nicht über Schatten; Text mindestens 4.5:1, Feldrahmen und Bedienelemente mindestens 3:1; Logo ganz weiss (`--logo`); helle Bilder leicht abdunkeln; Farbe nie allein als Bedeutung (Vorzeichen, Wort oder Icon dazu).
 
 ## 3. Schrift
 

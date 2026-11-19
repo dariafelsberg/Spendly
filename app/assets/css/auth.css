@@ -906,6 +906,7 @@
   border-radius: 26px;
 }
 .hero-phone::before { display: none; }
+.hero-phone picture { display: contents; }
 
 /* Striche gleichmässig verteilt: 7 Striche, gleicher Abstand, Längen im Wechsel */
 .hero-bar-1 { left: calc(1 * 100% / 8 - 13px) !important; height: 150px; }
