@@ -311,3 +311,35 @@ button.pl-row:active, a.pl-row:active { opacity: .7; }
   .pl-hero { font-size: var(--fs-hero); }
   .planen-main { padding-bottom: calc(var(--nav-h) + var(--sp-2xl)); }
 }
+
+/* ── COMPUTER (ab 1024px): Übersicht in breiten weissen Karten wie auf den anderen Seiten.
+   Netto-Vermögen und Schulden über die volle Breite, Sparkonten und Sparziele nebeneinander.
+   Die Detailansichten (#konto-…, #schuld-…) bekommen die volle Breite, bleiben sonst gleich. */
+@media (min-width: 1024px) {
+  html:not(.embed-mode) .planen-main {
+    max-width: none;
+  }
+  html:not(.embed-mode) .planen-main:has(> .pl-net) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    align-content: start;
+    gap: var(--sp-md);
+  }
+  html:not(.embed-mode) .planen-main > .pl-net,
+  html:not(.embed-mode) .planen-main:has(> .pl-net) > .pl-section {
+    background: var(--card);
+    border-radius: var(--radius-card);
+    padding: var(--sp-lg);
+    margin: 0;
+  }
+  html:not(.embed-mode) .planen-main > .pl-net,
+  html:not(.embed-mode) .planen-main:has(> .pl-net) > .pl-section:last-child {
+    grid-column: 1 / -1;
+  }
+  /* In der Karte braucht die Liste keine eigene Karte mehr */
+  html:not(.embed-mode) .planen-main:has(> .pl-net) .pl-list {
+    padding: 0;
+    border-radius: 0;
+  }
+}

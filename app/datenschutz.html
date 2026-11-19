@@ -18,54 +18,92 @@
     <a class="legal-back" href="javascript:history.length > 1 ? history.back() : location.assign('index.html')"><span class="ico ico-arrow-left"></span> Zurück</a>
     <h1 class="legal-title">Datenschutzerklärung</h1>
     <div class="legal-body">
-    <p>Diese Datenschutzerklärung informiert nach dem Schweizer Datenschutzgesetz (DSG)
-      darüber, welche Personendaten Spendly bearbeitet.</p>
-    <p><strong>Verantwortliche Stelle</strong><br>
-      Daria Felsberg, Stationsstrasse 18, 8274 Tägerwilen, daria.felsberg@outlook.com</p>
-    <p><strong>Welche Daten gespeichert werden</strong></p>
+    <p>Diese Datenschutzerklärung gilt für die Webseite spendly.ch und die App app.spendly.ch.
+      Sie informiert nach dem Schweizer Datenschutzgesetz (DSG), welche Personendaten Spendly
+      bearbeitet, wozu und wo.</p>
+    <p><strong>Verantwortlich</strong><br>
+      Daria Felsberg, Stationsstrasse 18, 8274 Tägerwilen, Schweiz,
+      <a href="mailto:daria.felsberg@outlook.com">daria.felsberg@outlook.com</a></p>
+
+    <p><strong>Welche Daten Spendly bearbeitet</strong></p>
     <ul>
-      <li><strong>Konto:</strong> Benutzername, E-Mail-Adresse und das Passwort als
+      <li><strong>Account:</strong> Benutzername, E-Mail-Adresse und das Passwort als
         gesalzener bcrypt-Hash. Das Passwort selbst wird nie gespeichert.</li>
       <li><strong>Anmeldung:</strong> ein Sitzungs-Token, damit du angemeldet bleibst.</li>
       <li><strong>Finanzdaten:</strong> Einträge, Konten und Kontostände, Monatsbudget,
-        wiederkehrende Buchungen und eigene Kategorien, so wie du sie erfasst.</li>
+        wiederkehrende Einträge, eigene Kategorien, Tags, Sparziele und Schulden, so wie du sie
+        erfasst.</li>
+      <li><strong>Technische Zugriffsdaten:</strong> Beim Aufruf von spendly.ch und
+        app.spendly.ch fallen IP-Adresse, Zeitpunkt, aufgerufene Seite und Browser-Angaben an.
+        Spendly wertet diese Daten nicht aus.</li>
     </ul>
-    <p><strong>Wo die Daten gespeichert werden</strong></p>
+
+    <p><strong>Wozu</strong><br>
+      Nur um dir die App bereitzustellen: deine Finanzübersicht speichern, auf deinen Geräten
+      anzeigen und deinen Account schützen. Spendly zeigt keine Werbung, setzt kein Tracking
+      und keine Analyse-Werkzeuge ein und gibt keine Daten zu Werbe- oder Analysezwecken
+      weiter. Es gibt keine automatisierten Einzelentscheidungen und kein Profiling.</p>
+
+    <p><strong>Cookies und lokaler Speicher</strong><br>
+      Die Webseite spendly.ch setzt keine Cookies. Die App speichert im lokalen Speicher deines
+      Browsers (localStorage) deine Anmeldung, eine Kopie deiner Daten, damit Spendly schnell
+      lädt und offline funktioniert, sowie Einstellungen wie die Darstellung (hell oder dunkel).
+      Diese Daten bleiben auf deinem Gerät.</p>
+
+    <p><strong>Wer die Daten für Spendly bearbeitet</strong></p>
     <ul>
-      <li><strong>Server:</strong> Konto und Finanzdaten liegen in einer Datenbank bei Supabase
-        (Supabase Inc., USA; Rechenzentrum in der EU, Frankfurt). Supabase bearbeitet die
-        Daten als Auftragsbearbeiter nur zur Bereitstellung der App.</li>
-      <li><strong>Hosting:</strong> Die App-Dateien von app.spendly.ch werden über Vercel
-        (Vercel Inc., USA) ausgeliefert. Dabei fallen technische Zugriffsdaten wie die
-        IP-Adresse an.</li>
-      <li><strong>Dein Gerät:</strong> eine Kopie im lokalen Speicher deines Browsers
-        (localStorage), damit die App schnell lädt und auch offline funktioniert.</li>
+      <li><strong>Supabase</strong> (Supabase Inc., USA): Datenbank und Anmeldung. Die Daten
+        liegen in einem Rechenzentrum in Frankfurt (EU).</li>
+      <li><strong>Vercel</strong> (Vercel Inc., USA): liefert die Dateien von spendly.ch und
+        app.spendly.ch aus. Dabei fallen die technischen Zugriffsdaten an.</li>
+      <li><strong>Infomaniak</strong> (Infomaniak Network SA, Genf, Server in der Schweiz):
+        verschickt die E-Mails von Spendly.</li>
+      <li><strong>GitHub</strong> (GitHub Inc., USA): bewahrt einmal pro Woche eine
+        verschlüsselte Sicherungskopie der Datenbank auf. Den Schlüssel hat nur die
+        Verantwortliche, GitHub kann den Inhalt nicht lesen.</li>
+      <li><strong>jsDelivr</strong> (Content Delivery Network): lädt in der App die
+        Programmbibliothek für die Anmeldung (supabase-js). Dabei wird deine IP-Adresse an
+        dessen Server übermittelt.</li>
     </ul>
-    <p><strong>Zweck</strong><br>
-      Die Daten werden ausschliesslich verwendet, um dir die App bereitzustellen, also um
-      deine Finanzübersicht zu speichern und auf deinen Geräten anzuzeigen. Es gibt keine
-      Werbung, kein Tracking und keine Weitergabe an Dritte zu Werbe- oder Analysezwecken.</p>
+    <p>Diese Anbieter bearbeiten die Daten nur im Auftrag von Spendly und nicht für eigene
+      Zwecke. Einige haben ihren Sitz in den USA oder betreiben Server ausserhalb der Schweiz.
+      Dafür stützt sich Spendly auf die Datenschutzverträge der Anbieter mit den
+      Standardvertragsklauseln der EU-Kommission, die der Eidgenössische Datenschutz- und
+      Öffentlichkeitsbeauftragte (EDÖB) anerkennt, oder, wo ein Anbieter zertifiziert ist, auf
+      das Swiss-U.S. Data Privacy Framework.</p>
+
     <p><strong>E-Mails</strong><br>
-      Deine E-Mail-Adresse wird nur für kontobezogene Nachrichten verwendet, z.&nbsp;B. zum
-      Zurücksetzen des Passworts oder als Hinweis, wenn dein Passwort oder deine E-Mail-Adresse geändert wurde. Diese E-Mails
-      werden über den Mailserver von Infomaniak
-      (Infomaniak Network SA, Genf, Serverstandort Schweiz) verschickt.</p>
-    <p><strong>Schriftarten</strong><br>
-      Die Schriftarten werden direkt von Spendly geladen. Es werden dafür keine Daten an
-      Google oder andere Anbieter übermittelt.</p>
-    <p><strong>jsDelivr</strong><br>
-      Die Programmbibliothek für die Anmeldung (supabase-js) wird über das Content Delivery
-      Network jsDelivr geladen. Dabei wird deine IP-Adresse an dessen Server übermittelt,
-      auch ausserhalb der Schweiz.</p>
-    <p><strong>Aufbewahrung und Löschung</strong><br>
-      Die Daten bleiben gespeichert, solange dein Konto besteht. Du kannst dein Konto mit allen
-      Daten jederzeit selbst in den Einstellungen löschen, oder per E-Mail darum bitten. Die
-      lokale Kopie auf dem Gerät wird dabei ebenfalls entfernt. Auf anderen Geräten kannst du
-      sie über die Browser-Einstellungen löschen.</p>
+      Deine E-Mail-Adresse wird nur für Nachrichten zu deinem Account verwendet, zum Beispiel
+      zum Bestätigen der Adresse, zum Zurücksetzen des Passworts oder als Hinweis, wenn dein
+      Passwort oder deine E-Mail-Adresse geändert wurde. Spendly verschickt keinen Newsletter.</p>
+
+    <p><strong>Schriften</strong><br>
+      Die Schriften werden direkt von Spendly geladen. Dafür gehen keine Daten an Google oder
+      andere Anbieter.</p>
+
+    <p><strong>Wie lange die Daten bleiben</strong><br>
+      Deine Daten bleiben gespeichert, solange dein Account besteht. Du kannst deinen Account
+      mit allen Daten jederzeit in den Einstellungen löschen oder per E-Mail darum bitten.
+      Die Kopie auf dem Gerät, auf dem du löschst, wird ebenfalls entfernt; auf anderen Geräten
+      löschst du sie über die Browser-Einstellungen. In den verschlüsselten Sicherungskopien
+      bleiben gelöschte Daten noch höchstens 90 Tage, dann werden die Kopien automatisch
+      gelöscht.</p>
+
+    <p><strong>Sicherheit</strong><br>
+      Die Verbindung zu Spendly ist verschlüsselt (HTTPS). In der Datenbank sieht jeder Account
+      nur seine eigenen Daten.</p>
+
     <p><strong>Deine Rechte</strong><br>
-      Du hast das Recht auf Auskunft über deine Daten, auf Berichtigung und auf Löschung.
-      Wende dich dafür an die oben genannte E-Mail-Adresse.</p>
-    <p class="legal-date">Stand: Oktober 2026</p>
+      Du kannst Auskunft über deine Daten verlangen, sie berichtigen oder löschen lassen, der
+      Bearbeitung widersprechen und deine Daten in einem gängigen Format herausverlangen.
+      Schreib dafür an die oben genannte E-Mail-Adresse. Bist du mit der Antwort nicht
+      einverstanden, kannst du dich beim EDÖB beschweren
+      (<a href="https://www.edoeb.admin.ch" rel="noopener">edoeb.admin.ch</a>).</p>
+
+    <p><strong>Änderungen</strong><br>
+      Ändert sich etwas an der Bearbeitung, wird diese Erklärung angepasst. Es gilt die hier
+      veröffentlichte Fassung.</p>
+    <p class="legal-date">Stand: November 2026</p>
     </div>
   </main>
 </body>
