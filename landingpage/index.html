@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spendly Landingpage</title>
+<title>Spendly: die Budget-App für den Alltag in der Schweiz</title>
 <meta name="description" content="Spendly ist deine Budget-App für den Alltag. Du erfasst deine Ausgaben von überall und siehst immer, wie viel vom Monat noch übrig ist.">
-<meta property="og:title" content="Spendly – Wohin geht eigentlich dein Geld?">
+<meta property="og:title" content="Spendly: Wohin geht eigentlich dein Geld?">
 <meta property="og:description" content="Die Budget-App für den Alltag in der Schweiz. Gratis, ohne Werbung, auf Handy, Tablet und Computer.">
 <meta property="og:locale" content="de_CH">
 <meta name="theme-color" content="#e91e63">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201451.3%201451.3%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20%23e91e63%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%3E%3Cpath%20d%3D%22M1202.6%2C482.9l-327.4%2C36.8h-7.6c-34.8%2C0-65.4-26.4-68.8-61.9-4.2-38.2%2C22.9-72.3%2C61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7%2C25.7-174.5%2C91.8-188.4%2C144.6-25%2C95.2%2C91.8%2C151.6%2C278.8%2C220.4l-46.6%2C130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1%2C29.2-111.2%2C146-209.3%2C289.9-244%2C164.1-39.6%2C337.9%2C3.5%2C495.7%2C120.3l-18.1-159.2c-4.2-38.2%2C22.9-72.3%2C61.2-77.2%2C38.2-4.2%2C72.3%2C22.9%2C77.2%2C61.2l38.9%2C343.4c4.2%2C38.2-22.9%2C72.3-61.2%2C77.2h-.7v.7h-.1Z%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M934.3%2C1282.4c-54.9%2C20.9-118.9%2C31.3-187.7%2C31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8%2C158.5c7%2C37.5-18.8%2C73.7-56.3%2C80.6-4.2%2C0-8.3.7-12.5.7-33.4%2C0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8%2C11.1-52.1s26.4-25.7%2C45.2-28.5l324.7-57.7c37.5-7%2C73.7%2C18.8%2C80.6%2C56.3%2C7%2C37.5-18.8%2C73.7-56.3%2C80.6l-178.7%2C31.3c91.1%2C54.9%2C216.9%2C91.8%2C330.9%2C91.8s97.3-7%2C139.7-22.9c94.5-35.5%2C136.3-109.1%2C126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1%2C57.7%2C305.2%2C124.4%2C316.3%2C261.4%2C14.6%2C178.7-62.6%2C308.7-216.9%2C366.4h0l.7.7h.1Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="canonical" href="https://spendly.ch/">
 <meta property="og:url" content="https://spendly.ch/">
@@ -92,7 +93,7 @@ p{margin:0}
 .btn-lg{min-height:56px;padding:0 28px;font-size:18px}
 
 /* Kopfzeile */
-.nav-bar{position:sticky;top:0;z-index:20;background:var(--bg-page);transition:box-shadow .2s}
+.nav-bar{position:sticky;top:0;z-index:20;background:var(--bg-page);transition:box-shadow .2s var(--ease)}
 .nav-bar.is-stuck{box-shadow:0 1px 0 var(--pink-hell)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;padding-bottom:14px}
 .logo{display:inline-flex;align-items:center;gap:10px;font:400 26px/1 var(--serif);color:var(--tinte);text-decoration:none}
@@ -158,7 +159,7 @@ a:has(> .logo){text-decoration:none}
 .row .a{font-weight:700;color:var(--ausgabe-text);font-variant-numeric:tabular-nums}
 .row.is-new{animation:flash 1.2s ease}
 .p-toast{position:absolute;left:12px;right:12px;top:40px;z-index:4;display:flex;align-items:center;gap:8px;background:var(--tinte);color:#fff;
-  border-radius:var(--r);padding:9px 12px;font-size:12px;font-weight:600;box-shadow:var(--sch-schwebend);opacity:0;transform:translateY(-8px);transition:opacity .2s,transform .2s;pointer-events:none}
+  border-radius:var(--r);padding:9px 12px;font-size:12px;font-weight:600;box-shadow:var(--sch-schwebend);opacity:0;transform:translateY(-8px);transition:opacity .2s var(--ease),transform .2s var(--ease);pointer-events:none}
 .p-toast.show{opacity:1;transform:none}
 .p-toast .ico{color:#4ade80;font-size:15px}
 @keyframes flash{0%{background:var(--pink-hell)}100%{background:var(--rose-weiss)}}
@@ -169,7 +170,7 @@ a:has(> .logo){text-decoration:none}
 .try p{font-size:13.2px;color:var(--grau-rose);margin-top:4px}
 .try-list{display:grid;gap:8px;margin-top:14px}
 .try-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:var(--r);
-  border:1px solid var(--pink-hell);background:var(--rose-weiss);color:var(--tinte);font:500 15px/1.2 var(--sans);cursor:pointer;transition:background .15s,border-color .15s}
+  border:1px solid var(--pink-hell);background:var(--rose-weiss);color:var(--tinte);font:500 15px/1.2 var(--sans);cursor:pointer;transition:background .2s var(--ease),border-color .2s var(--ease)}
 .try-btn:hover{border-color:var(--pink)}
 .try-btn .ico{color:var(--c);font-size:20px}
 .try-btn .n{flex:1;min-width:0}
@@ -238,7 +239,7 @@ a:has(> .logo){text-decoration:none}
 .faq details:last-child{border-bottom:1px solid var(--pink-hell)}
 .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 0;font:600 18px/1.35 var(--sans)}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary .ico{transition:transform .2s;color:var(--pink-dunkel)}
+.faq summary .ico{transition:transform .2s var(--ease);color:var(--pink-dunkel)}
 .faq details[open] summary .ico{transform:rotate(180deg)}
 .faq details p{padding:0 0 22px;max-width:38em}
 
@@ -277,9 +278,9 @@ a:has(> .logo){text-decoration:none}
 .thread{position:absolute;left:var(--tx);top:0;width:2px;height:var(--th,100%);background:var(--pink-hell);border-radius:2px}
 .thread i{position:absolute;inset:0;background:var(--pink);border-radius:2px;transform-origin:top;transform:scaleY(var(--p,0))}
 .chap{position:relative;padding:64px 0 64px var(--ind)}
-.when{position:relative;margin:0 0 16px;font:400 22px/1.2 var(--serif);color:var(--grau-rose);transition:color .3s}
+.when{position:relative;margin:0 0 16px;font:400 22px/1.2 var(--serif);color:var(--grau-rose);transition:color .3s var(--ease)}
 .when::before{content:"";position:absolute;left:calc(var(--tx) - var(--ind) - 7px);top:.3em;width:16px;height:16px;border-radius:50%;
-  background:var(--bg-page);border:2px solid var(--pink-hell);box-sizing:border-box;transition:background .3s,border-color .3s}
+  background:var(--bg-page);border:2px solid var(--pink-hell);box-sizing:border-box;transition:background .3s var(--ease),border-color .3s var(--ease)}
 .chap.is-on .when{color:var(--pink-dunkel)}
 .chap.is-on .when::before{background:var(--pink);border-color:var(--pink)}
 .chap h2{font-size:36px;line-height:1.1}
@@ -486,8 +487,10 @@ a:has(> .logo){text-decoration:none}
 .raster .wrap{height:100%;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap)}
 .raster .wrap span{background:rgba(255,0,0,.1)}
 </style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Was kostet Spendly?", "acceptedAnswer": {"@type": "Answer", "text": "Nichts. Spendly ist ein privates Projekt, es gibt kein Abo und keine Werbung."}}, {"@type": "Question", "name": "Muss ich eine App herunterladen?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Spendly läuft im Browser auf Handy, Tablet und Computer. Du öffnest app.spendly.ch. Apps für den App Store und Google Play sind geplant."}}, {"@type": "Question", "name": "Brauche ich einen Account?", "acceptedAnswer": {"@type": "Answer", "text": "Zum Ausprobieren nicht. Du richtest Spendly ein und siehst eine Vorschau. Erst wenn du deine Einträge speichern willst, erstellst du einen Account mit deiner E-Mail-Adresse."}}, {"@type": "Question", "name": "Kann ich Spendly mit meiner Bank verbinden?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Du erfasst deine Ausgaben selbst, dein Bankzugang bleibt bei dir."}}, {"@type": "Question", "name": "Kann ich mehrere Konten erfassen?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. Lohnkonto, Sparkonto oder Bargeld: Spendly zählt alle Konten zu einem Gesamtguthaben zusammen."}}, {"@type": "Question", "name": "Gibt es einen dunklen Modus?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. In den Einstellungen wählst du Hell, Dunkel oder wie dein Gerät."}}, {"@type": "Question", "name": "Wo sind meine Daten gespeichert?", "acceptedAnswer": {"@type": "Answer", "text": "Auf Servern in Frankfurt (EU). Die Details findest du in der Datenschutzerklärung."}}, {"@type": "Question", "name": "Kann ich meinen Account wieder löschen?", "acceptedAnswer": {"@type": "Answer", "text": "Ja, jederzeit. In den Einstellungen löschst du deinen Account mit allen Einträgen."}}]}</script>
 </head>
 <body>
+<a class="skip" href="#inhalt">Zum Inhalt springen</a>
 
 <div class="nav-bar" id="nav-bar"><header class="wrap nav">
   <a href="#" aria-label="Spendly Startseite"><span class="logo"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1451.3 1451.3"><defs><style>
@@ -495,13 +498,13 @@ a:has(> .logo){text-decoration:none}
         fill: #e91e63;
       }
     </style></defs><g><path d="M1202.6,482.9l-327.4,36.8h-7.6c-34.8,0-65.4-26.4-68.8-61.9-4.2-38.2,22.9-72.3,61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7,25.7-174.5,91.8-188.4,144.6-25,95.2,91.8,151.6,278.8,220.4l-46.6,130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1,29.2-111.2,146-209.3,289.9-244,164.1-39.6,337.9,3.5,495.7,120.3l-18.1-159.2c-4.2-38.2,22.9-72.3,61.2-77.2,38.2-4.2,72.3,22.9,77.2,61.2l38.9,343.4c4.2,38.2-22.9,72.3-61.2,77.2h-.7v.7h-.1Z"/><path class="lm0" d="M934.3,1282.4c-54.9,20.9-118.9,31.3-187.7,31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8,158.5c7,37.5-18.8,73.7-56.3,80.6-4.2,0-8.3.7-12.5.7-33.4,0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8,11.1-52.1s26.4-25.7,45.2-28.5l324.7-57.7c37.5-7,73.7,18.8,80.6,56.3,7,37.5-18.8,73.7-56.3,80.6l-178.7,31.3c91.1,54.9,216.9,91.8,330.9,91.8s97.3-7,139.7-22.9c94.5-35.5,136.3-109.1,126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1,57.7,305.2,124.4,316.3,261.4,14.6,178.7-62.6,308.7-216.9,366.4h0l.7.7h.1Z"/></g></svg><span>Spendly</span></span></a>
-  <div class="nav-links">
+  <nav class="nav-links" aria-label="Hauptnavigation">
     <a class="btn btn-ghost" href="https://app.spendly.ch/">Anmelden</a>
     <a class="btn btn-primary" href="https://app.spendly.ch/"><span class="long">Gratis ausprobieren</span><span class="short">Ausprobieren</span></a>
-  </div>
+  </nav>
 </header></div>
 
-<main>
+<main id="inhalt" tabindex="-1">
 <section class="wrap fhero">
   <h1>Wohin geht eigentlich dein Geld?</h1>
   <p class="lead">Spendly ist deine Budget-App für den Alltag. Du erfasst deine Ausgaben von überall und siehst immer, wie viel vom Monat noch übrig ist.</p>
@@ -636,6 +639,10 @@ a:has(> .logo){text-decoration:none}
     </div>
   </section>
 
+  <section class="chap tagline" aria-label="Worum es bei Spendly geht">
+    <p class="tagline-text"><span class="w">Du</span> <span class="w">musst</span> <span class="w">nicht</span> <span class="w">jeden</span> <span class="w">Rappen</span> <span class="w">kennen.</span><br class="br-d"> <span class="w">Es</span> <span class="w">reicht,</span> <span class="w">wenn</span> <span class="w">du</span> <span class="w">weisst,</span><br class="br-d"> <span class="w">was</span> <span class="w">vom</span> <span class="w">Monat</span> <span class="w">noch</span> <span class="w">übrig</span> <span class="w">ist.</span></p>
+  </section>
+
   <section class="chap" id="ueberall">
     <div class="chap-body">
       <h2>Auf dem Handy und am Computer</h2>
@@ -676,7 +683,10 @@ a:has(> .logo){text-decoration:none}
         <details><summary>Muss ich eine App herunterladen?<span class="ico ico-arrow-down"></span></summary><p>Nein. Spendly läuft im Browser auf Handy, Tablet und Computer. Du öffnest app.spendly.ch. Apps für den App Store und Google Play sind geplant.</p></details>
         <details><summary>Brauche ich einen Account?<span class="ico ico-arrow-down"></span></summary><p>Zum Ausprobieren nicht. Du richtest Spendly ein und siehst eine Vorschau. Erst wenn du deine Einträge speichern willst, erstellst du einen Account mit deiner E-Mail-Adresse.</p></details>
         <details><summary>Kann ich Spendly mit meiner Bank verbinden?<span class="ico ico-arrow-down"></span></summary><p>Nein. Du erfasst deine Ausgaben selbst, dein Bankzugang bleibt bei dir.</p></details>
+        <details><summary>Kann ich mehrere Konten erfassen?<span class="ico ico-arrow-down"></span></summary><p>Ja. Lohnkonto, Sparkonto oder Bargeld: Spendly zählt alle Konten zu einem Gesamtguthaben zusammen.</p></details>
+        <details><summary>Gibt es einen dunklen Modus?<span class="ico ico-arrow-down"></span></summary><p>Ja. In den Einstellungen wählst du Hell, Dunkel oder wie dein Gerät.</p></details>
         <details><summary>Wo sind meine Daten gespeichert?<span class="ico ico-arrow-down"></span></summary><p>Auf Servern in Frankfurt (EU). Die Details findest du in der <a href="https://app.spendly.ch/datenschutz.html">Datenschutzerklärung</a>.</p></details>
+        <details><summary>Kann ich meinen Account wieder löschen?<span class="ico ico-arrow-down"></span></summary><p>Ja, jederzeit. In den Einstellungen löschst du deinen Account mit allen Einträgen.</p></details>
       </div>
     </div>
   </section>
@@ -687,6 +697,7 @@ a:has(> .logo){text-decoration:none}
         <h2>Fang diesen Monat an</h2>
         <p>Richte Spendly ein und sieh, wo dein Geld diesen Monat hingeht.</p>
         <a class="btn btn-white btn-lg" href="https://app.spendly.ch/">Gratis ausprobieren</a>
+        <p class="final-note">Kein Abo, keine Werbung. Deinen Account kannst du jederzeit löschen.</p>
       </div>
     </div>
   </section>
@@ -700,7 +711,28 @@ a:has(> .logo){text-decoration:none}
       .lm0 {
         fill: #e91e63;
       }
-    </style></defs><g><path d="M1202.6,482.9l-327.4,36.8h-7.6c-34.8,0-65.4-26.4-68.8-61.9-4.2-38.2,22.9-72.3,61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7,25.7-174.5,91.8-188.4,144.6-25,95.2,91.8,151.6,278.8,220.4l-46.6,130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1,29.2-111.2,146-209.3,289.9-244,164.1-39.6,337.9,3.5,495.7,120.3l-18.1-159.2c-4.2-38.2,22.9-72.3,61.2-77.2,38.2-4.2,72.3,22.9,77.2,61.2l38.9,343.4c4.2,38.2-22.9,72.3-61.2,77.2h-.7v.7h-.1Z"/><path class="lm0" d="M934.3,1282.4c-54.9,20.9-118.9,31.3-187.7,31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8,158.5c7,37.5-18.8,73.7-56.3,80.6-4.2,0-8.3.7-12.5.7-33.4,0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8,11.1-52.1s26.4-25.7,45.2-28.5l324.7-57.7c37.5-7,73.7,18.8,80.6,56.3,7,37.5-18.8,73.7-56.3,80.6l-178.7,31.3c91.1,54.9,216.9,91.8,330.9,91.8s97.3-7,139.7-22.9c94.5-35.5,136.3-109.1,126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1,57.7,305.2,124.4,316.3,261.4,14.6,178.7-62.6,308.7-216.9,366.4h0l.7.7h.1Z"/></g></svg><span>Spendly</span></span>
+    
+/* landing-page-design: Grundkurve, Zustände, Textumbruch, Skip-Link, Einblenden, Tagline */
+:root{--ease:cubic-bezier(.22,1,.36,1)}
+h1,h2,h3,summary{text-wrap:balance}
+p,dd,li{text-wrap:pretty}
+.skip{position:absolute;left:16px;top:-80px;z-index:100;padding:8px 12px;border-radius:var(--r-klein);background:var(--tinte);color:#fff;font-weight:600;text-decoration:none;transition:top .3s var(--ease)}
+.skip:focus{top:12px}
+main:focus{outline:none}
+.btn{transition:background .3s var(--ease),transform .3s var(--ease)}
+.btn:active{transform:scale(.98)}
+.final .final-note{font-size:16px;line-height:24px;margin:16px auto 0;opacity:.9}
+.js .chap.reveal{opacity:0;transform:translateY(32px)}
+.js .chap.reveal.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.chap.tagline{display:block;padding:64px 0;text-align:center}
+.tagline-text{margin:0 auto;max-width:680px;font:400 30px/36px var(--serif);color:var(--tinte);text-wrap:balance}
+.br-d{display:none}
+@media (min-width:640px){.tagline-text{font-size:40px;line-height:48px}.chap.tagline{padding-block:96px}}
+@media (min-width:860px){.br-d{display:inline}}
+.js .tagline-text .w{color:color-mix(in srgb,var(--tinte) 28%,var(--rose-weiss));transition:color .5s var(--ease)}
+.js .tagline-text .w.on{color:var(--tinte)}
+@media (prefers-reduced-motion:reduce){.js .chap.reveal{opacity:1;transform:none}.js .tagline-text .w{color:var(--tinte)}}
+</style></defs><g><path d="M1202.6,482.9l-327.4,36.8h-7.6c-34.8,0-65.4-26.4-68.8-61.9-4.2-38.2,22.9-72.3,61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7,25.7-174.5,91.8-188.4,144.6-25,95.2,91.8,151.6,278.8,220.4l-46.6,130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1,29.2-111.2,146-209.3,289.9-244,164.1-39.6,337.9,3.5,495.7,120.3l-18.1-159.2c-4.2-38.2,22.9-72.3,61.2-77.2,38.2-4.2,72.3,22.9,77.2,61.2l38.9,343.4c4.2,38.2-22.9,72.3-61.2,77.2h-.7v.7h-.1Z"/><path class="lm0" d="M934.3,1282.4c-54.9,20.9-118.9,31.3-187.7,31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8,158.5c7,37.5-18.8,73.7-56.3,80.6-4.2,0-8.3.7-12.5.7-33.4,0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8,11.1-52.1s26.4-25.7,45.2-28.5l324.7-57.7c37.5-7,73.7,18.8,80.6,56.3,7,37.5-18.8,73.7-56.3,80.6l-178.7,31.3c91.1,54.9,216.9,91.8,330.9,91.8s97.3-7,139.7-22.9c94.5-35.5,136.3-109.1,126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1,57.7,305.2,124.4,316.3,261.4,14.6,178.7-62.6,308.7-216.9,366.4h0l.7.7h.1Z"/></g></svg><span>Spendly</span></span>
   <nav aria-label="Rechtliches">
     <a href="https://app.spendly.ch/datenschutz.html">Datenschutz</a>
     <a href="https://app.spendly.ch/impressum.html">Impressum</a>
@@ -736,6 +768,19 @@ if (/[?&]raster\b/.test(location.search)) {
   r.innerHTML = '<div class="wrap">' + new Array(13).join('<span></span>') + '</div>';
   document.body.appendChild(r);
 }
+</script>
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!('IntersectionObserver' in window)||reduce){document.documentElement.classList.remove('js');return;}
+  // Abschnitte steigen beim ersten Erscheinen leicht auf, nur einmal
+  var chaps=[].slice.call(document.querySelectorAll('.story > .chap:not(.tagline)'));
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -10% 0px'});
+  chaps.forEach(function(c){var r=c.getBoundingClientRect();if(r.top<innerHeight*0.9)return;c.classList.add('reveal');io.observe(c);});
+  // Tagline: Wort für Wort, sobald es die Linie bei 60 % der Fensterhöhe kreuzt
+  var wio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');wio.unobserve(e.target);}});},{rootMargin:'0px 0px -40% 0px'});
+  [].forEach.call(document.querySelectorAll('.tagline-text .w'),function(w){wio.observe(w);});
+})();
 </script>
 </body>
 </html>
