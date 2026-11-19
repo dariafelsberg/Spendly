@@ -611,3 +611,85 @@ html.embed-modal-open body {
   .rec-row .rec-acc::before { content: "· "; }
   .rec-row .settings-item-actions { grid-area: x; }
 }
+
+/* ── DARSTELLUNG: Wort links, runder Knopf rechts; Symbol und Wort wechseln mit Unschärfe */
+.settings-theme { --sun: #ff9f0a; }
+.theme-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: 4px 0;
+}
+.theme-row .theme-btn { margin-left: auto; }
+.theme-btn {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+  transition: background-color .5s ease, box-shadow .5s ease, transform .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-btn:active { transform: scale(.92); }
+.theme-btn.is-tapped { animation: theme-tap .45s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes theme-tap { 0% { transform: scale(.88); } 100% { transform: scale(1); } }
+
+.theme-ico {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 26px;
+  height: 26px;
+  overflow: visible;
+  opacity: 0;
+  transform: scale(.4) rotate(-90deg);
+  filter: blur(4px);
+  transition: opacity .3s ease, transform .55s cubic-bezier(.3, 1.4, .5, 1), filter .35s ease;
+}
+.ti-sun { fill: var(--sun); }
+.ti-night { fill: currentColor; transition: fill .5s ease; }
+.ti-rays, .ti-spark { fill: none; stroke: var(--sun); stroke-width: 2; stroke-linecap: round; }
+.ti-spark { stroke: currentColor; stroke-width: 1.6; opacity: .8; }
+.ti-rays { transform-origin: 12px 12px; transform: scale(.4); opacity: 0; transition: transform .5s cubic-bezier(.3, 1.5, .5, 1) .08s, opacity .3s ease .08s; }
+
+.settings-theme[data-mode="light"] .ti-light,
+.settings-theme[data-mode="system"] .ti-system,
+.settings-theme[data-mode="dark"] .ti-dark {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.settings-theme[data-mode="light"] .ti-light .ti-rays,
+.settings-theme[data-mode="system"] .ti-system .ti-rays { transform: none; opacity: 1; }
+/* Weg gehendes Symbol dreht in die andere Richtung hinaus */
+.settings-theme[data-mode="dark"] .ti-light,
+.settings-theme[data-mode="light"] .ti-system { transform: scale(.4) rotate(90deg); }
+
+.theme-label {
+  display: grid;
+  font-weight: 700;
+  font-size: var(--fs-body);
+  white-space: nowrap;
+  position: relative;
+}
+.theme-label span {
+  grid-area: 1 / 1;
+  text-align: left;
+  opacity: 0;
+  filter: blur(5px);
+  transform: translateY(6px);
+  transition: opacity .3s ease, filter .35s ease, transform .4s ease;
+}
+.settings-theme[data-mode="light"] .theme-label [data-v="light"],
+.settings-theme[data-mode="system"] .theme-label [data-v="system"],
+.settings-theme[data-mode="dark"] .theme-label [data-v="dark"] { opacity: 1; filter: none; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-ico, .ti-rays, .theme-label span { transition: opacity .01s; transform: none !important; filter: none !important; }
+  .theme-btn.is-tapped { animation: none; }
+}

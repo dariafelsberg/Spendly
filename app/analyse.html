@@ -35,8 +35,14 @@
     <!-- ── MAIN: ANALYSE ── -->
     <div class="calendar-main" id="analysisView">
 
+      <!-- Nach Tag filtern: erscheint, sobald es Einträge mit Tags gibt -->
+      <div class="tag-filter" id="tagFilter" role="group" aria-label="Nach Tag filtern" hidden></div>
+
+      <!-- Zusammenfassung für den gewählten Tag (alle Monate) -->
+      <div class="card tag-summary" id="tagSummary" hidden></div>
+
       <!-- Month navigation -->
-      <div class="card calendar-nav">
+      <div class="card calendar-nav" id="insightsMonthNav">
         <button class="cal-nav-btn" onclick="changeInsightsMonth(-1)" aria-label="Vorheriger Monat"><span class="ico ico-arrow-left"></span></button>
         <div class="cal-month-label" id="insightsMonthLabel">…</div>
         <button class="cal-nav-btn" id="insightsNavNext" onclick="changeInsightsMonth(1)" aria-label="Nächster Monat"><span class="ico ico-arrow-right"></span></button>
@@ -50,7 +56,7 @@
         <p class="insights-review-sub" id="insightsReviewSub"></p>
       </div>
 
-      <div class="card insights-chart-card">
+      <div class="card insights-chart-card" id="insightsChartCard">
         <div class="section-label">Monatsbilanz</div>
         <div class="insights-chart" id="insightsChart"></div>
       </div>

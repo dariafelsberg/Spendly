@@ -69,9 +69,79 @@ function renderInsightsView() {
     nextBtn.style.opacity = disabled ? '0.3' : '';
     nextBtn.style.cursor = disabled ? 'default' : '';
   }
-  renderInsightsReview();
-  renderInsightsChart();
+  renderTagFilter();
+  // Mit Tag: Zusammenfassung über alle Monate statt Monatsansicht
+  const tagged = !!insightsTag;
+  ['insightsMonthNav', 'insightsChartCard'].forEach(id => { const el = document.getElementById(id); if (el) el.hidden = tagged; });
+  document.getElementById('tagSummary').hidden = !tagged;
+  if (tagged) {
+    document.getElementById('insightsReview').hidden = true;
+    renderTagSummary();
+  } else {
+    renderInsightsReview();
+    renderInsightsChart();
+  }
   renderInsightsMonthList();
+}
+
+// ── NACH TAG FILTERN
+// Gewählter Tag, '' = alle. Steht auch in der Adresse (#tag=Ferien), damit Zurück funktioniert.
+let insightsTag = '';
+function tagFromHash() {
+  const m = location.hash.match(/^#tag=(.+)$/);
+  return m ? decodeURIComponent(m[1]) : '';
+}
+function setInsightsTag(tag) {
+  insightsTag = tag;
+  const hash = tag ? '#tag=' + encodeURIComponent(tag) : '';
+  if (location.hash !== hash) history.replaceState(null, '', location.pathname + hash);
+  renderInsightsView();
+  if (tag) document.getElementById('tagSummary').scrollIntoView({ block: 'nearest' });
+}
+function entriesWithTag(tag) {
+  const t = tag.toLowerCase();
+  return state.entries.filter(e => !e.isPreview && (e.tags || []).some(x => x.toLowerCase() === t));
+}
+function renderTagFilter() {
+  const box = document.getElementById('tagFilter');
+  if (!box) return;
+  const tags = allTags();
+  // Tag existiert nicht mehr (z.B. Eintrag gelöscht): zurück zu allen
+  if (insightsTag && !tags.some(t => t.name.toLowerCase() === insightsTag.toLowerCase())) insightsTag = '';
+  box.hidden = !tags.length;
+  if (!tags.length) { box.innerHTML = ''; return; }
+  const chip = (tag, label) => {
+    const on = tag.toLowerCase() === insightsTag.toLowerCase();
+    return `<button type="button" class="tag-filter-chip${on ? ' on' : ''}" aria-pressed="${on}" onclick="setInsightsTag(${jsArg(tag)})">${label}</button>`;
+  };
+  box.innerHTML = chip('', 'Alle') + tags.map(t => chip(t.name, "#" + esc(t.name))).join('');
+}
+function renderTagSummary() {
+  const box = document.getElementById('tagSummary');
+  const list = entriesWithTag(insightsTag);
+  const spent = list.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
+  const earned = list.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
+  const dates = list.map(e => e.date).sort();
+  const fmt = d => new Date(d + 'T00:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'short', year: 'numeric' });
+  const range = !dates.length ? '' : dates[0] === dates[dates.length - 1] ? fmt(dates[0]) : `${fmt(dates[0])} bis ${fmt(dates[dates.length - 1])}`;
+  // Ausgaben nach Kategorie als dünne Balken
+  const byCat = {};
+  list.filter(e => e.type === 'expense').forEach(e => { byCat[e.category] = (byCat[e.category] || 0) + e.amount; });
+  const cats = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  const max = cats.length ? cats[0][1] : 1;
+  const rows = cats.map(([name, sum]) => {
+    const c = ALL_CATS.find(x => x.name === name) || { color: '#ccc', emoji: '?' };
+    return `<div class="tag-cat-row">
+        <span class="tag-cat-name">${catIcon(c)} ${esc(name)}</span><span class="tag-cat-amt">${formatNum(sum)}</span>
+        <span class="tag-cat-bar"><span style="width:${(sum / max * 100).toFixed(1)}%;background:${c.color}"></span></span></div>`;
+  }).join('');
+  box.innerHTML = `
+    <div class="tag-summary-head">
+      <div><div class="section-label">#${esc(insightsTag)}, ausgegeben</div><div class="tag-summary-total">CHF ${formatNum(spent)}</div></div>
+      <button type="button" class="tag-summary-clear" onclick="setInsightsTag('')" aria-label="Filter aufheben"><span class="ico ico-close"></span></button>
+    </div>
+    <div class="tag-summary-sub">${list.length === 1 ? '1 Eintrag' : list.length + ' Einträge'}${range ? ', ' + range : ''}${earned ? `, CHF ${formatNum(earned)} eingenommen` : ''}</div>
+    ${rows ? `<div class="tag-cats">${rows}</div>` : ''}`;
 }
 
 // Monatsrückblick: Ausgaben des gewählten Monats im Vergleich zum Vormonat.
@@ -205,12 +275,11 @@ function renderInsightsMonthList() {
   const countEl = document.getElementById('insightsTxCount');
   if (!listEl) return;
   const mKey = monthKey(insightsViewDate);
-  const entries = state.entries
-    .filter(e => e.date.slice(0, 7) === mKey)
+  const entries = (insightsTag ? entriesWithTag(insightsTag) : state.entries.filter(e => e.date.slice(0, 7) === mKey))
     .sort((a, b) => new Date(b.date) - new Date(a.date));
   listEl.querySelectorAll('.insights-cat-group').forEach(el => el.remove());
   if (countEl) countEl.textContent = entries.length;
-  if (!entries.length) { if (emptyEl) emptyEl.style.display = 'block'; return; }
+  if (!entries.length) { if (emptyEl) { emptyEl.textContent = 'Keine Einträge in diesem Monat.'; emptyEl.style.display = 'block'; } return; }
   if (emptyEl) emptyEl.style.display = 'none';
 
   const groups = {};
@@ -249,5 +318,7 @@ function renderInsightsMonthList() {
 }
 
 // ── START
+insightsTag = tagFromHash();
+window.addEventListener('hashchange', () => { insightsTag = tagFromHash(); renderInsightsView(); });
 registerPageRender(renderInsightsView);
 renderInsightsView();

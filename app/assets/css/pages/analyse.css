@@ -195,3 +195,78 @@
   line-height: 1.5;
   color: var(--muted);
 }
+
+/* ── NACH TAG FILTERN */
+.tag-filter {
+  display: flex;
+  gap: var(--sp-xs);
+  overflow-x: auto;
+  margin: 0 calc(var(--sp-md) * -1) var(--sp-sm);
+  padding: 2px var(--sp-md) 4px;
+  scrollbar-width: none;
+}
+.tag-filter::-webkit-scrollbar { display: none; }
+.tag-filter-chip {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--primary-light);
+  background: var(--card);
+  color: var(--primary-dark);
+  font: inherit;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.tag-filter-chip.on {
+  background: var(--btn);
+  border-color: var(--btn);
+  color: #fff;
+}
+.tag-summary { position: relative; }
+.tag-summary-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-sm); }
+.tag-summary-total {
+  font-family: 'DM Serif Display', serif;
+  font-size: var(--fs-2xl);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.tag-summary-sub { font-size: var(--fs-note); color: var(--muted); margin-top: var(--sp-2xs); }
+.tag-summary-clear {
+  width: 36px;
+  height: 36px;
+  margin: -6px -6px 0 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.tag-cats { margin-top: var(--sp-md); display: grid; gap: var(--sp-sm); }
+.tag-cat-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px var(--sp-sm);
+  font-size: var(--fs-note);
+}
+.tag-cat-name { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.tag-cat-amt { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tag-cat-bar {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.tag-cat-bar span { display: block; height: 100%; border-radius: 999px; }
+@media (hover: hover) {
+  .tag-filter-chip:not(.on):hover { background: var(--primary-light); }
+}
+@media (min-width:480px) {
+  .tag-filter { margin: 0 0 var(--sp-sm); padding: 2px 0 4px; flex-wrap: wrap; }
+}

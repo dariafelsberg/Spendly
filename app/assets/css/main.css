@@ -1606,6 +1606,14 @@ button {
 }
 .form-hint .ico { color: var(--primary-dark); margin-top: 1px; }
 
+/* ── WECHSEL HELL / DUNKEL: alle Farben gleiten kurz über (theme.js setzt die Klasse 650 ms) */
+html.theme-anim,
+html.theme-anim *:not(.theme-switch *),
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition: background-color .5s ease, color .5s ease, border-color .5s ease, fill .5s ease, stroke .5s ease, box-shadow .5s ease !important;
+}
+
 /* ── ZWISCHENTITEL IN LISTEN (z.B. Konten: Alltag / Sparen) */
 .settings-subhead {
   font-size: var(--fs-note);

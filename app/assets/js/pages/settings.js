@@ -11,9 +11,27 @@ function initSettings() {
     if (el) el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('show'); });
   });
 }
+// ── DARSTELLUNG: ein runder Knopf, jeder Tipp wechselt Hell → Wie Gerät → Dunkel → Hell
+const THEME_ORDER = ['light', 'system', 'dark'];
+const THEME_NAMES = { light: 'Hell', system: 'Wie Gerät', dark: 'Dunkel' };
+function updateThemeSwitch() {
+  const box = document.getElementById('themeSwitch');
+  if (!box || !window.spendlyTheme) return;
+  const mode = spendlyTheme.get();
+  box.dataset.mode = mode;
+  const next = THEME_ORDER[(THEME_ORDER.indexOf(mode) + 1) % THEME_ORDER.length];
+  document.getElementById('themeBtn').setAttribute('aria-label', `Darstellung: ${THEME_NAMES[mode]}. Wechseln zu ${THEME_NAMES[next]}`);
+}
+function cycleTheme() {
+  const mode = spendlyTheme.get();
+  spendlyTheme.set(THEME_ORDER[(THEME_ORDER.indexOf(mode) + 1) % THEME_ORDER.length]);
+  updateThemeSwitch();
+  const btn = document.getElementById('themeBtn');
+  btn.classList.remove('is-tapped'); void btn.offsetWidth; btn.classList.add('is-tapped');
+}
+
 function renderSettings() {
-  const ts = document.getElementById('themeSelect');
-  if (ts && window.spendlyTheme) ts.value = spendlyTheme.get();
+  updateThemeSwitch();
   renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense'); renderRecurringList('transfer');
   renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
@@ -495,3 +513,5 @@ function deleteRecurring(type, id) {
 // ── START
 registerPageRender(renderSettings);
 initSettings();
+// Darstellung in einem anderen Fenster geändert → Knopf nachführen
+window.addEventListener('storage', e => { if (e.key === 'spendly_theme') updateThemeSwitch(); });
