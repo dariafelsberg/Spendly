@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <script src="assets/js/theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
   <script src="assets/js/supabase.js"></script>
   <script>requireLogin(); document.documentElement.classList.add('is-loading');</script>
@@ -62,7 +63,7 @@
       <div class="card donut-wrapper">
         <div class="donut-container">
           <svg id="donutSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="100" r="72" fill="none" style="stroke:var(--donut-track)" stroke-width="28" />
+            <circle cx="100" cy="100" r="72" fill="none" style="stroke:var(--surface)" stroke-width="28" />
             <g id="donutArcs"></g>
           </svg>
           <div class="donut-center">
@@ -175,6 +176,10 @@
         <span class="nav-icon"><span class="ico ico-calendar"></span></span>
         <span class="nav-label">Kalender</span>
       </a>
+      <a class="nav-btn" href="planen.html">
+        <span class="nav-icon"><span class="ico ico-piggy"></span></span>
+        <span class="nav-label">Planen</span>
+      </a>
       <a class="nav-btn" href="analyse.html">
         <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
         <span class="nav-label">Analyse</span>
@@ -233,6 +238,15 @@
           <input type="checkbox" id="accountOnlyCheck" aria-label="Nur Konto">
           <span class="toggle-track"></span>
         </label>
+      </div>
+      <div class="form-group" id="entryTagsGroup">
+        <label class="form-label" for="entryTagInput">Tags (optional)</label>
+        <div class="tag-input" id="entryTagBox">
+          <span class="tag-input-chips" id="entryTagChips"></span>
+          <input type="text" id="entryTagInput" maxlength="31" placeholder="z.B. #Ferien-Italien" autocomplete="off" autocapitalize="off" spellcheck="false"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="entryTagSugg">
+        </div>
+        <div class="tag-sugg" id="entryTagSugg" role="listbox" aria-label="Vorschläge" hidden></div>
       </div>
       <div class="form-group">
         <label class="form-label" for="entryNote">Notiz (optional)</label>

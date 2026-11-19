@@ -45,7 +45,7 @@
   color: var(--primary-dark);
 }
 .cal-day.selected {
-  background: var(--primary-dark); /* Weiss darauf 5.9:1 */
+  background: var(--btn); /* Weiss darauf 5.9:1 */
   color: #fff;
 }
 .cal-day-dots {
@@ -119,7 +119,7 @@
   border-radius: 0;
   margin-bottom: 0;
   padding: 12px 4px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--primary-light);
 }
 .day-detail .tx-item:last-child {
   border-bottom: 0;

@@ -22,11 +22,13 @@ const EXPENSE_CATEGORIES = [
   { name: 'Hygieneartikel',  icon: 'hygiene', color: '#a3e635' },
   { name: 'Shopping',         icon: 'shoppingbag', color: '#7c3aed' },
   { name: 'Abos',             icon: 'subscription', color: '#6366f1' },
+  { name: 'Schulden',         icon: 'bank', color: '#9f1239' },   // Raten aus «Planen»
 ];
 const INCOME_CATEGORIES = [
   { name: 'Lohn',      icon: 'wallet', color: '#16a34a' },
   { name: 'Sackgeld',  icon: 'coin', color: '#84cc16' },
   { name: 'Sonstiges', icon: 'tag', color: '#4ade80' },
+  { name: 'Rückzahlung', icon: 'refund', color: '#0d9488' },   // geliehenes Geld zurück («Planen»)
 ];
 // ALL_CATS ist ein dynamischer Getter (berücksichtigt eigene Kategorien)
 // Eigene Kategorien, die gleich heissen wie eine fixe (z.B. ein früher selbst erstelltes «Abos»), nicht doppelt zeigen
@@ -68,6 +70,7 @@ let state = {
   recurringIncome: [], recurringExpense: [], recurringTransfers: [],
   appliedRecurringMonths: [],
   customExpenseCats: [], customIncomeCats: [],
+  goals: [], debts: [],
   entryType: 'expense', editId: null,
   accountEditId: null, recurringEditId: null, recurringType: 'income',
   customCatEditId: null, customCatType: 'expense',
@@ -82,6 +85,9 @@ function sanitizeState() {
   if (!Array.isArray(state.appliedRecurringMonths)) state.appliedRecurringMonths = [];
   if (!Array.isArray(state.customExpenseCats))  state.customExpenseCats = [];
   if (!Array.isArray(state.customIncomeCats))   state.customIncomeCats = [];
+  if (!Array.isArray(state.goals))              state.goals = [];
+  if (!Array.isArray(state.debts))              state.debts = [];
+  state.debts.forEach(d => { if (!Array.isArray(d.payments)) d.payments = []; });
   state.entries = state.entries.filter(e => e && typeof e.date === 'string' && typeof e.amount === 'number');
   // Migration: alte globale Monats-Markierung (appliedRecurringMonths) auf das
   // neue Pro-Regel-Tracking (lastAppliedMonth) übertragen, damit Regeln aus
@@ -313,6 +319,7 @@ function _claimLocalData(userId) {
       balance: 0, budget: 0, entries: [], accounts: [],
       recurringIncome: [], recurringExpense: [], recurringTransfers: [],
       appliedRecurringMonths: [], customExpenseCats: [], customIncomeCats: [],
+      goals: [], debts: [],
     });
     try {
       localStorage.removeItem('budgetApp_v2');
@@ -324,8 +331,8 @@ function _claimLocalData(userId) {
 }
 
 function _payload() {
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats } = state;
-  return { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats };
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats, goals, debts } = state;
+  return { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats, goals, debts };
 }
 
 function _persistLocal() {
@@ -461,18 +468,39 @@ function entryRowInner(e) {
   const isAccOnly = e.type === 'account-only';
   const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
   const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${esc(acc.name)}</span>` : '';
-  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
+  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:var(--surface);color:var(--transfer-text);">nur Konto</span>` : '';
   return `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
         <div class="tx-cat-label">${catIcon(cat)} ${esc(e.category)}</div>
         <div class="tx-note">${formatRelDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? esc(e.note) + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
+        ${tagChipsHtml(e.tags)}
       </div>
       <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
       <div class="tx-actions">
         <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})"><span class="ico ico-pencil"></span></button>
         <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})"><span class="ico ico-trash"></span></button>
       </div>`;
+}
+
+// Kontoart: 'saving' = Sparkonto (unter Planen mit Sparzielen verknüpfbar), sonst Alltagskonto
+function isSavingAccount(a) { return !!a && a.kind === 'saving'; }
+
+// ── TAGS: quer zu den Kategorien, z.B. «Ferien-Italien». Gespeichert ohne «#» in entry.tags.
+function normTag(t) { return String(t || '').trim().replace(/^#+/, '').replace(/\s+/g, '-').slice(0, 30); }
+// Alle bisher benutzten Tags, häufigste zuerst (gleiche Schreibweise unabhängig von Gross/Klein)
+function allTags() {
+  const count = new Map();
+  state.entries.forEach(e => (e.tags || []).forEach(t => {
+    const key = t.toLowerCase();
+    const cur = count.get(key) || { name: t, n: 0, last: '' };
+    cur.n++; if (e.date > cur.last) cur.last = e.date;
+    count.set(key, cur);
+  }));
+  return [...count.values()].sort((a, b) => b.n - a.n || a.name.localeCompare(b.name, 'de'));
+}
+function tagChipsHtml(tags) {
+  return (tags || []).length ? `<span class="tx-tags">${tags.map(t => `<span class="tag-chip">#${esc(t)}</span>`).join('')}</span>` : '';
 }
 
 function applyAccountDelta(accountId, amount, type) {
@@ -817,16 +845,25 @@ function enhanceCatSelect(sel) {
   const catFor = name => allCats().find(c => c.name === name) || null;
   // Symbole hier ohne Kategoriefarbe (Daria); Emojis bleiben, wie sie sind
   const look = name => { const c = catFor(name); return !c ? '' : c.icon ? iconHtml(c.icon) : esc(c.emoji || ''); };
+  // Andere Auswahlfelder (Konto, Kontoart, Darstellung): <option data-icon="bank" data-sub="…">Text</option>
+  const optHtml = (o, withSub) => {
+    const generic = 'icon' in o.dataset;
+    const ico = generic ? (o.dataset.icon ? iconHtml(o.dataset.icon) : '') : look(o.value);
+    const name = generic ? o.textContent : o.value;
+    const sub = withSub && o.dataset.sub ? `<span class="cat-select-sub">${esc(o.dataset.sub)}</span>` : '';
+    return (ico ? `<span class="cat-select-ico">${ico}</span>` : '') +
+      (sub ? `<span class="cat-select-text"><span class="cat-select-name">${esc(name)}</span>${sub}</span>` : `<span class="cat-select-name">${esc(name)}</span>`);
+  };
   const renderBtn = () => {
     const opt = sel.options[sel.selectedIndex];
     btn.classList.toggle('is-empty', !opt || !opt.value);
-    btn.innerHTML = opt && opt.value ? `<span class="cat-select-ico">${look(opt.value)}</span><span class="cat-select-name">${esc(opt.value)}</span>` : '<span class="cat-select-name">Kategorie auswählen</span>';
+    btn.innerHTML = opt && opt.value ? optHtml(opt, false) : `<span class="cat-select-name">${esc(sel.dataset.placeholder || 'Kategorie auswählen')}</span>`;
   };
   const renderList = () => {
     // Platzhalter ("Kategorie auswählen", value="") nicht in der Liste zeigen
     list.innerHTML = [...sel.options].map((o, i) => !o.value ? '' :
       `<div class="cat-select-item${o.selected ? ' selected' : ''}" role="option" id="${sel.id}Opt${i}" data-i="${i}" aria-selected="${o.selected}">` +
-      `<span class="cat-select-ico">${look(o.value)}</span><span class="cat-select-name">${esc(o.value)}</span></div>`).join('');
+      optHtml(o, true) + '</div>').join('');
   };
   const setActive = i => {
     const items = list.children;

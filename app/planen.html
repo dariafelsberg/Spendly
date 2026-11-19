@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <script src="assets/js/theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script>requireLogin();</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#e91e63">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Spendly">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="assets/icons/favicon/spendly_favicon_48.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="assets/icons/spendly_apple_touch_icon_180.png" sizes="180x180">
+  <title>Planen - Spendly</title>
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/pages/planen.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- ── TOPBAR: nur der Titel (Netto-Vermögen steht ruhig darunter) ── -->
+    <div class="settings-topbar">
+      <h1 class="settings-title">Planen</h1>
+      <button class="icon-btn menu-toggle-btn" onclick="toggleAppMenu()" aria-label="Menü öffnen"><span class="ico ico-settings"></span></button>
+    </div>
+
+    <!-- ── MAIN: Übersicht, Sparkonto oder Schuld (je nach #Adresse) ── -->
+    <div class="settings-main planen-main" id="planenView" aria-live="polite"></div>
+
+    <!-- ── APP MENU OVERLAY ── -->
+    <div class="app-menu-overlay" id="appMenuOverlay" onclick="if(event.target===this) closeAppMenu()">
+      <div class="app-menu-panel">
+        <div class="app-menu-header">
+          <button class="icon-btn app-menu-close-btn" onclick="closeAppMenu()" aria-label="Menü schliessen"><span class="ico ico-close"></span></button>
+          <div class="app-menu-title">Einstellungen</div>
+        </div>
+        <iframe class="app-menu-settings-frame" src="settings.html?embed=1" title="Einstellungen"></iframe>
+      </div>
+    </div>
+
+    <!-- ── BOTTOM NAV ── -->
+    <nav class="bottom-nav">
+      <a class="nav-btn" href="index.html">
+        <span class="nav-icon"><span class="ico ico-home"></span></span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-btn" href="calendar.html">
+        <span class="nav-icon"><span class="ico ico-calendar"></span></span>
+        <span class="nav-label">Kalender</span>
+      </a>
+      <a class="nav-btn active" href="planen.html" aria-current="page">
+        <span class="nav-icon"><span class="ico ico-piggy"></span></span>
+        <span class="nav-label">Planen</span>
+      </a>
+      <a class="nav-btn" href="analyse.html">
+        <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
+        <span class="nav-label">Analyse</span>
+      </a>
+      <!-- Einstellungen: nur auf dem Computer, als Symbol unten links in der Seitenleiste -->
+      <a class="nav-btn nav-settings" href="settings.html" aria-label="Einstellungen" title="Einstellungen">
+        <span class="nav-icon"><span class="ico ico-settings"></span></span>
+      </a>
+    </nav>
+
+  </div><!-- /app-shell -->
+
+  <!-- ══ MODAL: SPARZIEL ══ -->
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle" tabindex="-1">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="goalModalTitle">Sparziel hinzufügen</div>
+      <div class="form-group">
+        <label class="form-label" for="goalName">Name</label>
+        <input class="form-input" type="text" id="goalName" maxlength="40" placeholder="z.B. Ferien Japan" data-required="value" data-error="Der Name fehlt. Gib dem Sparziel einen Namen, zum Beispiel Ferien.">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="goalTarget">Zielbetrag (CHF)</label>
+          <input class="form-input amount-step" type="text" inputmode="decimal" id="goalTarget" maxlength="15" placeholder="z.B. 3000" autocomplete="off" data-required="amount" data-error="Der Zielbetrag fehlt. Gib einen Betrag über 0 ein.">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="goalDate">Bis wann (optional)</label>
+          <input class="form-input" type="month" id="goalDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="goalAccount">Sparkonto</label>
+        <select class="form-input form-select cat-select" id="goalAccount" data-placeholder="Sparkonto auswählen" onchange="onGoalAccountChange()"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="goalSaved" id="goalSavedLabel">Davon schon gespart (CHF)</label>
+        <input class="form-input amount-step" type="text" inputmode="decimal" id="goalSaved" maxlength="15" placeholder="0.00" autocomplete="off" oninput="updateGoalHint()">
+        <div class="field-note" id="goalSavedHint"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeGoalModal()">Abbrechen</button>
+        <button class="btn-save" onclick="saveGoal()">Sparziel speichern</button>
+      </div>
+      <button class="btn-delete-link" id="goalDeleteBtn" onclick="deleteGoal()" hidden>Sparziel löschen</button>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: SPARKONTO ANLEGEN (aus dem Sparziel heraus) ══ -->
+  <div class="modal-overlay" id="savingAccountModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="savingAccountTitle" tabindex="-1">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="savingAccountTitle">Neues Sparkonto</div>
+      <div class="form-group">
+        <label class="form-label" for="savingAccountName">Kontoname</label>
+        <input class="form-input" type="text" id="savingAccountName" maxlength="40" placeholder="z.B. Sparkonto, Säule 3a" data-required="value" data-error="Der Name fehlt. Gib dem Konto einen Namen, zum Beispiel Sparkonto.">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="savingAccountBalance">Guthaben (CHF)</label>
+        <input class="form-input" type="text" inputmode="decimal" id="savingAccountBalance" maxlength="15" placeholder="0.00" autocomplete="off">
+      </div>
+      <div class="form-hint"><span class="ico ico-piggy" aria-hidden="true"></span>Das Sparkonto erscheint auch in den Einstellungen unter Konten. Dort kannst du es später ändern.</div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeSavingAccountModal()">Abbrechen</button>
+        <button class="btn-save" onclick="saveSavingAccount()">Sparkonto anlegen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: GELD ZUTEILEN / EINZAHLEN ══ -->
+  <div class="modal-overlay" id="allocModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="allocTitle" tabindex="-1">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="allocTitle">Freies Geld zuteilen</div>
+      <div class="modal-sub" id="allocSub"></div>
+      <div class="form-group" id="allocGoalGroup">
+        <label class="form-label" for="allocGoal">Sparziel</label>
+        <select class="form-input form-select cat-select" id="allocGoal" data-placeholder="Sparziel auswählen" onchange="onAllocGoalChange()"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="allocAmount">Betrag (CHF)</label>
+        <input class="form-input amount-step" type="text" inputmode="decimal" id="allocAmount" maxlength="15" placeholder="0.00" autocomplete="off" data-required="amount" data-error="Der Betrag fehlt. Gib einen Betrag über 0 ein.">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeAllocModal()">Abbrechen</button>
+        <button class="btn-save" id="allocSaveBtn" onclick="saveAlloc()">Zuteilen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: SCHULD ══ -->
+  <div class="modal-overlay" id="debtModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="debtModalTitle" tabindex="-1">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="debtModalTitle">Schuld hinzufügen</div>
+      <div class="form-group">
+        <label class="form-label" for="debtDirection">Art</label>
+        <select class="form-input form-select cat-select" id="debtDirection" onchange="updateDebtFormUi()">
+          <option value="owe" data-icon="bank" data-sub="Kredit, Leasing, Abzahlung, Geld von Freunden">Ich schulde</option>
+          <option value="owed" data-icon="refund" data-sub="Du hast jemandem Geld geliehen">Mir schuldet jemand</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="debtName">Name</label>
+          <input class="form-input" type="text" id="debtName" maxlength="40" placeholder="z.B. Privatkredit" data-required="value" data-error="Der Name fehlt. Gib einen Namen ein, zum Beispiel Privatkredit.">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="debtPerson" id="debtPersonLabel">Bei wem (optional)</label>
+          <input class="form-input" type="text" id="debtPerson" maxlength="40" placeholder="z.B. Bank Cler">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="debtAmount">Betrag am Anfang (CHF)</label>
+          <input class="form-input amount-step" type="text" inputmode="decimal" id="debtAmount" maxlength="15" placeholder="z.B. 12000" autocomplete="off" data-required="amount" data-error="Der Betrag fehlt. Gib einen Betrag über 0 ein." oninput="syncDebtOpen()">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="debtOpen">Noch offen (CHF)</label>
+          <input class="form-input amount-step" type="text" inputmode="decimal" id="debtOpen" maxlength="15" placeholder="gleich wie am Anfang" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="debtRate">Monatsrate (optional)</label>
+          <input class="form-input amount-step" type="text" inputmode="decimal" id="debtRate" maxlength="15" placeholder="z.B. 380" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="debtInterest">Zins pro Jahr in % (optional)</label>
+          <input class="form-input" type="text" inputmode="decimal" id="debtInterest" maxlength="6" placeholder="z.B. 5.9" autocomplete="off">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="debtDueDay">Fällig am</label>
+          <select class="form-input form-select" id="debtDueDay"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="debtAccount" id="debtAccountLabel">Bezahlt von Konto</label>
+          <select class="form-input form-select" id="debtAccount"></select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeDebtModal()">Abbrechen</button>
+        <button class="btn-save" onclick="saveDebt()">Speichern</button>
+      </div>
+      <button class="btn-delete-link" id="debtDeleteBtn" onclick="deleteDebt()" hidden>Schuld löschen</button>
+    </div>
+  </div>
+
+  <!-- ══ MODAL: ZAHLUNG ══ -->
+  <div class="modal-overlay" id="payModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="payTitle" tabindex="-1">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="payTitle">Rate bezahlt</div>
+      <div class="modal-sub" id="paySub"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="payAmount">Betrag (CHF)</label>
+          <input class="form-input amount-step" type="text" inputmode="decimal" id="payAmount" maxlength="15" placeholder="0.00" autocomplete="off" data-required="amount" data-error="Der Betrag fehlt. Gib einen Betrag über 0 ein.">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="payDate">Datum</label>
+          <input class="form-input" type="date" id="payDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="payAccount" id="payAccountLabel">Von Konto</label>
+        <select class="form-input form-select" id="payAccount"></select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closePayModal()">Abbrechen</button>
+        <button class="btn-save" id="paySaveBtn" onclick="savePayment()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/pages/planen.js"></script>
+</body>
+
+</html>

@@ -233,7 +233,7 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: var(--radius);
-  background: var(--card-soft);
+  background: var(--bg);
   border: 1.5px solid transparent;
   cursor: pointer;
   min-width: 0;
@@ -304,7 +304,7 @@
   width: calc(100% - 32px);
   max-width: 360px;
   justify-content: center;
-  background: var(--primary-dark); /* wie Speichern: Weiss darauf 5.9:1 */
+  background: var(--btn); /* wie Speichern: Weiss darauf 5.9:1 */
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -332,7 +332,7 @@
 .type-toggle {
   position: relative;
   display: flex;
-  background: var(--card-soft);
+  background: var(--bg);
   border-radius: var(--radius-sm);
   padding: 3px;
   margin-top: 4px;
@@ -498,7 +498,7 @@
 .sk {
   display: block;
   border-radius: 999px;
-  background: var(--skeleton);
+  background: var(--surface);
   animation: sk-pulse 1.2s ease-in-out infinite;
 }
 .is-loading #accountPills,
@@ -526,7 +526,7 @@
 .is-loading #budgetSub,
 .is-loading .donut-center-budget,
 .is-loading .donut-center-spent,
-.is-loading #txCount { background: var(--skeleton); border-color: transparent; }
+.is-loading #txCount { background: var(--surface); border-color: transparent; }
 .is-loading #budgetDisplay,
 .is-loading #budgetSub { width: fit-content; min-width: 120px; }
 .is-loading .donut-center-budget,
@@ -638,7 +638,7 @@
   width: max-content;
   max-width: calc(100% - 32px);
   padding: var(--sp-sm) var(--sp-xs) var(--sp-sm) var(--sp-md);
-  background: var(--text);
+  background: var(--ink);
   color: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow-float);
@@ -657,7 +657,7 @@
   transform: translateX(-50%);
   border: 10px solid transparent;
   border-bottom: 0;
-  border-top-color: var(--text);
+  border-top-color: var(--ink);
 }
 .first-entry-hint-close {
   flex: none;

@@ -27,7 +27,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--border);
+  background: var(--primary-light);
 }
 .insights-bar-value {
   font-size: var(--fs-note);
@@ -77,7 +77,7 @@
 /* ── EINTRÄGE NACH KATEGORIE (aufklappbar)
    Ruhige Liste: weisse Zeilen mit feiner Linie dazwischen statt rosa Kästchen */
 .insights-cat-group {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--primary-light);
 }
 .insights-cat-group:last-child {
   border-bottom: 0;
@@ -138,7 +138,7 @@
   border-radius: 0;
   margin-bottom: 0;
   padding: 12px 4px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--primary-light);
 }
 
 /* ── CALENDAR */

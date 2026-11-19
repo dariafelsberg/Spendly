@@ -12,6 +12,8 @@ function initSettings() {
   });
 }
 function renderSettings() {
+  const ts = document.getElementById('themeSelect');
+  if (ts && window.spendlyTheme) ts.value = spendlyTheme.get();
   renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense'); renderRecurringList('transfer');
   renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
@@ -53,23 +55,34 @@ function showRecurringTab(type) {
     if (panel) panel.classList.toggle('active', on);
   });
 }
-function renderAccountsList() {
-  const el = document.getElementById('accountsList');
-  el.innerHTML = !state.accounts.length
-    ? '<div class="empty-tx">Noch keine Konten hinzugefügt.</div>'
-    : state.accounts.map(a => `
+function accountRowHtml(a) {
+  const goals = (state.goals || []).filter(g => g.accountId === a.id).length;
+  const vis = a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt';
+  const extra = isSavingAccount(a) ? (goals === 1 ? '1 Sparziel' : goals + ' Sparziele') : vis;
+  return `
       <div class="settings-item acc-row">
         <div class="settings-item-info">
           <div class="settings-item-name">${esc(a.name)}</div>
-          <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt'}</span></div>
+          <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${extra}</span></div>
         </div>
         <span class="acc-bal">CHF ${formatNum(a.balance)}</span>
-        <span class="acc-vis">${a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt'}</span>
+        <span class="acc-vis">${extra}</span>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openAccountModal(${jsArg(a.id)})"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteAccount(${jsArg(a.id)})"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openAccountModal(${jsArg(a.id)})" aria-label="Konto bearbeiten"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteAccount(${jsArg(a.id)})" aria-label="Konto löschen"><span class="ico ico-trash"></span></button>
         </div>
-      </div>`).join('');
+      </div>`;
+}
+function renderAccountsList() {
+  const el = document.getElementById('accountsList');
+  const everyday = state.accounts.filter(a => !isSavingAccount(a));
+  const saving   = state.accounts.filter(isSavingAccount);
+  // Ohne Sparkonto bleibt die Liste wie bisher (keine Zwischentitel)
+  el.innerHTML = !state.accounts.length
+    ? '<div class="empty-tx">Noch keine Konten hinzugefügt.</div>'
+    : !saving.length ? everyday.map(accountRowHtml).join('')
+    : (everyday.length ? '<div class="settings-subhead">Alltag</div>' + everyday.map(accountRowHtml).join('') : '') +
+      '<div class="settings-subhead">Sparen</div>' + saving.map(accountRowHtml).join('');
 }
 function recurringListElId(type) {
   return type === 'income' ? 'recurringIncomeList' : type === 'transfer' ? 'recurringTransferList' : 'recurringExpenseList';
@@ -314,32 +327,46 @@ function deleteCustomCat(type, id) {
     else                    state.customIncomeCats  = state.customIncomeCats.filter(c => c.id !== id);
   }, 'Kategorie gelöscht');
 }
-function openAccountModal(editId = null) {
+function openAccountModal(editId = null, kind = 'everyday') {
   state.accountEditId = editId;
   document.getElementById('accountModalTitle').textContent = editId ? 'Konto bearbeiten' : 'Konto hinzufügen';
   if (editId) {
     const a = state.accounts.find(x => x.id === editId);
+    document.getElementById('accountKind').value      = isSavingAccount(a) ? 'saving' : 'everyday';
     document.getElementById('accountName').value      = a.name;
     document.getElementById('accountBalance').value   = a.balance;
     document.getElementById('accountVisible').checked = a.visible;
   } else {
+    document.getElementById('accountKind').value      = kind === 'saving' ? 'saving' : 'everyday';
     document.getElementById('accountName').value      = '';
     document.getElementById('accountBalance').value   = '';
-    document.getElementById('accountVisible').checked = true;
+    document.getElementById('accountVisible').checked = kind !== 'saving';
   }
+  updateAccountKindUi();
   document.getElementById('accountModal').classList.add('show');
+}
+// Kontoart: Sparkonten zählen standardmässig nicht zum Gesamtguthaben auf Home
+function updateAccountKindUi() {
+  const saving = document.getElementById('accountKind').value === 'saving';
+  document.getElementById('accountSavingHint').hidden = !saving;
+  document.getElementById('accountName').placeholder = saving ? 'z.B. Sparkonto, Säule 3a' : 'z.B. Raiffeisen, Neon…';
+}
+function onAccountKindChange() {
+  if (!state.accountEditId) document.getElementById('accountVisible').checked = document.getElementById('accountKind').value !== 'saving';
+  updateAccountKindUi();
 }
 function closeAccountModal() { document.getElementById('accountModal').classList.remove('show'); state.accountEditId = null; }
 function saveAccount() {
   const name    = document.getElementById('accountName').value.trim();
   const balance = parseAmount(document.getElementById('accountBalance').value) || 0;
   const visible = document.getElementById('accountVisible').checked;
+  const kind    = document.getElementById('accountKind').value === 'saving' ? 'saving' : 'everyday';
   if (!name) { showError('Konto nicht gespeichert', 'Der Name fehlt. Gib dem Konto einen Namen, zum Beispiel UBS.', 'accountName'); return; }
   if (state.accountEditId) {
     const a = state.accounts.find(x => x.id === state.accountEditId);
-    if (a) Object.assign(a, { name, balance, visible });
+    if (a) Object.assign(a, { name, balance, visible, kind });
   } else {
-    state.accounts.push({ id: uid(), name, balance, visible });
+    state.accounts.push({ id: uid(), name, balance, visible, kind });
   }
   saveState(); renderAccountsList(); closeAccountModal();
 }
@@ -353,6 +380,9 @@ function deleteAccount(id) {
     // Überweisungen ohne gültiges Konto ergeben keinen Sinn mehr — entfernen
     state.entries = state.entries.filter(e => e.type !== 'transfer' || (e.fromAccountId !== id && e.toAccountId !== id));
     state.recurringTransfers = state.recurringTransfers.filter(r => r.fromAccountId !== id && r.toAccountId !== id);
+    // Sparziele und Schulden bleiben, verlieren aber die Verknüpfung
+    (state.goals || []).forEach(g => { if (g.accountId === id) g.accountId = ''; });
+    (state.debts || []).forEach(d => { if (d.accountId === id) d.accountId = ''; });
   }, 'Konto gelöscht', 'Überweisungen mit diesem Konto wurden auch gelöscht.');
 }
 // Beispiele für das Feld Bezeichnung, passend zur Art

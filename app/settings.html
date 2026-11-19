@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <script src="assets/js/theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
   <script src="assets/js/supabase.js"></script>
   <script>requireLogin();</script>
@@ -143,6 +144,25 @@
       </div>
     </div>
 
+    <!-- DARSTELLUNG: Hell, Dunkel oder wie das Gerät (gilt pro Gerät, siehe assets/js/theme.js) -->
+    <div class="settings-section settings-theme">
+      <div class="settings-section-header">
+        <span class="settings-section-icon"><span class="ico ico-eye_open"></span></span>
+        <div>
+          <div class="settings-section-title">Darstellung</div>
+          <div class="settings-section-sub">Gilt für dieses Gerät</div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label" for="themeSelect">Farben</label>
+        <select class="form-input form-select cat-select" id="themeSelect" onchange="spendlyTheme.set(this.value)">
+          <option value="system" data-icon="phone" data-sub="Hell oder dunkel, wie auf deinem Gerät eingestellt">Wie Gerät</option>
+          <option value="light" data-icon="" data-sub="Rosé-weisser Hintergrund">Hell</option>
+          <option value="dark" data-icon="" data-sub="Dunkler Hintergrund, schont nachts die Augen">Dunkel</option>
+        </select>
+      </div>
+    </div>
+
     <!-- RECHTLICHES -->
     <nav class="legal-links">
       <a href="impressum.html" target="_top">Impressum</a>
@@ -173,6 +193,10 @@
     <span class="nav-icon"><span class="ico ico-calendar"></span></span>
     <span class="nav-label">Kalender</span>
   </a>
+    <a class="nav-btn" href="planen.html">
+      <span class="nav-icon"><span class="ico ico-piggy"></span></span>
+      <span class="nav-label">Planen</span>
+    </a>
   <a class="nav-btn" href="analyse.html">
     <span class="nav-icon"><span class="ico ico-combo-chart"></span></span>
     <span class="nav-label">Analyse</span>
@@ -208,6 +232,13 @@
     <div class="modal-handle"></div>
     <div class="modal-title" id="accountModalTitle">Konto hinzufügen</div>
     <div class="form-group">
+      <label class="form-label" for="accountKind">Kontoart</label>
+      <select class="form-input form-select cat-select" id="accountKind" onchange="onAccountKindChange()">
+        <option value="everyday" data-icon="bank" data-sub="Lohnkonto, Karte, Bargeld">Alltagskonto</option>
+        <option value="saving" data-icon="piggy" data-sub="Sparkonto, Säule 3a, Anlagen">Sparkonto</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label class="form-label" for="accountName">Kontoname</label>
       <input class="form-input" type="text" id="accountName" data-required="value" data-error="Der Name fehlt. Gib dem Konto einen Namen, zum Beispiel UBS." maxlength="40" placeholder="z.B. Raiffeisen, Neon…">
     </div>
@@ -225,6 +256,7 @@
         <span class="toggle-track"></span>
       </label>
     </div>
+    <div class="form-hint" id="accountSavingHint" hidden><span class="ico ico-piggy" aria-hidden="true"></span>Unter Planen kannst du diesem Sparkonto Sparziele zuteilen und siehst, wie viel noch frei ist.</div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeAccountModal()">Abbrechen</button>
       <button class="btn-save" onclick="saveAccount()">Speichern</button>

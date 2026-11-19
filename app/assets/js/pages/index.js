@@ -363,6 +363,8 @@ function setEntryType(type) {
   const catGroup = document.getElementById('entryCategoryGroup');
   const accGroup = document.getElementById('accountSelectGroup');
   const transferGroup = document.getElementById('transferAccountsGroup');
+  const tagsGroup = document.getElementById('entryTagsGroup');
+  if (tagsGroup) tagsGroup.style.display = type === 'transfer' ? 'none' : '';
   if (type === 'transfer') {
     if (catGroup) catGroup.style.display = 'none';
     if (accGroup) accGroup.style.display = 'none';
@@ -430,6 +432,7 @@ function openEntryModal(editId = null) {
     document.getElementById('entryAmount').value = e.amount;
     document.getElementById('entryNote').value   = e.note || '';
     document.getElementById('entryDate').value   = e.date;
+    setEntryTags(e.tags || []);
     document.getElementById('typeToggle').style.display = 'none';
     if (e.type === 'transfer') {
       populateTransferAccountSelects(e.fromAccountId, e.toAccountId);
@@ -446,6 +449,7 @@ function openEntryModal(editId = null) {
     document.getElementById('entryAmount').value = '';
     document.getElementById('entryNote').value   = '';
     document.getElementById('entryDate').valueAsDate = new Date();
+    setEntryTags([]);
     document.getElementById('typeToggle').style.display = '';
     populateAccountSelect(defaultAccountId());
   }
@@ -486,6 +490,8 @@ function saveEntry() {
 
   const category  = document.getElementById('entryCategory').value;
   const accountId = document.getElementById('entryAccount').value;
+  commitTagInput();
+  const tags = entryTags.slice();
   if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'entryAmount'); return; }
   if (!category) { showError('Nicht gespeichert', 'Die Kategorie fehlt. Wähle eine Kategorie aus.', 'entryCategory'); return; }
   if (!accountId && state.accounts.length > 0) { showError('Nicht gespeichert', 'Das Konto fehlt. Wähle ein Konto aus.', 'entryAccount'); return; }
@@ -501,12 +507,13 @@ function saveEntry() {
         type = document.getElementById('accountOnlyCheck')?.checked ? 'account-only' : 'expense';
       }
       Object.assign(e, { type, amount, category, note, date, accountId });
+      if (tags.length) e.tags = tags; else delete e.tags;
       applyAccountDelta(accountId, amount, e.type);
     }
   } else {
     const aoChecked = document.getElementById('accountOnlyCheck')?.checked;
     const finalType = (state.entryType === 'expense' && aoChecked) ? 'account-only' : state.entryType;
-    state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId });
+    state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId, ...(tags.length ? { tags } : {}) });
     rememberEntryPrefs(state.entryType === 'income' ? 'income' : 'expense', category, accountId);
     applyAccountDelta(accountId, amount, finalType);
   }
@@ -607,6 +614,110 @@ function totalExpenses() {
   const nowKey = monthKey(new Date());
   return state.entries.filter(e => e.type==='expense' && e.date.slice(0, 7) === nowKey).reduce((s,e) => s+e.amount, 0);
 }
+
+// ── TAGS IM EINTRAG: Chips + Vorschläge aus den schon benutzten Tags
+let entryTags = [];
+let tagActive = -1;
+function setEntryTags(list) {
+  entryTags = (list || []).slice();
+  const inp = document.getElementById('entryTagInput');
+  if (inp) inp.value = '';
+  renderEntryTags(); hideTagSugg();
+}
+function renderEntryTags() {
+  const el = document.getElementById('entryTagChips');
+  if (!el) return;
+  el.innerHTML = entryTags.map((t, i) =>
+    `<span class="tag-chip tag-chip-lg">#${esc(t)}<button type="button" class="tag-chip-x" onclick="removeEntryTag(${i})" aria-label="Tag ${esc(t)} entfernen"><span class="ico ico-close"></span></button></span>`).join('');
+}
+function addEntryTag(raw) {
+  let t = normTag(raw);
+  if (!t) return;
+  // Gleicher Tag in anderer Schreibweise → bestehende Schreibweise übernehmen
+  const known = allTags().find(x => x.name.toLowerCase() === t.toLowerCase());
+  if (known) t = known.name;
+  if (!entryTags.some(x => x.toLowerCase() === t.toLowerCase())) entryTags.push(t);
+  renderEntryTags();
+}
+function removeEntryTag(i) { entryTags.splice(i, 1); renderEntryTags(); document.getElementById('entryTagInput').focus(); showTagSugg(); }
+function commitTagInput() {
+  const inp = document.getElementById('entryTagInput');
+  if (inp && normTag(inp.value)) { addEntryTag(inp.value); inp.value = ''; }
+}
+function tagSuggestions(q) {
+  const taken = entryTags.map(t => t.toLowerCase());
+  const all = allTags().filter(t => !taken.includes(t.name.toLowerCase()));
+  if (!q) return all.slice(0, 5);
+  const ql = q.toLowerCase();
+  const starts = all.filter(t => t.name.toLowerCase().startsWith(ql));
+  const inside = all.filter(t => !t.name.toLowerCase().startsWith(ql) && t.name.toLowerCase().includes(ql));
+  return [...starts, ...inside].slice(0, 5);
+}
+function showTagSugg() {
+  const inp = document.getElementById('entryTagInput');
+  const box = document.getElementById('entryTagSugg');
+  const q = normTag(inp.value);
+  const list = tagSuggestions(q);
+  const exact = q && allTags().some(t => t.name.toLowerCase() === q.toLowerCase());
+  const items = list.map(t => {
+    const i = t.name.toLowerCase().indexOf(q.toLowerCase());
+    const name = q && i >= 0 ? esc(t.name.slice(0, i)) + '<mark>' + esc(t.name.slice(i, i + q.length)) + '</mark>' + esc(t.name.slice(i + q.length)) : esc(t.name);
+    return { value: t.name, html: `<span>#${name}</span><span class="tag-sugg-n">${t.n === 1 ? '1 Eintrag' : t.n + ' Einträge'}</span>` };
+  });
+  if (q && !exact && !entryTags.some(t => t.toLowerCase() === q.toLowerCase())) items.push({ value: q, html: `<span>Neuer Tag «#${esc(q)}»</span><span class="ico ico-plus" aria-hidden="true"></span>`, isNew: true });
+  if (!items.length) { hideTagSugg(); return; }
+  box.innerHTML = (!q ? '<div class="tag-sugg-head">Zuletzt verwendet</div>' : '') + items.map((it, i) =>
+    `<div class="tag-sugg-item${it.isNew ? ' is-new' : ''}" role="option" id="entryTagOpt${i}" data-value="${esc(it.value)}">${it.html}</div>`).join('');
+  box.hidden = false;
+  inp.setAttribute('aria-expanded', 'true');
+  tagActive = q ? 0 : -1;
+  markTagActive();
+}
+function hideTagSugg() {
+  const box = document.getElementById('entryTagSugg');
+  if (box) box.hidden = true;
+  document.getElementById('entryTagInput')?.setAttribute('aria-expanded', 'false');
+  tagActive = -1;
+}
+function markTagActive() {
+  const items = [...document.querySelectorAll('#entryTagSugg .tag-sugg-item')];
+  items.forEach((el, i) => el.classList.toggle('active', i === tagActive));
+  const inp = document.getElementById('entryTagInput');
+  if (items[tagActive]) inp.setAttribute('aria-activedescendant', items[tagActive].id); else inp.removeAttribute('aria-activedescendant');
+}
+function initTagInput() {
+  const inp = document.getElementById('entryTagInput');
+  const box = document.getElementById('entryTagSugg');
+  if (!inp) return;
+  document.getElementById('entryTagBox').addEventListener('click', e => { if (!e.target.closest('.tag-chip-x')) inp.focus(); });
+  inp.addEventListener('focus', showTagSugg);
+  inp.addEventListener('input', () => {
+    // Komma oder Leerzeichen am Ende schliesst den Tag ab
+    if (/[,;]$/.test(inp.value)) { addEntryTag(inp.value.slice(0, -1)); inp.value = ''; }
+    showTagSugg();
+  });
+  inp.addEventListener('keydown', e => {
+    const items = [...box.querySelectorAll('.tag-sugg-item')];
+    if (e.key === 'ArrowDown' && !box.hidden) { e.preventDefault(); tagActive = Math.min(items.length - 1, tagActive + 1); markTagActive(); }
+    else if (e.key === 'ArrowUp' && !box.hidden) { e.preventDefault(); tagActive = Math.max(0, tagActive - 1); markTagActive(); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      const it = items[tagActive];
+      if (it && !box.hidden) addEntryTag(it.dataset.value); else commitTagInput();
+      inp.value = ''; showTagSugg();
+    }
+    else if (e.key === 'Backspace' && !inp.value && entryTags.length) { entryTags.pop(); renderEntryTags(); showTagSugg(); }
+    else if (e.key === 'Escape' && !box.hidden) { e.stopPropagation(); hideTagSugg(); }
+  });
+  inp.addEventListener('blur', () => { commitTagInput(); hideTagSugg(); });
+  box.addEventListener('mousedown', e => e.preventDefault()); // Fokus bleibt im Feld
+  box.addEventListener('click', e => {
+    const it = e.target.closest('.tag-sugg-item');
+    if (!it) return;
+    addEntryTag(it.dataset.value); inp.value = ''; inp.focus(); showTagSugg();
+  });
+}
+initTagInput();
 
 // ── START
 registerPageRender(render);

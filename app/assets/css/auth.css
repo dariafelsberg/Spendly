@@ -80,7 +80,7 @@
 .auth-secondary {
   width: 100%;
   padding: 10.5px 12px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
   border-radius: var(--radius-sm);
   background: var(--card);
   color: var(--text);
@@ -99,7 +99,7 @@
     border-color: var(--primary);
     color: var(--primary-dark);
   }
-  .auth-back:hover { background: var(--card-soft); }
+  .auth-back:hover { background: var(--bg); }
 }
 
 .auth-inline-link {
@@ -117,7 +117,7 @@
 
 .auth-tabs {
   display: flex;
-  background: var(--card-soft);
+  background: var(--bg);
   border-radius: var(--radius-sm);
   padding: 3px;
   gap: 3px;
@@ -139,7 +139,7 @@
 }
 
 .auth-tab.active {
-  background: #fff;
+  background: var(--card);
   color: var(--primary-dark);
   box-shadow: var(--shadow-raised);
 }
@@ -172,7 +172,7 @@
 }
 
 .pw-toggle:active {
-  background: var(--card-soft);
+  background: var(--bg);
 }
 
 /* Farben aus dem Corporate Design: der erste Teil ist immer volles Spendly-Pink,
@@ -197,7 +197,7 @@
   position: relative;
   height: 6px;
   border-radius: 999px;
-  background: var(--border);
+  background: var(--primary-light);
 }
 .pw-bars i::after {
   content: "";
@@ -373,7 +373,7 @@
   border: none;
   border-radius: var(--radius-sm);
   padding: 8px 16px;
-  background: var(--card-soft); /* wie "Abbrechen": Abmelden löscht nichts, darum nicht rot */
+  background: var(--bg); /* wie "Abbrechen": Abmelden löscht nichts, darum nicht rot */
   color: var(--muted);
   font-family: inherit;
   font-weight: 600;
@@ -383,7 +383,7 @@
 }
 
 .auth-logout-btn:active {
-  background: var(--border);
+  background: var(--primary-light);
 }
 
 /* Zeile "Account bearbeiten" in den Einstellungen */
@@ -399,7 +399,7 @@
   padding: var(--sp-sm);
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--card-soft);
+  background: var(--bg);
   color: var(--text);
   font-family: inherit;
   font-size: var(--fs-body);
@@ -428,7 +428,7 @@
 /* Auf dem hellen Seitenhintergrund weiss wie der Kasten darüber */
 .account-main .auth-edit-btn {
   background: var(--card);
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
 }
 .account-main .auth-edit-btn:active {
   background: var(--primary-light);
@@ -447,7 +447,7 @@
   text-decoration: none;
 }
 @media (hover: hover) {
-  .account-back:hover { background: var(--card-soft); }
+  .account-back:hover { background: var(--bg); }
 }
 /* Seitenleiste auf der Account-Seite nur auf dem Computer */
 @media (max-width: 1023px) {
@@ -477,7 +477,7 @@
 }
 .profile-fields {
   background: var(--card);
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -488,10 +488,10 @@
   padding: 13px var(--sp-md);
 }
 .profile-field + .profile-field {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--primary-light);
 }
 .profile-field:focus-within {
-  background: var(--card-soft);
+  background: var(--bg);
 }
 /* Stift: zeigt, dass das Feld geändert werden kann */
 .profile-field .ico {
@@ -531,7 +531,7 @@
   width: 100%;
   margin-top: var(--sp-sm);
   padding: 12px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--danger-text); /* löscht alles: rote Schrift als Warnung */
@@ -623,7 +623,7 @@
   margin-top: 4px;
   border: 2px solid transparent;
   border-radius: 8px;
-  background: var(--card-soft);
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -681,7 +681,7 @@
   background: var(--primary-light);
 }
 .hero-circle-lg { width: 300px; height: 300px; left: 50%; top: 40px; transform: translateX(-50%); }
-.hero-circle-sm { width: 90px; height: 90px; right: 6%; top: 18px; background: var(--card-soft); }
+.hero-circle-sm { width: 90px; height: 90px; right: 6%; top: 18px; background: var(--bg); }
 
 /* Handy */
 .hero-phone {
@@ -693,7 +693,7 @@
   transform: translateX(-50%);
   padding: 8px;
   border-radius: 34px;
-  background: var(--text);
+  background: var(--ink);
   box-shadow: var(--shadow-float);
 }
 .hp-notch {
@@ -705,7 +705,7 @@
   height: 14px;
   transform: translateX(-50%);
   border-radius: 999px;
-  background: var(--text);
+  background: var(--ink);
 }
 .hero-phone > :not(.hp-notch) { position: relative; }
 .hp-top {
@@ -747,7 +747,7 @@
 }
 .hp-card-label { font-size: 8px; color: var(--muted); }
 .hp-card-value { font-size: 15px; font-weight: 700; color: var(--primary-dark); }
-.hp-bar { height: 5px; border-radius: 999px; background: var(--donut-track); overflow: hidden; }
+.hp-bar { height: 5px; border-radius: 999px; background: var(--surface); overflow: hidden; }
 .hp-bar i { display: block; width: 62%; height: 100%; background: var(--primary); border-radius: inherit; }
 .hp-list { display: flex; flex-direction: column; padding: 4px 0; }
 .hp-row {
@@ -758,7 +758,7 @@
   font-size: 9px;
   color: var(--text);
 }
-.hp-row + .hp-row { border-top: 1px solid var(--border); }
+.hp-row + .hp-row { border-top: 1px solid var(--primary-light); }
 .hp-row i { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .hp-row b { margin-left: auto; font-weight: 700; color: var(--danger-text); }
 /* Unterer Teil des Handys wird vom Bildrand abgeschnitten: Bildschirm-Hintergrund */
@@ -818,7 +818,7 @@
   z-index: 4;
   left: 0; right: 0; bottom: 0;
   height: 56px;
-  background: linear-gradient(to bottom, rgba(253, 246, 250, 0), var(--bg));
+  background: linear-gradient(to bottom, transparent, var(--bg));
 }
 
 /* Computer und Tablet quer: Bild links, Formular rechts */
@@ -863,11 +863,11 @@
   border-radius: 999px;
   background: var(--primary-light);
 }
-.hero-bar-1 { left: -40px;  top: 70px;  width: 150px; background: var(--card-soft); }
+.hero-bar-1 { left: -40px;  top: 70px;  width: 150px; background: var(--bg); }
 .hero-bar-2 { right: -50px; top: 104px; width: 190px; }
 .hero-bar-3 { left: -60px;  top: 196px; width: 170px; }
-.hero-bar-4 { right: -30px; top: 282px; width: 140px; background: var(--card-soft); }
-.hero-bar-5 { left: -30px;  top: 330px; width: 120px; background: var(--card-soft); }
+.hero-bar-4 { right: -30px; top: 282px; width: 140px; background: var(--bg); }
+.hero-bar-5 { left: -30px;  top: 330px; width: 120px; background: var(--bg); }
 @media (min-width: 900px) {
   .hero-bar { display: none; }
 }
@@ -984,7 +984,7 @@
   width: 28px;
   height: 6px;
   border-radius: 999px;
-  background: var(--border);
+  background: var(--primary-light);
 }
 .onb-progress i.on { background: var(--primary); }
 
@@ -1039,7 +1039,7 @@
   align-items: center;
   gap: var(--sp-sm);
   padding: var(--sp-sm) var(--sp-md);
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
   border-radius: var(--radius-card);
   background: var(--card);
   cursor: pointer;
@@ -1058,7 +1058,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius);
-  background: var(--card-soft);
+  background: var(--bg);
   color: var(--primary-dark);
   font-size: var(--fs-lg);
 }
@@ -1092,7 +1092,7 @@
   padding: 8px;
   margin: var(--sp-lg) 0;
   border-radius: 34px;
-  background: var(--text);
+  background: var(--ink);
   box-shadow: var(--shadow-float);
 }
 .onb-phone .hp-notch { top: 16px; }
@@ -1143,7 +1143,7 @@
     bottom: -14px;
     height: 14px;
     border-radius: 2px 2px 14px 14px;
-    background: var(--text);
+    background: var(--ink);
     box-shadow: var(--shadow-float);
   }
 }

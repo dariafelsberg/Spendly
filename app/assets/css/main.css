@@ -4,10 +4,9 @@
 :root {
   --bg: #fdf6fa;
   --card: #fff;
-  --card-soft: #fff3f8;
   --primary: #e91e63;
   --primary-dark: #c2185b;
-  --primary-light: #ffd8e7;
+  --primary-light: #ffd8e7;   /* auch Linien und Rahmen (früher --border) */
   /* Signalfarben für Flächen, Punkte, Balken und Diagramme */
   --income: #16a34a;
   --danger: #ef4444;
@@ -19,11 +18,8 @@
   --transfer-text: #4f5fd6;
   --text: #2d1b24;
   --muted: #7a5c69;
-  --border: #f5d7e3;
   --track: #ddd;              /* Schalter ausgeschaltet */
-  --donut-track: #f0e8f0;     /* leerer Ring im Donut */
-  --skeleton: #f3e3ec;        /* Platzhalter beim Laden */
-  --bg-desktop: #f7edf3;      /* Seitenhintergrund ab 1024px */
+  --surface: #f7edf3;         /* Rosé-Fläche: Seitenhintergrund ab 1024px, leerer Donut-Ring, Lade-Platzhalter */
   --income-light: #d7ffe6;
   --warning-text: #b45309;    /* "mittel" bei der Passwortstärke, 5:1 auf Weiss */
   /* Radien: Buttons/Felder, Listenzeilen/Chips, Karten/Fenster (radius-karte im CD-Manual) */
@@ -52,6 +48,37 @@
   --fs-2xl: 1.875rem;    /* 30px  Seitentitel */
   --fs-3xl: 2.5rem;      /* 40px  Gesamtguthaben (Handy) */
   --fs-hero: 3rem;       /* 48px  Gesamtguthaben (ab 480px) */
+  /* Rollen, die im Dunkelmodus einen eigenen Wert brauchen */
+  --header: var(--primary);   /* Kopfzeile */
+  --btn: var(--primary-dark); /* Fläche von Buttons mit weisser Schrift */
+  --ink: #2d1b24;             /* dunkle Fläche: Meldungen (Toasts), Hinweise */
+  color-scheme: light;
+}
+
+/* ── DUNKELMODUS: gleiche Variablen, dunkle Werte. assets/js/theme.js setzt
+   data-theme="dark" auf <html> (Einstellung «Darstellung», Standard: wie Gerät). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #160d12;
+  --card: #22151c;
+  --surface: #1d1218;
+  --primary-light: #4a1f33;   /* aktive Fläche und Linien */
+  --primary-dark: #ff6fa0;    /* Pink als Schrift: 6.9:1 auf Karte */
+  --btn: #d81b60;             /* Weiss darauf 4.8:1 */
+  --header: #8f1240;
+  --ink: #3a2630;
+  --text: #f6e9ef;
+  --muted: #b697a6;
+  --track: #4a3a42;
+  --income-text: #4ade80;
+  --danger-text: #f87171;
+  --transfer-text: #a5b4ff;
+  --warning-text: #fbbf24;
+  --danger-light: #3d1518;
+  --income-light: #123222;
+  --shadow-raised: 0 1px 3px rgba(0, 0, 0, .5);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, .55);
+  --shadow-bar: 0 -1px 6px rgba(0, 0, 0, .4);
 }
 
 /* ── RESET */
@@ -128,7 +155,7 @@ button {
 /* ── TOPBAR */
 .topbar,
 .settings-topbar {
-  background: var(--primary);
+  background: var(--header);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -204,7 +231,7 @@ button {
 }
 .view-toggle-btn.active {
   background: #fff;
-  color: var(--primary-dark);
+  color: #c2185b; /* bleibt auf Weiss, auch im Dunkelmodus */
   box-shadow: var(--shadow-raised);
 }
 
@@ -307,7 +334,7 @@ button {
   gap: 16px;
   padding: 20px;
   border-radius: var(--radius);
-  background: var(--card-soft);
+  background: var(--bg);
   transition: background .15s;
 }
 .app-menu-item:active {
@@ -321,7 +348,7 @@ button {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -431,7 +458,7 @@ button {
   height: 44px;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--card-soft);
+  background: var(--bg);
   cursor: pointer;
   font-size: .9rem;
   display: flex;
@@ -527,7 +554,7 @@ button {
   cursor: pointer;
 }
 .empty-cta:active { opacity: .8; }
-@media (hover: hover) { .empty-cta:hover { background: var(--border); } }
+@media (hover: hover) { .empty-cta:hover { background: var(--primary-light); } }
 .empty-tx {
   text-align: center;
   padding: 16px;
@@ -540,7 +567,7 @@ button {
   gap: 12px;
   padding: 12px 12px;
   border-radius: var(--radius);
-  background: var(--card-soft);
+  background: var(--bg);
   margin-bottom: 8px;
   transition: background .15s;
 }
@@ -661,7 +688,7 @@ button {
   width: 100%;
   padding: var(--sp-sm);
   border-radius: var(--radius-card);
-  background: var(--text);
+  background: var(--ink);
   color: #fff;
   box-shadow: var(--shadow-float);
   pointer-events: auto;
@@ -703,7 +730,7 @@ button {
 }
 .toast-success .toast-icon { color: #86efac; }                                  /* Grün auf dunkel */
 .toast-error .toast-icon { background: var(--danger-text); color: #fff; }
-.toast-offline .toast-icon { background: var(--primary-dark); color: #fff; }
+.toast-offline .toast-icon { background: var(--btn); color: #fff; }
 .toast-body {
   flex: 1;
   min-width: 0;
@@ -727,7 +754,7 @@ button {
   border: none;
   border-radius: var(--radius-sm);
   background: #fff;
-  color: var(--text);
+  color: #2d1b24;
   font-family: inherit;
   font-size: var(--fs-note);
   font-weight: 700;
@@ -778,7 +805,7 @@ button {
   right: 0;
   height: var(--nav-h);
   background: var(--card);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--primary-light);
   display: flex;
   z-index: 50;
   box-shadow: var(--shadow-bar);
@@ -923,7 +950,7 @@ button {
 .modal-handle {
   width: 40px;
   height: 4px;
-  background: var(--border);
+  background: var(--primary-light);
   border-radius: 999px;
   margin: 0 auto 20px;
 }
@@ -950,12 +977,12 @@ button {
 .form-input {
   width: 100%;
   padding: 12px 12px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
   border-radius: var(--radius-sm);
   font-family: inherit;
   font-size: var(--fs-body);
   color: var(--text);
-  background: #fff;
+  background: var(--card);
   outline: none;
   transition: border-color .15s;
 }
@@ -1009,13 +1036,15 @@ button {
 }
 .cat-select-ico .ico { width: 22px; height: 22px; }
 .cat-select-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cat-select-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.cat-select-sub { font-size: var(--fs-note); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cat-select-list {
   position: fixed;
   z-index: 10001;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--card, #fff);
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--primary-light);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-float);
   padding: 4px;
@@ -1030,10 +1059,10 @@ button {
   color: var(--text);
   cursor: pointer;
 }
-.cat-select-item.active { background: var(--card-soft); }
+.cat-select-item.active { background: var(--bg); }
 .cat-select-item.selected { font-weight: 600; color: var(--primary-dark); }
 @media (hover: hover) {
-  .cat-select-item:hover { background: var(--card-soft); }
+  .cat-select-item:hover { background: var(--bg); }
 }
 .form-row {
   display: grid;
@@ -1050,7 +1079,7 @@ button {
   border: none;
   border-radius: var(--radius-sm);
   padding: 12px;
-  background: var(--card-soft);
+  background: var(--bg);
   color: var(--muted);
   font-family: inherit;
   font-weight: 600;
@@ -1059,14 +1088,14 @@ button {
   transition: background .15s;
 }
 .btn-cancel:active {
-  background: var(--border);
+  background: var(--primary-light);
 }
 .btn-save {
   flex: 2;
   border: none;
   border-radius: var(--radius-sm);
   padding: 12px;
-  background: var(--primary-dark); /* Weiss auf Pink-dunkel 5.9:1, auf Spendly-Pink nur 4.35:1 */
+  background: var(--btn); /* Weiss auf Pink-dunkel 5.9:1, auf Spendly-Pink nur 4.35:1 */
   color: #fff;
   font-family: inherit;
   font-weight: 700;
@@ -1104,7 +1133,7 @@ button {
   .app-shell {
       width: 100%;
       margin: 0 auto;
-      box-shadow: 0 0 0 1px var(--border);
+      box-shadow: 0 0 0 1px var(--primary-light);
       border-radius: 0 0 var(--radius-card) var(--radius-card);
       min-height: 100vh;
       display: grid;
@@ -1154,14 +1183,14 @@ button {
 /* ── BREAKPOINT ≥1024px */
 @media (min-width:1024px) {
   body {
-      background: var(--bg-desktop);
+      background: var(--surface);
     }
   .app-shell {
       width: 100%;
       margin: auto 0;
       border-radius: var(--radius-card);
       min-height: calc(100vh - 64px);
-      box-shadow: 0 0 0 1px var(--border);
+      box-shadow: 0 0 0 1px var(--primary-light);
       overflow: hidden;
     }
   .topbar,
@@ -1204,7 +1233,7 @@ button {
   height: 44px;
   border: none;
   border-radius: var(--radius-sm);
-  background: var(--card-soft);
+  background: var(--bg);
   color: var(--primary-dark);
   font-size: 1.3rem;
   font-weight: 700;
@@ -1456,7 +1485,7 @@ button {
     background: var(--danger-light);
   }
   .btn-cancel:hover {
-    background: var(--border);
+    background: var(--primary-light);
   }
   .btn-save:hover {
     opacity: .88;
@@ -1500,7 +1529,7 @@ button {
     gap: 4px;
     padding: 28px 16px;
     border-top: none;
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--primary-light);
     border-radius: 0;
     box-shadow: none;
     overflow: visible;
@@ -1537,7 +1566,7 @@ button {
 }
 @media (min-width: 1024px) and (hover: hover) {
   html:not(.embed-mode) .nav-btn:not(.active):hover {
-    background: var(--card-soft);
+    background: var(--bg);
     color: var(--text);
   }
 }
@@ -1560,6 +1589,113 @@ button {
     display: none;
   }
 }
+
+/* ── HINWEIS UNTER EINEM FORMULAR (z.B. Sparkonto) */
+.form-hint {
+  display: flex;
+  gap: var(--sp-xs);
+  align-items: flex-start;
+  padding: var(--sp-sm) 14px;
+  margin-bottom: var(--sp-md);
+  border: 1px solid var(--primary-light);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-size: var(--fs-note);
+  line-height: 1.45;
+  color: var(--muted);
+}
+.form-hint .ico { color: var(--primary-dark); margin-top: 1px; }
+
+/* ── ZWISCHENTITEL IN LISTEN (z.B. Konten: Alltag / Sparen) */
+.settings-subhead {
+  font-size: var(--fs-note);
+  font-weight: 600;
+  color: var(--muted);
+  margin: var(--sp-sm) 2px var(--sp-xs);
+}
+.settings-subhead:first-child { margin-top: 0; }
+
+/* ── TAGS */
+.tx-tags { display: inline-flex; flex-wrap: wrap; gap: 4px; vertical-align: middle; }
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--primary-light);
+  background: var(--bg);
+  color: var(--primary-dark);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Eingabefeld mit Chips */
+.tx-info .tx-tags { display: flex; margin-top: 4px; }
+.tag-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 7px 10px;
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  cursor: text;
+}
+.tag-input:focus-within { border-color: var(--primary-dark); }
+.tag-input-chips { display: contents; }
+.tag-input input {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-body);
+  color: var(--text);
+  padding: 4px 2px;
+}
+.tag-input input::placeholder { color: var(--muted); opacity: .8; }
+.tag-chip-lg { font-size: var(--fs-note); padding: 4px 4px 4px 10px; gap: 2px; }
+.tag-chip-x {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.tag-chip-x .ico { width: 12px; height: 12px; }
+.tag-sugg {
+  margin-top: 6px;
+  border: 1px solid var(--primary-light);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+}
+.tag-sugg-head { padding: 8px 14px 4px; font-size: var(--fs-label); color: var(--muted); font-weight: 600; }
+.tag-sugg-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--primary-light);
+  font-size: var(--fs-body);
+  cursor: pointer;
+}
+.tag-sugg-head + .tag-sugg-item, .tag-sugg-item:first-child { border-top: none; }
+.tag-sugg-item mark { background: none; color: var(--primary-dark); font-weight: 700; }
+.tag-sugg-item.active { background: var(--bg); }
+.tag-sugg-item.is-new { color: var(--primary-dark); font-weight: 600; }
+.tag-sugg-n { font-size: var(--fs-note); color: var(--muted); white-space: nowrap; }
+@media (hover: hover) { .tag-sugg-item:hover { background: var(--bg); } }
 
 /* hidden-Attribut gewinnt immer, auch gegen display aus einer Klasse
    (sonst bleiben z. B. "Budget festlegen" oder die Kategorien sichtbar) */

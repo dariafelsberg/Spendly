@@ -65,7 +65,7 @@ html.embed-modal-open body {
   align-items: center;
   gap: 12px;
   padding: 12px 12px;
-  background: var(--card-soft);
+  background: var(--bg);
   border-radius: var(--radius);
 }
 .settings-item-info {
@@ -96,7 +96,7 @@ html.embed-modal-open body {
   width: 100%;
   margin-top: 12px;
   padding: 12px;
-  border: 1.5px dashed var(--border);
+  border: 1.5px dashed var(--primary-light);
   border-radius: var(--radius);
   background: none;
   color: var(--primary-dark);
@@ -259,7 +259,7 @@ html.embed-modal-open body {
     gap: 8px;
     width: 220px;
     padding: 0 12px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--primary-light);
     border-radius: var(--radius-sm);
     background: var(--card);
   }
@@ -296,7 +296,7 @@ html.embed-modal-open body {
   }
   html:not(.embed-mode) .settings-accounts .acc-head {
     padding: 0 4px 8px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--primary-light);
     font-size: var(--fs-note);
     color: var(--muted);
   }
@@ -307,7 +307,7 @@ html.embed-modal-open body {
     background: transparent;
     border-radius: 0;
     padding: 12px 4px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--primary-light);
   }
   html:not(.embed-mode) .acc-row:last-child,
   html:not(.embed-mode) .rec-row:last-child { border-bottom: 0; }
@@ -416,7 +416,7 @@ html.embed-modal-open body {
   }
   html:not(.embed-mode) .acc-row:hover,
   html:not(.embed-mode) .rec-row:hover {
-    background: var(--card-soft);
+    background: var(--bg);
   }
 }
 /* Geräte ohne Maus (grosses iPad): Knöpfe immer sichtbar */
@@ -436,7 +436,7 @@ html.embed-modal-open body {
     grid-template-columns: 24px minmax(0, 1fr) 120px 70px 160px 88px;
     column-gap: 16px;
     padding: 0 4px 8px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--primary-light);
     font-size: var(--fs-note);
     color: var(--muted);
   }
@@ -457,7 +457,7 @@ html.embed-modal-open body {
 /* Reiter wie die Auswahl Ausgabe/Einnahme/Überweisung im Eintrag-Fenster */
 @media (min-width: 1024px) {
   html:not(.embed-mode) .settings-recurring .rec-tabs {
-    background: var(--card-soft);
+    background: var(--bg);
     border-radius: var(--radius-sm);
     padding: 3px;
     gap: 3px;
@@ -501,7 +501,7 @@ html.embed-modal-open body {
     gap: 8px;
     width: 100%;
     padding: 0 12px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--primary-light);
     border-radius: var(--radius-sm);
     background: var(--card);
   }
@@ -527,7 +527,7 @@ html.embed-modal-open body {
     background: transparent;
     border-radius: 0;
     padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--primary-light);
   }
   .acc-row:last-child,
   .rec-row:last-child { border-bottom: 0; }
@@ -554,7 +554,7 @@ html.embed-modal-open body {
     gap: 3px;
     padding: 3px;
     margin-bottom: 8px;
-    background: var(--card-soft);
+    background: var(--bg);
     border-radius: var(--radius-sm);
   }
   .rec-tab {

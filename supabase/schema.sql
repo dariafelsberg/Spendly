@@ -60,7 +60,8 @@ begin
    where key = any (array[
      'balance', 'budget', 'entries', 'accounts',
      'recurringIncome', 'recurringExpense', 'recurringTransfers',
-     'appliedRecurringMonths', 'customExpenseCats', 'customIncomeCats'
+     'appliedRecurringMonths', 'customExpenseCats', 'customIncomeCats',
+     'goals', 'debts'
    ]);
 
   insert into public.user_data as u (user_id, payload, updated_at)

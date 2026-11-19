@@ -1,0 +1,313 @@
+/* ==========================================================
+ * pages/planen.css – Planen: Netto-Vermögen, Sparkonten, Sparziele, Schulden
+ * Ruhige Darstellung: grosse Serif-Zahlen, dünne Balken, Listen statt Kreise.
+ * Nur Variablen aus main.css, darum hell und dunkel ohne Extra-Regeln.
+ ========================================================== */
+
+.planen-main {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: calc(var(--nav-h) + var(--sp-xl));
+}
+
+/* ── ZAHLEN UND TEXTE */
+.pl-label {
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+.pl-hero {
+  font-family: 'DM Serif Display', serif;
+  font-size: var(--fs-3xl);
+  line-height: 1.1;
+  margin: 2px 0 var(--sp-sm);
+  font-variant-numeric: tabular-nums;
+}
+.pl-sub-lg {
+  color: var(--muted);
+  font-size: var(--fs-note);
+  margin: calc(var(--sp-xs) * -1) 0 var(--sp-md);
+}
+.pl-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  margin: var(--sp-sm) 0 0;
+}
+.pl-ok { color: var(--income-text); font-weight: 700; }
+.pl-pos { color: var(--income-text); }
+.pl-neg { color: var(--danger-text); }
+
+/* ── NETTO-VERMÖGEN */
+.pl-net { margin-bottom: var(--sp-lg); }
+.pl-stack,
+.pl-alloc {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.pl-stack span,
+.pl-alloc span {
+  display: block;
+  height: 100%;
+  min-width: 0;
+}
+.pl-stack span:first-child,
+.pl-alloc span:first-child { border-radius: 999px 0 0 999px; }
+.pl-stack span:last-child,
+.pl-alloc span:last-child { border-radius: 0 999px 999px 0; }
+.pl-alloc { height: 16px; margin-bottom: var(--sp-xs); }
+.pl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2xs) var(--sp-md);
+  margin-top: var(--sp-xs);
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+.pl-legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+/* ── ABSCHNITTE */
+.pl-section { margin: var(--sp-xl) 0 0; }
+.pl-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-sm);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  margin: 0 0 var(--sp-sm);
+}
+.pl-h3 {
+  font-size: var(--fs-note);
+  font-weight: 600;
+  color: var(--muted);
+  margin: var(--sp-md) 2px var(--sp-xs);
+}
+.pl-h-link {
+  border: none;
+  background: none;
+  padding: 6px 0 6px var(--sp-sm);
+  margin: -6px 0;
+  font: inherit;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  color: var(--primary-dark);
+  cursor: pointer;
+}
+.pl-empty {
+  font-size: var(--fs-note);
+  color: var(--muted);
+  line-height: 1.5;
+  padding: var(--sp-md);
+  border: 1.5px dashed var(--primary-light);
+  border-radius: var(--radius);
+  margin: 0;
+}
+
+/* ── LISTEN */
+.pl-list {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  padding: 2px var(--sp-md);
+}
+.pl-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  border-bottom: 1px solid var(--primary-light);
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+.pl-row:last-child { border-bottom: none; }
+button.pl-row, a.pl-row { cursor: pointer; }
+button.pl-row:active, a.pl-row:active { opacity: .7; }
+.pl-goal { flex-direction: column; align-items: stretch; gap: 10px; }
+.pl-row-top { display: flex; align-items: center; gap: var(--sp-sm); }
+.pl-row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.pl-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl-sub { font-size: var(--fs-note); color: var(--muted); }
+.pl-amt {
+  margin-left: auto;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pl-amt small {
+  display: block;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--muted);
+}
+.pl-chev { color: var(--muted); font-size: .9rem; flex-shrink: 0; }
+.pl-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.pl-swatch-free { background: var(--surface); box-shadow: inset 0 0 0 1px var(--primary-light); }
+
+/* ── DÜNNE BALKEN */
+.pl-bar {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.pl-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+}
+.pl-bar-paid > span { background: var(--income); }
+.pl-bar-lg { height: 10px; margin-bottom: var(--sp-md); }
+
+/* ── SCHULDEN-VERLAUF */
+.pl-chart { margin-bottom: var(--sp-sm); height: auto; }
+.pl-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--sp-sm);
+}
+.pl-chart-total {
+  font-family: 'DM Serif Display', serif;
+  font-size: var(--fs-2xl);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.pl-chart-end { text-align: right; }
+.pl-chart-svg {
+  display: block;
+  width: 100%;
+  height: 92px;
+  margin-top: var(--sp-sm);
+  overflow: visible;
+}
+.pl-area { fill: var(--primary); fill-opacity: .14; }
+.pl-line { fill: none; stroke: var(--primary); stroke-width: 2.5; stroke-linejoin: round; }
+.pl-dot-now { fill: var(--card); stroke: var(--primary); stroke-width: 2.5; }
+.pl-dot-end { fill: var(--income); stroke: var(--card); stroke-width: 2; }
+.pl-axis {
+  position: relative;
+  height: 16px;
+  margin-top: 6px;
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+.pl-axis span { position: absolute; top: 0; white-space: nowrap; }
+.pl-axis span:not(:first-child):not(:last-child) { transform: translateX(-50%); }
+
+/* ── DETAILANSICHTEN */
+.pl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: var(--fs-note);
+  text-decoration: none;
+}
+.pl-top-row { display: flex; justify-content: space-between; align-items: center; }
+.pl-top-row .pl-h-link { margin: 0; }
+.btn-save.pl-wide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xs);
+  width: 100%;
+  margin-top: var(--sp-lg);
+  padding: 14px;
+}
+.btn-save.pl-wide:disabled { opacity: .45; cursor: default; }
+
+.pl-kv {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.pl-kv .card { margin: 0; padding: var(--sp-sm) 14px; height: auto; }
+.pl-kv-v { font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+/* Abzahlplan */
+.pl-plan { padding: 4px var(--sp-md); height: auto; }
+.pl-plan-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  min-height: 48px;
+  border-bottom: 1px solid var(--primary-light);
+  font-size: var(--fs-note);
+}
+.pl-plan-row:last-child { border-bottom: none; }
+.pl-plan-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-light);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.pl-plan-row.is-paid .pl-plan-dot { background: var(--income); border-color: var(--income); color: #fff; font-size: 10px; }
+.pl-plan-row.is-paid { color: var(--muted); }
+.pl-plan-row.is-next .pl-plan-dot { border-color: var(--primary); }
+.pl-plan-row.is-next { font-weight: 700; }
+.pl-plan-date { width: 76px; flex-shrink: 0; }
+.pl-plan-what { flex: 1; color: var(--muted); font-weight: 500; }
+.pl-plan-amt { font-weight: 600; font-variant-numeric: tabular-nums; }
+.pl-plan-row .tx-btn { margin-right: -8px; }
+.pl-warn {
+  font-size: var(--fs-note);
+  color: var(--danger-text);
+  background: var(--danger-light);
+  border-radius: var(--radius);
+  padding: var(--sp-sm) 14px;
+  margin: 0 0 var(--sp-sm);
+  line-height: 1.45;
+}
+
+/* ── FORMULARE */
+.field-note {
+  font-size: var(--fs-note);
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+.field-note.is-warn { color: var(--danger-text); }
+.btn-delete-link {
+  display: block;
+  margin: var(--sp-md) auto 0;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: var(--fs-note);
+  font-weight: 600;
+  color: var(--danger-text);
+  cursor: pointer;
+}
+
+@media (min-width: 480px) {
+  .pl-hero { font-size: var(--fs-hero); }
+  .planen-main { padding-bottom: calc(var(--nav-h) + var(--sp-2xl)); }
+}
