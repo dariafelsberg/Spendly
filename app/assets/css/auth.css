@@ -1268,3 +1268,8 @@
 @media (hover: hover) {
   .onb-chip:hover:not(.on) { color: var(--text); }
 }
+
+/* Dunkelmodus: weisse Schrift auf Pink-Flächen braucht das dunklere Button-Pink (--primary ist dort heller) */
+:root[data-theme="dark"] .onb-summary,
+:root[data-theme="dark"] .hp-top,
+:root[data-theme="dark"] .onb-goal:has(input:checked) .onb-goal-ico { background: var(--btn); }

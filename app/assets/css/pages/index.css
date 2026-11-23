@@ -201,6 +201,9 @@
               transform .7s cubic-bezier(.34, 1.2, .64, 1),
               opacity .4s ease;
 }
+.donut-label { color: var(--c); }
+:root[data-theme="dark"] .donut-label { color: color-mix(in oklch, var(--c) 60%, var(--text)); }
+:root[data-theme="dark"] .donut-arc[style*="--c"] { stroke: color-mix(in oklch, var(--c) 85%, var(--text)); }
 .donut-label.show {
   opacity: 1;
 }

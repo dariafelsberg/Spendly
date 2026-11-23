@@ -229,6 +229,7 @@ function renderDonut() {
       el.getBoundingClientRect(); // Reflow erzwingen, damit die Transition startet
     }
     el.setAttribute('stroke', c.color);
+    el.style.setProperty('--c', c.color); // Dunkelmodus mischt die Farbe weicher (index.css)
     el.style.strokeDasharray = `${dLen.toFixed(2)} ${(circ - dLen).toFixed(2)}`;
     el.style.strokeDashoffset = dashOffset;
 
@@ -247,7 +248,7 @@ function renderDonut() {
       lbl.append(name);
       labelsEl.appendChild(lbl);
     }
-    lbl.style.color = c.color;
+    lbl.style.setProperty('--c', c.color);
     labelItems.push({ lbl, theta });
     offset += frac;
   });

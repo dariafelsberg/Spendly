@@ -23,7 +23,7 @@
     var dark = p === 'dark' || (p === 'system' && !!(mq && mq.matches));
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', dark ? '#8f1240' : '#e91e63');
+    if (meta) meta.setAttribute('content', dark ? '#7a1f42' : '#e91e63');
   }
   apply();
   if (mq && mq.addEventListener) mq.addEventListener('change', function () { apply(true); });

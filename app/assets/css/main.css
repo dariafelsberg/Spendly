@@ -60,34 +60,48 @@
 }
 
 /* ── DUNKELMODUS: gleiche Variablen, dunkle Werte. assets/js/theme.js setzt
-   data-theme="dark" auf <html> (Einstellung «Darstellung», Standard: wie Gerät). */
+   data-theme="dark" auf <html> (Einstellung «Darstellung», Standard: wie Gerät).
+   Regeln (Überarbeitung 23.11.2026, nach colorpick.app «Dark Mode Color Schemes»):
+   - Kein reines Schwarz: rosé getöntes Fast-Schwarz, weniger Schlieren auf OLED.
+   - Höhe zeigen mit helleren Flächen: Hintergrund → Karte → Fenster, je ein kleiner Schritt.
+   - Schrift kein reines Weiss (ca. 90 % Helligkeit), Notizen gedämpft, beides über 4.5:1.
+   - Akzente nicht umgedreht, sondern heller und weniger gesättigt als im hellen Modus,
+     damit sie auf Dunkel nicht flimmern. Alle Schriftfarben mind. 4.5:1 auf der Karte. */
 :root[data-theme="dark"] {
   color-scheme: dark;
+  /* Flächen: Ebene 0, 1, 2 */
   --bg: #160d12;
-  /* Höhe zeigen mit helleren Flächen statt Schatten: Hintergrund, Karte, Fenster */
   --card: #2a1a23;
   --raised: #33222b;
-  --donut-track: #54404a;     /* leerer Donut-Ring, auf der Karte gut sichtbar */
+  --surface: #1d1218;         /* Seitenrand ab 1024px, Lade-Platzhalter */
+  --donut-track: #4a3842;     /* leerer Donut-Ring: ruhiger, hebt die Kategorien hervor */
   --field-border: #93627a;    /* Eingabefelder 3.4:1 auf der Karte, damit man sie als Feld erkennt */
-  --logo: url(../icons/logo_spendly-weiss.svg); /* auf dunklem Grund ganz weiss (CD) */
-  --surface: #1d1218;
   --primary-light: #4a1f33;   /* aktive Fläche und Linien */
-  --primary-dark: #ff6fa0;    /* Pink als Schrift: 6.9:1 auf Karte */
-  --btn: #d81b60;             /* Weiss darauf 4.8:1 */
-  --header: #8f1240;
-  --ink: #3a2630;
-  --text: #f6e9ef;
-  --muted: #b697a6;
   --track: #4a3a42;
-  --income-text: #4ade80;
-  --danger-text: #f87171;
-  --transfer-text: #a5b4ff;
-  --warning-text: #fbbf24;
+  --logo: url(../icons/logo_spendly-weiss.svg); /* auf dunklem Grund ganz weiss (CD) */
+  /* Schrift */
+  --text: #eddee6;            /* 12.7:1 auf Karte, statt fast reinem Weiss */
+  --muted: #b697a6;           /* 6.3:1 auf Karte */
+  /* Marke: Pink heller und weniger gesättigt */
+  --primary: #e25081;         /* Flächen, Balken, Schalter: 4.5:1 auf Karte */
+  --primary-dark: #f589ad;    /* Pink als Schrift: 7.1:1 auf Karte */
+  --btn: #bc295f;             /* Buttons, Weiss darauf 5.8:1 */
+  --header: #7a1f42;          /* Kopfzeile, Weiss darauf 10:1 */
+  --ink: #3a2630;
+  /* Signalfarben: Flächen und Schrift weicher als im hellen Modus */
+  --income: #3cb468;
+  --danger: #e05c5c;
+  --transfer: #8b9cee;
+  --income-text: #7acd98;     /* 8.7:1 */
+  --danger-text: #ec8989;     /* 6.7:1 */
+  --transfer-text: #b1bdf6;   /* 9.0:1 */
+  --warning-text: #e8ba5e;    /* 9.1:1 */
   --danger-light: #3d1518;
   --income-light: #123222;
-  --shadow-raised: 0 1px 3px rgba(0, 0, 0, .5);
-  --shadow-float: 0 4px 16px rgba(0, 0, 0, .55);
-  --shadow-bar: 0 -1px 6px rgba(0, 0, 0, .4);
+  /* Schatten nur noch dezent, die Höhe zeigen die Flächen */
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-float: 0 6px 20px rgba(0, 0, 0, .45);
+  --shadow-bar: 0 -1px 0 rgba(255, 255, 255, .05);
 }
 
 /* ── RESET */
@@ -1813,6 +1827,11 @@ html.theme-anim *::after {
 /* Dunkelmodus: Logo-Bild ganz weiss, helle App-Bilder leicht abgedunkelt (weniger Blendung) */
 :root[data-theme="dark"] .auth-mark { content: var(--logo); }
 :root[data-theme="dark"] .hp-screen { filter: brightness(.82); }
+/* Kategoriefarben (Symbole, Donut): kommen als --c aus dem JS. Im Dunkelmodus mit der
+   Schriftfarbe gemischt, also heller und weniger gesättigt, damit auch dunkle Farben
+   wie Shopping oder Schulden auf der Karte lesbar bleiben. */
+.ico[style*="--c"] { color: var(--c) !important; }
+:root[data-theme="dark"] .ico[style*="--c"] { color: color-mix(in oklch, var(--c) 60%, var(--text)) !important; }
 /* Dunkelmodus: Symbole in den rosa Kacheln weiss statt pink (Daria) */
 :root[data-theme="dark"] .budget-icon,
 :root[data-theme="dark"] .settings-section-icon,

@@ -45,7 +45,7 @@ Object.defineProperty(window, 'ALL_CATS', { get: allCats });
 // Icon einer Kategorie: Standard-Kategorien und neue eigene Kategorien haben ein SVG-Icon (assets/icons/ui).
 // Ältere eigene Kategorien haben noch ein Emoji, das weiterhin angezeigt wird.
 function iconHtml(name, color) {
-  return `<span class="ico ico-${esc(name)}"${color ? ` style="color:${esc(color)}"` : ''}></span>`;
+  return `<span class="ico ico-${esc(name)}"${color ? ` style="--c:${esc(color)}"` : ''}></span>`;
 }
 function catIcon(cat) {
   return cat.icon ? iconHtml(cat.icon, cat.color) : esc(cat.emoji || '');
