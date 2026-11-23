@@ -640,6 +640,13 @@ button {
   font-size: var(--fs-body);
   flex-shrink: 0;
 }
+.tx-fx {
+  display: block;
+  font-weight: 400;
+  font-size: var(--fs-note);
+  color: var(--muted);
+  text-align: right;
+}
 .tx-amount.expense {
   color: var(--danger-text);
 }
@@ -1022,6 +1029,72 @@ button {
   padding-right: 36px;
   cursor: pointer;
 }
+/* ── BETRAG MIT WÄHRUNG: Währung als Auswahl vorne im Feld (Eintrag hinzufügen) */
+.amount-field {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid var(--field-border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  transition: border-color .15s;
+}
+.amount-field:focus-within {
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 1.5px var(--primary-dark);
+}
+.amount-field .form-input,
+.amount-field .form-input:focus {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  min-width: 0;
+}
+.amount-cur {
+  appearance: none;
+  flex: none;
+  border: 0;
+  border-right: 1px solid var(--primary-light);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  background: var(--surface) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237a5c69' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 9px center;
+  padding: 0 26px 0 12px;
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--fs-body);
+  color: var(--text);
+  cursor: pointer;
+}
+.amount-cur:focus-visible { outline: 2px solid var(--primary-dark); outline-offset: -2px; }
+.fx-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px var(--sp-xs);
+  margin-top: 6px;
+  font-size: var(--fs-note);
+  color: var(--muted);
+}
+.fx-line b { color: var(--text); font-variant-numeric: tabular-nums; }
+.fx-detail { font-size: var(--fs-note); color: var(--muted); margin-top: 2px; }
+.fx-detail.is-stale, .fx-detail.is-missing { color: var(--warning-text); }
+.fx-edit-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primary-dark);
+  cursor: pointer;
+}
+.fx-rate-edit {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xs);
+  margin-top: 6px;
+  font-size: var(--fs-note);
+  color: var(--muted);
+}
+.fx-rate-edit .form-input { width: 110px; padding: 8px 10px; }
+
 /* ── KATEGORIE-AUSWAHL MIT SYMBOLEN (ersetzt das <select>, siehe enhanceCatSelect in main.js) */
 .cat-select-btn {
   display: flex;
@@ -1040,6 +1113,8 @@ button {
   border-color: var(--danger-text);
   box-shadow: 0 0 0 1.5px var(--danger-text);
 }
+.amount-field:has(.is-invalid) { border-color: var(--danger-text); box-shadow: 0 0 0 1.5px var(--danger-text); }
+.amount-field .form-input.is-invalid { border: 0; box-shadow: none; }
 .field-error {
   margin-top: 6px;
   font-size: var(--fs-note);
@@ -1612,6 +1687,11 @@ button {
 }
 
 /* ── HINWEIS UNTER EINEM FORMULAR (z.B. Sparkonto) */
+.form-hint-text {
+  margin-top: 6px;
+  font-size: var(--fs-note);
+  color: var(--muted);
+}
 .form-hint {
   display: flex;
   gap: var(--sp-xs);

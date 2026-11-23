@@ -20,7 +20,7 @@ function updateThemeSwitch() {
   const mode = spendlyTheme.get();
   box.dataset.mode = mode;
   const next = THEME_ORDER[(THEME_ORDER.indexOf(mode) + 1) % THEME_ORDER.length];
-  document.getElementById('themeBtn').setAttribute('aria-label', `Darstellung: ${THEME_NAMES[mode]}. Wechseln zu ${THEME_NAMES[next]}`);
+  document.getElementById('themeBtn').setAttribute('aria-label', t('Darstellung: {jetzt}. Wechseln zu {neu}', { jetzt: t(THEME_NAMES[mode]), neu: t(THEME_NAMES[next]) }));
 }
 function cycleTheme() {
   const mode = spendlyTheme.get();
@@ -32,6 +32,7 @@ function cycleTheme() {
 
 function renderSettings() {
   updateThemeSwitch();
+  renderLocaleSettings();
   renderAccountsList(); renderRecurringList('income'); renderRecurringList('expense'); renderRecurringList('transfer');
   renderCustomCatList('expense'); renderCustomCatList('income');
   const sd = document.getElementById('budgetSettingDisplay');
@@ -40,7 +41,7 @@ function renderSettings() {
 }
 // Ohne Budget kein 'CHF 0.00', sondern ein Hinweis
 function showBudgetSetting(sd) {
-  sd.textContent = state.budget ? 'CHF ' + formatNum(state.budget) : 'Noch kein Budget';
+  sd.textContent = state.budget ? money(state.budget) : t('Noch kein Budget');
   sd.classList.toggle('is-empty', !state.budget);
   // Computer: dasselbe Budget im Eingabefeld (nicht überschreiben, während man tippt)
   const inp = document.getElementById('budgetInlineInput');
@@ -58,7 +59,7 @@ function saveBudgetInline() {
   if (val === (state.budget || 0)) { showBudgetSetting(document.getElementById('budgetSettingDisplay')); return; }
   state.budget = val; saveState();
   showBudgetSetting(document.getElementById('budgetSettingDisplay'));
-  showToast('Budget gespeichert', { text: val ? `Ab sofort CHF ${formatNum(val)} pro Monat.` : 'Du hast kein Monatsbudget mehr festgelegt.' });
+  showToast('Budget gespeichert', { text: val ? t('Ab sofort {betrag} pro Monat.', { betrag: money(val) }) : 'Du hast kein Monatsbudget mehr festgelegt.' });
 }
 
 // Wiederkehrend: welcher Reiter auf dem Computer offen ist (auf dem Handy stehen alle untereinander)
@@ -75,19 +76,19 @@ function showRecurringTab(type) {
 }
 function accountRowHtml(a) {
   const goals = (state.goals || []).filter(g => g.accountId === a.id).length;
-  const vis = a.visible ? iconHtml('eye_open') + ' sichtbar' : iconHtml('eye_closed') + ' versteckt';
-  const extra = isSavingAccount(a) ? (goals === 1 ? '1 Sparziel' : goals + ' Sparziele') : vis;
+  const vis = a.visible ? iconHtml('eye_open') + ' ' + t('sichtbar') : iconHtml('eye_closed') + ' ' + t('versteckt');
+  const extra = isSavingAccount(a) ? (goals === 1 ? t('1 Sparziel') : t('{n} Sparziele', { n: goals })) : vis;
   return `
       <div class="settings-item acc-row">
         <div class="settings-item-info">
           <div class="settings-item-name">${esc(a.name)}</div>
-          <div class="settings-item-val">CHF ${formatNum(a.balance)}<span style="opacity:.6"> · ${extra}</span></div>
+          <div class="settings-item-val">${money(a.balance)}<span style="opacity:.6"> · ${extra}</span></div>
         </div>
-        <span class="acc-bal">CHF ${formatNum(a.balance)}</span>
+        <span class="acc-bal">${money(a.balance)}</span>
         <span class="acc-vis">${extra}</span>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openAccountModal(${jsArg(a.id)})" aria-label="Konto bearbeiten"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteAccount(${jsArg(a.id)})" aria-label="Konto löschen"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openAccountModal(${jsArg(a.id)})" aria-label="${t('Konto bearbeiten')}"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteAccount(${jsArg(a.id)})" aria-label="${t('Konto löschen')}"><span class="ico ico-trash"></span></button>
         </div>
       </div>`;
 }
@@ -97,10 +98,10 @@ function renderAccountsList() {
   const saving   = state.accounts.filter(isSavingAccount);
   // Ohne Sparkonto bleibt die Liste wie bisher (keine Zwischentitel)
   el.innerHTML = !state.accounts.length
-    ? '<div class="empty-tx">Noch keine Konten hinzugefügt.</div>'
+    ? `<div class="empty-tx">${t('Noch keine Konten hinzugefügt.')}</div>`
     : !saving.length ? everyday.map(accountRowHtml).join('')
-    : (everyday.length ? '<div class="settings-subhead">Alltag</div>' + everyday.map(accountRowHtml).join('') : '') +
-      '<div class="settings-subhead">Sparen</div>' + saving.map(accountRowHtml).join('');
+    : (everyday.length ? `<div class="settings-subhead">${t('Alltag')}</div>` + everyday.map(accountRowHtml).join('') : '') +
+      `<div class="settings-subhead">${t('Sparen')}</div>` + saving.map(accountRowHtml).join('');
 }
 function recurringListElId(type) {
   return type === 'income' ? 'recurringIncomeList' : type === 'transfer' ? 'recurringTransferList' : 'recurringExpenseList';
@@ -117,7 +118,7 @@ function renderRecurringList(type) {
   const count = document.getElementById('recCount-' + type);
   if (count) count.textContent = list.length ? list.length : '';
   el.innerHTML = !list.length
-    ? '<div class="empty-tx">Noch keine Einträge.</div>'
+    ? `<div class="empty-tx">${t('Noch keine Einträge.')}</div>`
     : list.map(r => {
         let detail, icon, account;
         // Symbol in der Farbe der Kategorie (Überweisung: Pfeile in Blau), Tag im Monat, Konto
@@ -125,7 +126,7 @@ function renderRecurringList(type) {
         if (type === 'transfer') {
           const fromAcc = state.accounts.find(a => a.id === r.fromAccountId);
           const toAcc   = state.accounts.find(a => a.id === r.toAccountId);
-          detail = `CHF ${formatNum(r.amount)} / Monat · ${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}`;
+          detail = `${money(r.amount)} / ${t('Monat')} · ${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}`;
           icon = iconHtml('transfer', 'var(--transfer)');
           account = `${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}`;
         } else {
@@ -133,7 +134,7 @@ function renderRecurringList(type) {
           const cat = allCats().find(c => c.name === r.category);
           icon = cat ? catIcon(cat) : '';
           account = acc ? esc(acc.name) : '';
-          detail = `${sign}CHF ${formatNum(r.amount)} / Monat · ${esc(r.category)}${acc ? ' · ' + iconHtml('bank') + ' ' + esc(acc.name) : ''}${r.accountOnly ? ' · ' + iconHtml('banned') + ' Budget' : ''}`;
+          detail = `${sign}${money(r.amount)} / ${t('Monat')} · ${esc(catName(r.category))}${acc ? ' · ' + iconHtml('bank') + ' ' + esc(acc.name) : ''}${r.accountOnly ? ' · ' + iconHtml('banned') + ' ' + t('Budget') : ''}`;
         }
         return `
       <div class="settings-item rec-row">
@@ -146,8 +147,8 @@ function renderRecurringList(type) {
         <span class="rec-day">am ${day}.</span>
         <span class="rec-acc">${account}</span>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openRecurringModal('${type}',${jsArg(r.id)})"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteRecurring('${type}',${jsArg(r.id)})"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openRecurringModal('${type}',${jsArg(r.id)})" aria-label="${t('Bearbeiten')}"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteRecurring('${type}',${jsArg(r.id)})" aria-label="${t('Löschen')}"><span class="ico ico-trash"></span></button>
         </div>
       </div>`;
       }).join('');
@@ -199,7 +200,7 @@ function renderCustomCatList() {
   const incomeList  = state.customIncomeCats  || [];
   const total = expenseList.length + incomeList.length;
   if (!total) {
-    el.innerHTML = '<div class="empty-tx">Noch keine eigenen Kategorien.</div>';
+    el.innerHTML = `<div class="empty-tx">${t('Noch keine eigenen Kategorien.')}</div>`;
     return;
   }
   const renderGroup = (groupType, label, list) => {
@@ -211,13 +212,13 @@ function renderCustomCatList() {
           <div class="settings-item-name">${catIcon(c)} ${esc(c.name)}</div>
         </div>
         <div class="settings-item-actions">
-          <button class="tx-btn" onclick="openCustomCatModal('${groupType}',${jsArg(c.id)})" aria-label="Kategorie bearbeiten"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}',${jsArg(c.id)})" aria-label="Kategorie löschen"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="openCustomCatModal('${groupType}',${jsArg(c.id)})" aria-label="${t('Kategorie bearbeiten')}"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteCustomCat('${groupType}',${jsArg(c.id)})" aria-label="${t('Kategorie löschen')}"><span class="ico ico-trash"></span></button>
         </div>
       </div>`).join('');
     return header + items;
   };
-  el.innerHTML = renderGroup('expense', iconHtml('shoppingcart') + ' Ausgaben', expenseList) + renderGroup('income', iconHtml('coin') + ' Einnahmen', incomeList);
+  el.innerHTML = renderGroup('expense', iconHtml('shoppingcart') + ' ' + t('Ausgaben'), expenseList) + renderGroup('income', iconHtml('coin') + ' ' + t('Einnahmen'), incomeList);
 }
 
 function openCustomCatModal(type, editId = null) {
@@ -225,8 +226,8 @@ function openCustomCatModal(type, editId = null) {
   const initialType = type || 'expense';
   state.customCatEditId = editId;
   const editCat = editId ? (initialType === 'expense' ? state.customExpenseCats : state.customIncomeCats).find(c => c.id === editId) : null;
-  document.getElementById('customCatModalTitle').textContent = editCat ? 'Kategorie bearbeiten' : 'Eigene Kategorie hinzufügen';
-  document.getElementById('customCatSaveBtn').textContent = editCat ? 'Speichern' : 'Hinzufügen';
+  document.getElementById('customCatModalTitle').textContent = t(editCat ? 'Kategorie bearbeiten' : 'Eigene Kategorie hinzufügen');
+  document.getElementById('customCatSaveBtn').textContent = t(editCat ? 'Speichern' : 'Hinzufügen');
   // Beim Bearbeiten bleibt Ausgabe/Einnahme fix (Einträge hängen daran)
   document.getElementById('customCatTabs').hidden = !!editCat;
   state.customCatType = initialType;
@@ -243,7 +244,7 @@ function openCustomCatModal(type, editId = null) {
   // Symbol-Auswahl rendern
   const picker = document.getElementById('customCatIconPicker');
   picker.innerHTML = CUSTOM_CAT_ICONS.map(i =>
-    `<button type="button" class="emoji-pick-btn" data-icon="${i.icon}" title="${i.label}" aria-label="${i.label}" aria-pressed="false" onclick="selectCustomCatIcon('${i.icon}')">${iconHtml(i.icon)}</button>`
+    `<button type="button" class="emoji-pick-btn" data-icon="${i.icon}" title="${esc(t(i.label))}" aria-label="${esc(t(i.label))}" aria-pressed="false" onclick="selectCustomCatIcon('${i.icon}')">${iconHtml(i.icon)}</button>`
   ).join('');
   if (editCat && editCat.emoji && !editCat.icon) {
     selectCustomCatIcon(null);
@@ -347,18 +348,20 @@ function deleteCustomCat(type, id) {
 }
 function openAccountModal(editId = null, kind = 'everyday') {
   state.accountEditId = editId;
-  document.getElementById('accountModalTitle').textContent = editId ? 'Konto bearbeiten' : 'Konto hinzufügen';
+  document.getElementById('accountModalTitle').textContent = t(editId ? 'Konto bearbeiten' : 'Konto hinzufügen');
   if (editId) {
     const a = state.accounts.find(x => x.id === editId);
     document.getElementById('accountKind').value      = isSavingAccount(a) ? 'saving' : 'everyday';
     document.getElementById('accountName').value      = a.name;
     document.getElementById('accountBalance').value   = a.balance;
     document.getElementById('accountVisible').checked = a.visible;
+    document.getElementById('accountFee').value       = a.fee > 0 ? a.fee : '';
   } else {
     document.getElementById('accountKind').value      = kind === 'saving' ? 'saving' : 'everyday';
     document.getElementById('accountName').value      = '';
     document.getElementById('accountBalance').value   = '';
     document.getElementById('accountVisible').checked = kind !== 'saving';
+    document.getElementById('accountFee').value       = '';
   }
   updateAccountKindUi();
   document.getElementById('accountModal').classList.add('show');
@@ -367,7 +370,7 @@ function openAccountModal(editId = null, kind = 'everyday') {
 function updateAccountKindUi() {
   const saving = document.getElementById('accountKind').value === 'saving';
   document.getElementById('accountSavingHint').hidden = !saving;
-  document.getElementById('accountName').placeholder = saving ? 'z.B. Sparkonto, Säule 3a' : 'z.B. Raiffeisen, Neon…';
+  document.getElementById('accountName').placeholder = t(saving ? 'z.B. Sparkonto, Säule 3a' : 'z.B. Raiffeisen, Neon…');
 }
 function onAccountKindChange() {
   if (!state.accountEditId) document.getElementById('accountVisible').checked = document.getElementById('accountKind').value !== 'saving';
@@ -379,12 +382,14 @@ function saveAccount() {
   const balance = parseAmount(document.getElementById('accountBalance').value) || 0;
   const visible = document.getElementById('accountVisible').checked;
   const kind    = document.getElementById('accountKind').value === 'saving' ? 'saving' : 'everyday';
+  const feeRaw  = parseAmount(document.getElementById('accountFee').value);
+  const fee     = !isNaN(feeRaw) && feeRaw > 0 ? Math.min(round2(feeRaw), 20) : 0;
   if (!name) { showError('Konto nicht gespeichert', 'Der Name fehlt. Gib dem Konto einen Namen, zum Beispiel UBS.', 'accountName'); return; }
   if (state.accountEditId) {
     const a = state.accounts.find(x => x.id === state.accountEditId);
-    if (a) Object.assign(a, { name, balance, visible, kind });
+    if (a) { Object.assign(a, { name, balance, visible, kind }); if (fee) a.fee = fee; else delete a.fee; }
   } else {
-    state.accounts.push({ id: uid(), name, balance, visible, kind });
+    state.accounts.push({ id: uid(), name, balance, visible, kind, ...(fee ? { fee } : {}) });
   }
   saveState(); renderAccountsList(); closeAccountModal();
 }
@@ -407,9 +412,9 @@ function deleteAccount(id) {
 const RECURRING_EXAMPLES = { income: ['Lohn', 'Nebenjob'], expense: ['Miete', 'Krankenkasse'], transfer: ['Sparkonto', 'Säule 3a'] };
 function openRecurringModal(type, editId = null) {
   state.recurringType = type; state.recurringEditId = editId;
-  document.getElementById('recurringName').placeholder = 'z.B. ' + RECURRING_EXAMPLES[type].join(', ') + '…';
+  document.getElementById('recurringName').placeholder = t('z.B. {beispiele}…', { beispiele: RECURRING_EXAMPLES[type].map(x => t(x)).join(', ') });
   document.getElementById('recurringModalTitle').textContent =
-    (editId ? 'Bearbeiten' : 'Hinzufügen') + ' – ' + (type === 'income' ? 'Einnahme' : type === 'transfer' ? 'Überweisung' : 'Ausgabe');
+    t(editId ? 'Bearbeiten' : 'Hinzufügen') + ' – ' + t(type === 'income' ? 'Einnahme' : type === 'transfer' ? 'Überweisung' : 'Ausgabe');
 
   const catGroup = document.getElementById('recurringCategoryGroup');
   const accGroup = document.getElementById('recurringAccountGroup');
@@ -427,7 +432,7 @@ function openRecurringModal(type, editId = null) {
     if (transferGroup) transferGroup.style.display = '';
     const fromSel = document.getElementById('recurringFromAccount');
     const toSel   = document.getElementById('recurringToAccount');
-    const opts = state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
+    const opts = state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${money(a.balance)})</option>`).join('');
     if (fromSel) fromSel.innerHTML = opts;
     if (toSel)   toSel.innerHTML = opts;
   } else {
@@ -437,8 +442,8 @@ function openRecurringModal(type, editId = null) {
       (type === 'income' ? allIncomeCats() : allExpenseCats())
         .map(c => `<option value="${esc(c.name)}">${catOptionLabel(c)}</option>`).join('');
     if (accSel) {
-      accSel.innerHTML = `<option value="">Kein Konto</option>` +
-        state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
+      accSel.innerHTML = `<option value="">${t('Kein Konto')}</option>` +
+        state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${money(a.balance)})</option>`).join('');
     }
     if (accGroup) accGroup.style.display = '';
   }
@@ -472,7 +477,7 @@ function saveRecurring() {
   const name      = document.getElementById('recurringName').value.trim();
   const amount    = parseAmount(document.getElementById('recurringAmount').value);
   const startDate = document.getElementById('recurringStartDate').value || dateKey(new Date());
-  if (!name) { showError('Nicht gespeichert', `Die Bezeichnung fehlt. Gib eine Bezeichnung ein, zum Beispiel ${RECURRING_EXAMPLES[state.recurringType][0]}.`, 'recurringName'); return; }
+  if (!name) { showError('Nicht gespeichert', t('Die Bezeichnung fehlt. Gib eine Bezeichnung ein, zum Beispiel {beispiel}.', { beispiel: t(RECURRING_EXAMPLES[state.recurringType][0]) }), 'recurringName'); return; }
   if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'recurringAmount'); return; }
 
   if (state.recurringType === 'transfer') {
@@ -515,3 +520,42 @@ registerPageRender(renderSettings);
 initSettings();
 // Darstellung in einem anderen Fenster geändert → Knopf nachführen
 window.addEventListener('storage', e => { if (e.key === 'spendly_theme') updateThemeSwitch(); });
+
+// ── SPRACHE UND WÄHRUNG
+// Sprache und Hauptwährung gelten sofort auf diesem Gerät (localStorage, siehe i18n.js)
+// und werden im Account gespeichert, damit sie auf allen Geräten gleich sind.
+function renderLocaleSettings() {
+  const ls = document.getElementById('langSelect'), cs = document.getElementById('curSelect');
+  if (!ls || !cs) return;
+  if (!ls.options.length) {
+    ls.innerHTML = I18N.langs.map(l => `<option value="${l}" data-icon="">${esc(I18N.langNames[l])}</option>`).join('');
+    const main = cur();
+    const top = [main, ...['CHF', 'EUR', 'USD', 'GBP'].filter(c => c !== main)];
+    const list = [...top, ...I18N.currencies.filter(c => !top.includes(c)).sort()];
+    cs.innerHTML = list.map(c => `<option value="${c}" data-icon="" data-sub="${esc(I18N.currencyName(c))}">${c}</option>`).join('');
+  }
+  ls.value = I18N.lang;
+  cs.value = cur();
+}
+function _reloadAll() {
+  // Einstellungen im Menü-Fenster (iframe): die ganze Seite neu laden, damit alles in der neuen Sprache erscheint
+  try { if (window.top !== window && window.top.location.origin === location.origin) { window.top.location.reload(); return; } } catch (e) {}
+  location.reload();
+}
+function changeLanguage(code) {
+  if (code === I18N.lang) return;
+  I18N.setLang(code);
+  state.lang = code;
+  saveState();
+  setTimeout(_reloadAll, 150); // kurz warten, damit das Speichern losgeschickt ist
+}
+// Wechsel der Hauptwährung gilt ab jetzt: bisherige Beträge bleiben, wie sie sind, und behalten ihre Währung (e.base)
+function changeCurrency(code) {
+  const old = cur();
+  if (code === old) return;
+  state.entries.forEach(e => { if (!e.base) e.base = old; });
+  state.currency = code;
+  I18N.setCur(code);
+  saveState();
+  setTimeout(_reloadAll, 150);
+}

@@ -36,6 +36,8 @@ Details zu Seiten und Ladereihenfolge: `README.md`.
 
 Deutsch (Schweiz), Du-Form, ss statt ß. Beträge `1’250.00 CHF`. Kurz, das Wichtigste zuerst. Keine erfundenen Testimonials oder Zahlen.
 
+Die App gibt es auf Deutsch, Französisch, Italienisch, Englisch und Niederländisch. Texte immer deutsch in den Code schreiben und in `app/assets/i18n/{fr,it,en,nl}.js` ergänzen (in JS mit `t('…')`). Beträge nur mit `money()` / `formatNum()`, Währung mit `cur()`. Landingpage: `landingpage/index.html` und `i18n/texte.txt` ändern, dann `python landingpage/i18n/build.py`. Details: `README.md`, Abschnitt «Sprachen und Währungen».
+
 ## Ablauf
 
 - Daria committet und pusht selbst über VS Code. Nicht selbst pushen.

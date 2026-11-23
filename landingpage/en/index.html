@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spendly: the everyday budget app for Switzerland</title>
+<meta name="description" content="Spendly is your everyday budget app. Record your expenses from anywhere and always see how much of the month is left.">
+<meta property="og:title" content="Spendly: where does your money actually go?">
+<meta property="og:description" content="The everyday budget app for Switzerland. Free, no ads, on phone, tablet and computer.">
+<meta property="og:locale" content="en_GB">
+<meta name="theme-color" content="#e91e63">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201451.3%201451.3%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20%23e91e63%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%3E%3Cpath%20d%3D%22M1202.6%2C482.9l-327.4%2C36.8h-7.6c-34.8%2C0-65.4-26.4-68.8-61.9-4.2-38.2%2C22.9-72.3%2C61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7%2C25.7-174.5%2C91.8-188.4%2C144.6-25%2C95.2%2C91.8%2C151.6%2C278.8%2C220.4l-46.6%2C130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1%2C29.2-111.2%2C146-209.3%2C289.9-244%2C164.1-39.6%2C337.9%2C3.5%2C495.7%2C120.3l-18.1-159.2c-4.2-38.2%2C22.9-72.3%2C61.2-77.2%2C38.2-4.2%2C72.3%2C22.9%2C77.2%2C61.2l38.9%2C343.4c4.2%2C38.2-22.9%2C72.3-61.2%2C77.2h-.7v.7h-.1Z%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M934.3%2C1282.4c-54.9%2C20.9-118.9%2C31.3-187.7%2C31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8%2C158.5c7%2C37.5-18.8%2C73.7-56.3%2C80.6-4.2%2C0-8.3.7-12.5.7-33.4%2C0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8%2C11.1-52.1s26.4-25.7%2C45.2-28.5l324.7-57.7c37.5-7%2C73.7%2C18.8%2C80.6%2C56.3%2C7%2C37.5-18.8%2C73.7-56.3%2C80.6l-178.7%2C31.3c91.1%2C54.9%2C216.9%2C91.8%2C330.9%2C91.8s97.3-7%2C139.7-22.9c94.5-35.5%2C136.3-109.1%2C126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1%2C57.7%2C305.2%2C124.4%2C316.3%2C261.4%2C14.6%2C178.7-62.6%2C308.7-216.9%2C366.4h0l.7.7h.1Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<link rel="canonical" href="https://spendly.ch/en/">
+<link rel="alternate" hreflang="de" href="https://spendly.ch/de/">
+<link rel="alternate" hreflang="fr" href="https://spendly.ch/fr/">
+<link rel="alternate" hreflang="it" href="https://spendly.ch/it/">
+<link rel="alternate" hreflang="en" href="https://spendly.ch/en/">
+<link rel="alternate" hreflang="nl" href="https://spendly.ch/nl/">
+<link rel="alternate" hreflang="x-default" href="https://spendly.ch/">
+<meta property="og:url" content="https://spendly.ch/en/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://spendly.ch/assets/img/og-spendly.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Spendly on laptop and phone">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/assets/fonts/dm-serif-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/dm-sans-variable-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Schriften lokal ausgeliefert (keine Anfrage an Google, Datenschutz). DM Sans und DM Serif Display, SIL Open Font License 1.1. */
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:300 700;font-display:swap;src:url(/assets/fonts/dm-sans-variable-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:300 700;font-display:swap;src:url(/assets/fonts/dm-sans-variable-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'DM Serif Display';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/dm-serif-display-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'DM Serif Display';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/dm-serif-display-latin.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+:root{
+  --pink:#e91e63; --pink-dunkel:#c2185b; --pink-hell:#ffd8e7;
+  --tinte:#2d1b24; --grau-rose:#7a5c69;
+  --rose-weiss:#fdf6fa; --rose-flaeche:#f7edf3; --weiss:#fff;
+  --ausgabe-text:#b91c1c;
+  --r-klein:10px; --r:12px; --r-karte:16px;
+  --sch-gehoben:0 1px 3px rgba(45,27,36,.12);
+  --sch-schwebend:0 4px 16px rgba(45,27,36,.14);
+  --serif:"DM Serif Display",Georgia,serif;
+  --sans:"DM Sans",Arial,sans-serif;
+  --gutter:16px; --bg-page:var(--rose-weiss);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg-page);color:var(--tinte);font:400 16px/1.55 var(--sans);overflow-x:hidden}
+img,svg{display:block}
+a{color:var(--pink-dunkel);text-underline-offset:.18em;text-decoration-thickness:1px}
+::selection{background:var(--pink-hell);color:var(--tinte)}
+h1,h2,h3{text-wrap:balance}
+:focus-visible{outline:3px solid var(--pink-dunkel);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.005em}
+p{margin:0}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(var(--gutter),env(safe-area-inset-left,0px));padding-right:max(var(--gutter),env(safe-area-inset-right,0px))}
+@media (min-width:640px){:root{--gutter:28px}}
+@media (min-width:1024px){:root{--bg-page:var(--rose-flaeche)}}
+
+/* Icons wie in der App: einfarbig, übernehmen die Textfarbe */
+.ico{display:inline-block;width:1.25em;height:1.25em;background:currentColor;flex:none;
+  -webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
+.ico-coin{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%229.1%205.1%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st0%2C%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20stroke-miterlimit%3A%2010%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Ccircle%20class%3D%22st1%22%20cx%3D%2233.1%22%20cy%3D%2229.1%22%20r%3D%2215%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M37.4%2C23.4c0-2.5-2.3-2.5-4-2.5-2.8%2C0-4.3%2C1.3-4.3%2C3.3%2C0%2C1.6%2C1%2C2.7%2C1.7%2C3.3s3.5%2C1.6%2C4.8%2C2.6%2C1.8%2C2.2%2C1.8%2C3.5c0%2C2.3-3%2C3.6-4.4%2C3.6s-3.9%2C0-3.9-2.6%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2233.1%22%20y1%3D%2217.9%22%20x2%3D%2233.1%22%20y2%3D%2220.9%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2233.1%22%20y1%3D%2237.3%22%20x2%3D%2233.1%22%20y2%3D%2240.3%22%2F%3E%3C%2Fsvg%3E")}
+.ico-bank{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-2.3%20-2.15%2052.49%2052.49%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st0%2C%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202.19px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20stroke-miterlimit%3A%2010%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpath%20class%3D%22st1%22%20d%3D%22M38.4%2C21.6H8.7c-1.7%2C0-3-1.1.3-3.2s11.8-7.3%2C12.8-8c2.2-1.4%2C3.6-1.4%2C5.5%2C0%2C0%2C0%2C11%2C7.8%2C13%2C9.2%2C1%2C.8%2C1%2C2.1-2%2C2.1Z%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%228.7%2021.6%208.7%2038.8%2015%2038.8%2015%2021.6%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2233.9%2021.6%2033.9%2038.8%2040%2038.8%2040%2021.6%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M29.3%2C28.1c0-1.9-2.2-2.6-3.8-2.6s-4%2C1-4%2C4.7%2C2.5%2C5%2C3.9%2C5%2C3.9-1.4%2C3.9-3.5%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2219.2%22%20y1%3D%2230.2%22%20x2%3D%2226%22%20y2%3D%2230.2%22%2F%3E%3C%2Fsvg%3E")}
+.ico-clock{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Ccircle%20class%3D%22st0%22%20cx%3D%2224%22%20cy%3D%2224%22%20r%3D%2215.3%22%2F%3E%3Cpolyline%20class%3D%22st1%22%20points%3D%2224%2015.7%2024%2024%2029%2029%22%2F%3E%3C%2Fsvg%3E")}
+.ico-calendar{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-2.1%20-3.3%2052.2%2052.2%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20currentColor%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st0%2C%20.st1%20%7B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202.17px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cline%20class%3D%22st1%22%20x1%3D%2214.1%22%20y1%3D%225.4%22%20x2%3D%2214.1%22%20y2%3D%229.9%22%2F%3E%3Cline%20class%3D%22st1%22%20x1%3D%2233.6%22%20y1%3D%225.4%22%20x2%3D%2233.6%22%20y2%3D%229.9%22%2F%3E%3Crect%20class%3D%22st1%22%20x%3D%229%22%20y%3D%2215.6%22%20width%3D%2230%22%20height%3D%2224.6%22%2F%3E%3Crect%20class%3D%22st0%22%20x%3D%229%22%20y%3D%229.3%22%20width%3D%2230%22%20height%3D%226.3%22%2F%3E%3C%2Fsvg%3E")}
+.ico-combo-chart{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%221.15%20-1.4%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%229.8%207.1%209.8%2038.1%2040.5%2038.1%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2215.2%2026.5%2026.1%2016%2032.4%2021.7%2040.4%2013.7%22%2F%3E%3C%2Fsvg%3E")}
+.ico-tag{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-9.1%20-10.15%2067.2%2067.2%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202.8px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M40.8%2C10.5v-2.2c0-1.4-2.1-1.6-3.7-1.6h-11.9c-2.1%2C0-3.2%2C1.7-4.6%2C3S7%2C23.2%2C3.7%2C26.6s-.6%2C5.4%2C1%2C7.2%2C7.7%2C7.8%2C9.8%2C10%2C4.3%2C2.5%2C6.9%2C0%2C16.1-15.8%2C17.8-17.6%2C1.5-2.4%2C1.5-5v-4.2%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M34.8%2C11.1c1.1%2C1.9%2C3.2%2C3.2%2C5.6%2C3.2%2C3.6%2C0%2C6.5-2.9%2C6.5-6.5s-2.9-6.5-6.5-6.5-5.7%2C2.2-6.3%2C5.2%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2224%22%20y1%3D%2217.5%22%20x2%3D%2211.5%22%20y2%3D%2230%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2227%22%20y1%3D%2227.1%22%20x2%3D%2217.7%22%20y2%3D%2236.3%22%2F%3E%3C%2Fsvg%3E")}
+.ico-arrow-down{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%202.3%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2239.8%2020.9%2024%2031.7%208.2%2020.9%22%2F%3E%3C%2Fsvg%3E")}
+.ico-house{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%229%2021.5%2024%209.8%2039%2021.5%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2231%2015.3%2031%2012.1%2034.2%2012.1%2034.2%2017.7%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2211%2019.9%2011%2038.2%2037%2038.2%2037%2019.9%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2220%2038.2%2020%2026.1%2028%2026.1%2028%2038.2%22%2F%3E%3C%2Fsvg%3E")}
+.ico-shoppingbasket{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-3.07%20-3.07%2054.13%2054.13%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202.26px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2233.9%2018.6%2042.4%2018.6%2042.4%2023.2%206%2023.2%206%2018.6%2014.3%2018.6%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2219.3%22%20y1%3D%2218.6%22%20x2%3D%2228.7%22%20y2%3D%2218.6%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M39%2C23.2s-.7%2C6.7-1.6%2C11.7c-.8%2C5-3.9%2C4-7.3%2C4h-11.8c-3.4%2C0-6.5.8-7.3-4s-1.6-11.7-1.6-11.7h29.6Z%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2226.6%22%20y1%3D%2227.1%22%20x2%3D%2226.6%22%20y2%3D%2234.7%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2232.1%22%20y1%3D%2227.1%22%20x2%3D%2232.1%22%20y2%3D%2234.7%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2215.9%22%20y1%3D%2227.1%22%20x2%3D%2215.9%22%20y2%3D%2234.7%22%2F%3E%3Cline%20class%3D%22st0%22%20x1%3D%2221.4%22%20y1%3D%2227.1%22%20x2%3D%2221.4%22%20y2%3D%2234.7%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2242.4%209%2027.2%2019.6%2028.9%2021.9%2044.3%2011.4%2042.4%209%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%225.6%209%2020.8%2019.6%2019.1%2021.9%203.7%2011.4%205.6%209%22%2F%3E%3C%2Fsvg%3E")}
+.ico-oev{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M10.3%2C18.7h20.4c.4%2C0%2C.8.1%2C1.1.3h0c3.7%2C2.4%2C5.9%2C6.6%2C5.9%2C11h0v4H10.3%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2219.5%2018.7%2014.5%2013.6%2019.5%209%2024%2013.9%2019.5%2018.7%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M25.2%2C34.1c.1.4.2.8.2%2C1.2%2C0%2C2-1.6%2C3.7-3.7%2C3.7s-3.7-1.6-3.7-3.7%2C0-.6.1-1%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M32.9%2C34.2c.1.3.2.7.2%2C1.1%2C0%2C2-1.6%2C3.7-3.7%2C3.7s-3.7-1.6-3.7-3.7%2C0-.7.2-1.1%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2219.5%2018.7%2019.5%2028.5%2010.3%2028.5%22%2F%3E%3Cpolyline%20class%3D%22st0%22%20points%3D%2225.7%2018.7%2025.7%2028.5%2037.6%2028.5%22%2F%3E%3C%2Fsvg%3E")}
+.ico-phone{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220.9%200.65%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M16.5%2C10.5l3.7%2C5.6c.4.7.5%2C1.5%2C0%2C2.3l-1.7%2C3.1c-.1.2%2C0%2C.4%2C0%2C.6%2C0%2C0%2C3.5%2C4%2C4.8%2C5.2s4.6%2C3.9%2C4.6%2C3.9c.2.2.4.2.6%2C0l2.4-1.7c.7-.5%2C1.8-.5%2C2.5%2C0l2.8%2C1.9c1.5%2C1%2C2.5%2C1.7%2C3.2%2C2.2s.6%2C1.1.2%2C1.6c-1.2%2C1.5-3.7%2C4.5-4.5%2C4.6-2.4.2-6.4%2C0-16.2-10.1s-9.2-14.1-8.9-15.2%2C3.1-3.2%2C4.7-4.5%2C1.3-.3%2C1.7.3v.2Z%22%2F%3E%3C%2Fsvg%3E")}
+.ico-restaurant{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-1.4%20-1.05%2051.9%2051.9%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20currentColor%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st0%2C%20.st1%20%7B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202.16px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cline%20class%3D%22st1%22%20x1%3D%2219.6%22%20y1%3D%2242.2%22%20x2%3D%2219.6%22%20y2%3D%227.6%22%2F%3E%3Cpath%20class%3D%22st1%22%20d%3D%22M16.2%2C7.6v9.7c0%2C4.7%2C3.5%2C4.3%2C3.5%2C4.3%2C0%2C0%2C3.8.6%2C3.8-4V7.6%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M32.5%2C10.3c.1-.3.3-.6.4-.9v18.7c-5.1-4.1-4.7-8.9-.4-17.8Z%22%2F%3E%3Cline%20class%3D%22st1%22%20x1%3D%2232.9%22%20y1%3D%2228.2%22%20x2%3D%2232.9%22%20y2%3D%2242.2%22%2F%3E%3C%2Fsvg%3E")}
+.ico-shoppingbag{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st0%2C%20.st1%20%7B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-miterlimit%3A%2010%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20currentColor%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2213.2%2016.7%2034.6%2016.7%2037.3%2039%2010.7%2039%2013.2%2016.7%22%2F%3E%3Cpath%20class%3D%22st0%22%20d%3D%22M18.2%2C20v-5.2c0-4%2C3.4-5.8%2C5.8-5.8s5.8%2C1.1%2C5.8%2C5.5v5.5%22%2F%3E%3Ccircle%20class%3D%22st1%22%20cx%3D%2218.2%22%20cy%3D%2220%22%20r%3D%22.9%22%2F%3E%3Ccircle%20class%3D%22st1%22%20cx%3D%2229.8%22%20cy%3D%2220%22%20r%3D%22.9%22%2F%3E%3C%2Fsvg%3E")}
+.ico-sport{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cdefs%3E%3Cstyle%3E%0A%20%20%20%20%20%20.st0%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20currentColor%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st0%2C%20.st1%20%7B%0A%20%20%20%20%20%20%20%20stroke%3A%20currentColor%3B%0A%20%20%20%20%20%20%20%20stroke-linecap%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-linejoin%3A%20round%3B%0A%20%20%20%20%20%20%20%20stroke-width%3A%202px%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.st1%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Ccircle%20class%3D%22st1%22%20cx%3D%2224%22%20cy%3D%2224%22%20r%3D%2215%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2214.7%2012.6%2014.7%2014.6%2020%2015.8%2023.3%2010.9%2021.4%209.3%2018.2%2010.2%2014.7%2012.6%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2237.9%2020%2035.4%2022.5%2030.3%2020.3%2030.3%2013.6%2034.4%2013.6%2036.6%2015.8%2037.9%2020%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2210.1%2029.9%2013.3%2024.7%2010.1%2020.3%209%2024%2010.1%2029.9%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2223.3%2038.3%2019.5%2033.3%2014.1%2034.7%2018.7%2038%2023.3%2038.3%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2221.3%2020.3%2026.9%2022%2026.9%2027.8%2021.3%2029.9%2017.4%2024.7%2021.3%2020.3%22%2F%3E%3Cpolygon%20class%3D%22st0%22%20points%3D%2229.7%2037.3%2029.7%2031.7%2035.4%2029.9%2037.6%2029.9%2034.4%2034.9%2029.7%2037.3%22%2F%3E%3C%2Fsvg%3E")}
+.ico-k-piggy{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10.5%2C25c0-6.5%2C6.5-11%2C14.5-11c6%2C0%2C10%2C2.5%2C12.5%2C6h3v7h-2.5c-1%2C2-2.5%2C3.5-4.5%2C4.5V37h-5v-3h-7v3h-5v-5.5c-3.5-1.5-6-4-6-6.5Z%22%2F%3E%3Cpath%20d%3D%22M28.5%2C15.5l2-4.5l3.5%2C5.5%22%2F%3E%3Cline%20x1%3D%2220%22%20y1%3D%2219%22%20x2%3D%2227%22%20y2%3D%2219%22%2F%3E%3Cpath%20d%3D%22M10.5%2C24c-2%2C0-3.5-1.5-3-3.5%22%2F%3E%3Ccircle%20cx%3D%2232.5%22%20cy%3D%2221.5%22%20r%3D%221.3%22%20fill%3D%22currentColor%22%20stroke%3D%22none%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-travel{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%229%22%20y%3D%2216%22%20width%3D%2230%22%20height%3D%2221%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M19%2C16v-3a2%2C2%200%200%201%202-2h6a2%2C2%200%200%201%202%2C2v3%22%2F%3E%3Cline%20x1%3D%2216%22%20y1%3D%2216%22%20x2%3D%2216%22%20y2%3D%2237%22%2F%3E%3Cline%20x1%3D%2232%22%20y1%3D%2216%22%20x2%3D%2232%22%20y2%3D%2237%22%2F%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2240.5%22%20r%3D%221.6%22%20fill%3D%22currentColor%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2234%22%20cy%3D%2240.5%22%20r%3D%221.6%22%20fill%3D%22currentColor%22%20stroke%3D%22none%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-takeaway{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11%2C20h26l-3%2C20H14Z%22%2F%3E%3Cpath%20d%3D%22M11%2C20l3-6h20l3%2C6%22%2F%3E%3Cpath%20d%3D%22M18%2C14c0-5.5%2C12-5.5%2C12%2C0%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-subscription{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M35.5%2C18.5A12.5%2C12.5%200%200%200%2011.5%2C22%22%2F%3E%3Cpolyline%20points%3D%2236.5%2011.5%2035.5%2018.5%2028.5%2017.5%22%2F%3E%3Cpath%20d%3D%22M12.5%2C29.5A12.5%2C12.5%200%200%200%2036.5%2C26%22%2F%3E%3Cpolyline%20points%3D%2211.5%2036.5%2012.5%2029.5%2019.5%2030.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-bike{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2211.5%22%20cy%3D%2231%22%20r%3D%227%22%2F%3E%3Ccircle%20cx%3D%2236.5%22%20cy%3D%2231%22%20r%3D%227%22%2F%3E%3Cpolyline%20points%3D%2211.5%2031%2019%2019%2023.5%2031%2011.5%2031%22%2F%3E%3Cpolyline%20points%3D%2219%2019%2031%2019%2023.5%2031%22%2F%3E%3Cpolyline%20points%3D%2236.5%2031%2030%2014%2034.5%2014%22%2F%3E%3Cline%20x1%3D%2216%22%20y1%3D%2215.5%22%20x2%3D%2221%22%20y2%3D%2215.5%22%2F%3E%3Cline%20x1%3D%2219%22%20y1%3D%2219%22%20x2%3D%2218.3%22%20y2%3D%2215.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-plant{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M15%2C30h18l-2.5%2C10h-13Z%22%2F%3E%3Cline%20x1%3D%2224%22%20y1%3D%2230%22%20x2%3D%2224%22%20y2%3D%2217%22%2F%3E%3Cpath%20d%3D%22M24%2C23c-5.5%2C0-9.5-3.5-9.5-9.5c5.5%2C0%2C9.5%2C3.5%2C9.5%2C9.5Z%22%2F%3E%3Cpath%20d%3D%22M24%2C18c0-5.5%2C3.5-9.5%2C9.5-9.5c0%2C5.5-3.5%2C9.5-9.5%2C9.5Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-scissors{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2235%22%20r%3D%225%22%2F%3E%3Ccircle%20cx%3D%2233%22%20cy%3D%2235%22%20r%3D%225%22%2F%3E%3Cline%20x1%3D%2218.5%22%20y1%3D%2231.5%22%20x2%3D%2233%22%20y2%3D%229%22%2F%3E%3Cline%20x1%3D%2229.5%22%20y1%3D%2231.5%22%20x2%3D%2215%22%20y2%3D%229%22%2F%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%2223%22%20r%3D%221.3%22%20fill%3D%22currentColor%22%20stroke%3D%22none%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-k-insurance{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M24%2C7l14%2C5v11c0%2C8.5-6%2C14.5-14%2C18c-8-3.5-14-9.5-14-18V12Z%22%2F%3E%3Cpolyline%20points%3D%2218%2024%2022.5%2028.5%2030.5%2020%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+.ico-check{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpolyline%20points%3D%2211%2025%2020%2034%2037%2015%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E")}
+
+/* Knöpfe */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;
+  border-radius:var(--r-klein);font:600 16px/1 var(--sans);text-decoration:none;border:0;cursor:pointer;white-space:nowrap}
+.btn-primary{background:var(--pink-dunkel);color:#fff}
+.btn-primary:hover{background:#ad1452}
+.btn-ghost{color:var(--tinte);background:transparent}
+.btn-ghost:hover{background:var(--pink-hell)}
+.btn-white{background:#fff;color:var(--pink-dunkel)}
+.btn-white:hover{background:var(--rose-weiss)}
+.btn-lg{min-height:56px;padding:0 28px;font-size:18px}
+
+/* Kopfzeile */
+.nav-bar{position:sticky;top:0;z-index:20;background:var(--bg-page);transition:box-shadow .2s var(--ease)}
+.nav-bar.is-stuck{box-shadow:0 1px 0 var(--pink-hell)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;padding-bottom:14px}
+.logo{display:inline-flex;align-items:center;gap:10px;font:400 26px/1 var(--serif);color:var(--tinte);text-decoration:none}
+.logo svg{width:36px;height:36px;flex:none}
+a:has(> .logo){text-decoration:none}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav .btn-primary .short{display:none}
+@media (max-width:520px){.nav .logo{font-size:22px;gap:8px}.nav .logo svg{width:30px;height:30px}.nav .btn{min-height:40px;padding:0 12px;font-size:15px}.nav .btn-primary .long{display:none}.nav .btn-primary .short{display:inline}}
+
+/* Hero */
+.hero{display:grid;gap:40px;padding-top:24px;padding-bottom:72px;align-items:center}
+@media (min-width:1120px){.hero{grid-template-columns:.9fr 1.3fr;gap:40px;padding-top:40px;padding-bottom:96px}}
+.hero h1{font-size:48px;line-height:1.02;max-width:11ch}
+@media (min-width:640px){.hero h1{font-size:72px}}
+@media (min-width:1180px){.hero h1{font-size:84px}}
+.lead{font-size:20px;line-height:1.5;margin-top:24px;max-width:30em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-top:32px}
+.hero-note{font-size:13.2px;color:var(--grau-rose);max-width:22em}
+
+/* Die pinke Bühne: Kopfbereich der App im Grossformat */
+.stage{position:relative;background:var(--pink);border-radius:var(--r-karte);overflow:hidden;
+  padding:40px 20px 0;display:flex;justify-content:center;min-height:560px}
+.stage::before,.stage::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.stage::before{width:520px;height:520px;right:-180px;top:-200px;background:rgba(255,255,255,.07)}
+.stage::after{width:300px;height:300px;left:-110px;bottom:-120px;background:rgba(255,255,255,.05)}
+@media (min-width:960px){.stage{padding:56px 28px 0;min-height:640px}}
+
+/* Handy */
+.phone{position:relative;z-index:1;width:300px;height:600px;flex:none;border-radius:44px;background:var(--tinte);padding:10px;
+  box-shadow:0 30px 60px -20px rgba(45,27,36,.45);align-self:flex-end;margin-bottom:-24px}
+
+.screen{position:relative;width:100%;height:100%;border-radius:35px;background:var(--rose-weiss);overflow:hidden;font-size:11px}
+.notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:86px;height:24px;border-radius:999px;background:var(--tinte);z-index:3}
+.p-top{position:relative;background:var(--pink);color:#fff;padding:42px 16px 14px;border-radius:0 0 var(--r-karte) var(--r-karte);overflow:hidden}
+.p-top::before{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-60px;top:-70px;background:rgba(255,255,255,.07)}
+.p-top::after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;left:-36px;bottom:-46px;background:rgba(255,255,255,.05)}
+.p-lbl{font-weight:600;font-size:11px}
+.p-total{display:flex;align-items:baseline;gap:5px;margin:0 0 8px;font-weight:700}
+.p-total small{font-size:11px}
+.p-total b{font-size:28px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.p-pill{display:flex;gap:6px;background:rgba(45,27,36,.15);border-radius:999px;padding:4px 10px;margin-top:5px;font-size:11px}
+.p-pill b{font-weight:600}
+.p-body{padding:12px 12px}
+.p-month{font-family:var(--serif);font-size:20px;margin:0 2px 8px}
+.p-card{background:#fff;border-radius:12px;padding:12px}
+.p-card + .p-card{margin-top:8px}
+.p-budget{display:flex;gap:10px;align-items:center}
+.p-budget .ibox{width:36px;height:36px;border-radius:9px;background:var(--pink-hell);color:var(--pink-dunkel);display:grid;place-items:center;font-size:18px}
+.p-budget .k{font-size:11px;color:var(--grau-rose)}
+.p-budget .v{font-size:16px;font-weight:700;color:var(--pink-dunkel);line-height:1.2}
+.p-budget .s{font-size:11px}
+.donut{position:relative;width:140px;height:140px;margin:0 auto 10px;border-radius:50%;
+  -webkit-mask:radial-gradient(circle,transparent 45px,#000 46px);mask:radial-gradient(circle,transparent 45px,#000 46px)}
+.donut-wrap{position:relative}
+.donut-mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.25}
+.donut-mid b{display:block;font-size:15px;color:var(--pink-dunkel);font-variant-numeric:tabular-nums}
+.donut-mid span{font-size:11px}
+.rows{display:grid;gap:5px}
+.row{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:9px;background:var(--rose-weiss);font-size:11px;border:1px solid var(--rc,var(--pink-hell))}
+.row .dot{width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
+.row .ico{color:var(--c);font-size:13px}
+.row .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .a{font-weight:700;color:var(--ausgabe-text);font-variant-numeric:tabular-nums}
+.row.is-new{animation:flash 1.2s ease}
+.p-toast{position:absolute;left:12px;right:12px;top:40px;z-index:4;display:flex;align-items:center;gap:8px;background:var(--tinte);color:#fff;
+  border-radius:var(--r);padding:9px 12px;font-size:12px;font-weight:600;box-shadow:var(--sch-schwebend);opacity:0;transform:translateY(-8px);transition:opacity .2s var(--ease),transform .2s var(--ease);pointer-events:none}
+.p-toast.show{opacity:1;transform:none}
+.p-toast .ico{color:#4ade80;font-size:15px}
+@keyframes flash{0%{background:var(--pink-hell)}100%{background:var(--rose-weiss)}}
+
+/* «Eintrag hinzufügen»: zum Ausprobieren */
+.try{position:relative;z-index:2;background:#fff;border-radius:var(--r-karte);box-shadow:var(--sch-schwebend);padding:18px;width:100%;max-width:340px}
+.try h2{font-size:20px;line-height:1.2}
+.try p{font-size:13.2px;color:var(--grau-rose);margin-top:4px}
+.try-list{display:grid;gap:8px;margin-top:14px}
+.try-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:var(--r);
+  border:1px solid var(--pink-hell);background:var(--rose-weiss);color:var(--tinte);font:500 15px/1.2 var(--sans);cursor:pointer;transition:background .2s var(--ease),border-color .2s var(--ease)}
+.try-btn:hover{border-color:var(--pink)}
+.try-btn .ico{color:var(--c);font-size:20px}
+.try-btn .n{flex:1;min-width:0}
+.try-btn .n small{display:block;font-weight:400;font-size:13.2px;color:var(--grau-rose)}
+.try-btn .a{font-weight:700;color:var(--ausgabe-text);font-variant-numeric:tabular-nums}
+.try-btn[aria-pressed="true"]{background:var(--pink-hell);border-color:var(--pink-dunkel)}
+.try-btn[aria-pressed="true"] .a::after{content:" ✓";color:var(--pink-dunkel)}
+.stage{gap:20px;align-items:flex-end}
+.stage .try{width:256px;flex:none;align-self:center;margin-bottom:40px}
+.row .a,.try-btn .a{white-space:nowrap}
+@media (max-width:639px){
+  .stage{flex-direction:column;align-items:center;padding:28px 16px 16px;min-height:0;gap:0}
+  .phone{height:500px;margin:0 0 -100px;align-self:center}
+  .p-budget{display:none}
+  .stage .try{order:2;width:100%;margin:0;align-self:stretch;max-width:none;padding:16px}
+  .try-list{grid-template-columns:1fr 1fr;margin-top:12px}
+  .try-btn{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"i a" "n n";gap:4px 8px;padding:10px 12px}
+  .try-btn .ico{grid-area:i}
+  .try-btn .a{grid-area:a;text-align:right}
+  .try-btn .n{grid-area:n}
+  .try-btn .n small{display:none}
+}
+
+/* Abschnitte */
+.sec{padding:88px 0}
+.sec-head{max-width:36em}
+.sec h2{font-size:36px;line-height:1.1}
+@media (min-width:640px){.sec h2{font-size:48px}}
+.sec-head p{font-size:18px;margin-top:16px}
+
+/* Ablauf */
+.steps{list-style:none;margin:48px 0 0;padding:0;display:grid;gap:28px;counter-reset:s}
+@media (min-width:760px){.steps{grid-template-columns:repeat(4,1fr);gap:24px}}
+.steps li{counter-increment:s;position:relative;padding-top:64px}
+.steps li::before{content:counter(s);position:absolute;top:0;left:0;font:400 48px/1 var(--serif);color:var(--pink-dunkel)}
+@media (min-width:760px){.steps li:not(:last-child)::after{content:"";position:absolute;top:24px;left:44px;right:-12px;height:1px;background:var(--pink-hell)}}
+.steps h3{font-size:24px;line-height:1.2}
+.steps p{margin-top:8px;max-width:26em}
+.steps .q{display:inline-block;margin-top:12px;font-size:13.2px;background:#fff;border-radius:var(--r-klein);padding:4px 12px;color:var(--grau-rose)}
+
+/* Funktionen */
+.features{background:#fff}
+.feat-grid{display:grid;gap:56px;margin-top:8px}
+@media (min-width:960px){.feat-grid{grid-template-columns:5fr 7fr;gap:72px;align-items:start}.feat-grid .sec-head{position:sticky;top:40px}}
+.feat-list{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.feat-list li{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:24px 0;border-top:1px solid var(--pink-hell)}
+.feat-list li:last-child{border-bottom:1px solid var(--pink-hell)}
+.feat-list .ibox{width:44px;height:44px;border-radius:var(--r-klein);background:var(--pink-hell);color:var(--pink-dunkel);display:grid;place-items:center;font-size:22px}
+.feat-list h3{font:500 20px/1.4 var(--sans)}
+.feat-list p{margin-top:4px;max-width:34em}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.cat{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 8px;border-radius:999px;background:var(--rose-weiss);border:1px solid var(--pink-hell);font-size:13.2px}
+.cat .ico{color:var(--c);font-size:16px}
+
+/* Ehrlich gesagt */
+.honest{display:grid;gap:32px}
+@media (min-width:860px){.honest{grid-template-columns:1fr 1fr;gap:72px;align-items:start}}
+.honest dl{margin:0;display:grid;gap:12px}
+.honest dl div{background:#fff;border-radius:var(--r-karte);padding:20px 22px}
+.honest dt{font-weight:600;font-size:18px}
+.honest dd{margin:4px 0 0}
+
+/* FAQ */
+.faq{max-width:760px}
+.faq details{border-top:1px solid var(--pink-hell)}
+.faq details:last-child{border-bottom:1px solid var(--pink-hell)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px 0;font:600 18px/1.35 var(--sans)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ico{transition:transform .2s var(--ease);color:var(--pink-dunkel)}
+.faq details[open] summary .ico{transform:rotate(180deg)}
+.faq details p{padding:0 0 22px;max-width:38em}
+
+/* Schluss */
+.final{position:relative;overflow:hidden;background:var(--pink);color:#fff;border-radius:var(--r-karte);padding:64px 24px;text-align:center}
+.final > *{position:relative;z-index:1}
+.final h2{font-size:40px;line-height:1.1;max-width:20ch;margin:0 auto;text-wrap:balance}
+@media (min-width:640px){.final h2{font-size:56px}}
+.final p{font-size:24px;line-height:1.35;margin:16px auto 32px;max-width:40ch}
+
+.foot{padding-top:56px;padding-bottom:40px;display:flex;flex-wrap:wrap;gap:24px 40px;align-items:center;justify-content:space-between;font-size:13.2px;color:var(--grau-rose)}
+.foot .logo{font-size:22px}.foot .logo svg{width:30px;height:30px}
+.foot nav{display:flex;flex-wrap:wrap;gap:8px 24px}
+.foot a{color:var(--tinte);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+
+/* ===== Variante «Roter Faden» ===== */
+/* Hero: zentriert, Bühne darunter über die ganze Breite */
+.fhero{text-align:center;padding-top:40px;padding-bottom:40px}
+.fhero h1{font-size:48px;line-height:1.02;max-width:12ch;margin:0 auto;text-wrap:balance}
+@media (min-width:640px){.fhero h1{font-size:72px}}
+@media (min-width:1120px){.fhero{padding-top:72px;padding-bottom:56px}.fhero h1{font-size:96px;max-width:13ch}}
+.fhero .lead{margin:24px auto 0;max-width:34em}
+.fhero .hero-cta{flex-direction:column;justify-content:center;margin-top:32px}
+.fhero .hero-note{max-width:none}
+.stage{min-height:0}
+.stage::before,.stage::after{display:none}
+@media (min-width:960px){.stage{gap:48px;padding-top:64px}.stage .try{width:300px}}
+
+/* Der rote Faden: eine Linie durch den ganzen Monat */
+.story{position:relative;--tx:7px;--ind:40px;padding-top:24px}
+.thread{position:absolute;left:var(--tx);top:0;width:2px;height:var(--th,100%);background:var(--pink-hell);border-radius:2px}
+.thread i{position:absolute;inset:0;background:var(--pink);border-radius:2px;transform-origin:top;transform:scaleY(var(--p,0))}
+.chap{position:relative;padding:64px 0 64px var(--ind)}
+.when{position:relative;margin:0 0 16px;font:400 22px/1.2 var(--serif);color:var(--grau-rose);transition:color .3s var(--ease)}
+.when::before{content:"";position:absolute;left:calc(var(--tx) - var(--ind) - 7px);top:.3em;width:16px;height:16px;border-radius:50%;
+  background:var(--bg-page);border:2px solid var(--pink-hell);box-sizing:border-box;transition:background .3s var(--ease),border-color .3s var(--ease)}
+.chap.is-on .when{color:var(--pink-dunkel)}
+.chap.is-on .when::before{background:var(--pink);border-color:var(--pink)}
+.chap h2{font-size:36px;line-height:1.1}
+@media (min-width:640px){.chap h2{font-size:48px}}
+.chap-lead{font-size:18px;margin-top:16px;max-width:36em}
+
+@media (min-width:1120px){
+  .story{--tx:7px;--ind:0px}
+  .chap{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap);padding:72px 0}
+  .when{grid-column:1 / 3;margin:0;padding-left:32px;position:sticky;top:96px;align-self:start;font-size:26px}
+  .when::before{left:0;top:.25em}
+  .chap-body{grid-column:3 / 13}
+  .chap.no-mark .chap-body{grid-column:3 / 11}
+}
+
+/* Schritte im Kapitel «Heute» */
+.chap .steps{margin-top:40px}
+@media (min-width:1120px){.chap .steps{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--col-gap)}.chap .steps li{grid-column:auto}}
+
+/* Karten mit kleinen App-Ausschnitten */
+.bento{display:grid;gap:var(--col-gap);margin-top:40px}
+@media (min-width:760px){.bento.two{grid-template-columns:1fr 1fr}.bento.three{grid-template-columns:1fr 1fr}.bento.three .big{grid-column:1 / -1}}
+@media (min-width:1120px){.bento.three{grid-template-columns:repeat(10,minmax(0,1fr))}.bento.three .big{grid-column:1 / 11}.bento.three .card:not(.big){grid-column:span 5}}
+.card{background:#fff;border-radius:var(--r-karte);padding:24px;display:flex;flex-direction:column}
+@media (min-width:640px){.card{padding:32px}}
+.card .ibox{width:44px;height:44px;border-radius:var(--r-klein);background:var(--pink-hell);color:var(--pink-dunkel);display:grid;place-items:center;font-size:22px}
+.card h3{font:500 20px/1.4 var(--sans);margin-top:16px}
+.card > p{margin-top:4px;max-width:34em}
+.card .cats{margin-top:20px}
+.mini{margin-top:auto;padding-top:24px;display:grid;gap:6px}
+.m-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);background:var(--rose-weiss);border:1px solid var(--pink-hell);font-size:15px}
+.m-row .d{width:2.2em;color:var(--grau-rose);font-variant-numeric:tabular-nums}
+.m-row .ico{color:var(--c);font-size:18px}
+.m-row .n{flex:1;min-width:0}
+.m-row .v{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.m-row .v.out{color:var(--ausgabe-text)}
+.m-row .v.in{color:#15803d}
+.m-row.m-sum{background:var(--pink);border-color:var(--pink);color:#fff}
+
+.budget{gap:10px}
+.b-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.b-head span{font-weight:600}
+.b-head b{font:400 36px/1 var(--serif);color:var(--pink-dunkel);font-variant-numeric:tabular-nums}
+.b-bar{height:14px;border-radius:999px;background:var(--rose-flaeche);overflow:hidden}
+.b-bar i{display:block;height:100%;background:var(--pink);border-radius:999px}
+.b-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13.2px;color:var(--grau-rose)}
+
+.cal{grid-template-columns:repeat(7,1fr);gap:4px;font-size:13.2px;text-align:center}
+.cal .h{color:var(--grau-rose);padding-bottom:2px}
+.cal .d{position:relative;padding:6px 0 10px;border-radius:8px;font-variant-numeric:tabular-nums}
+.cal .d.x::after{content:"";position:absolute;left:50%;bottom:3px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--pink)}
+.cal .d.t{background:var(--pink);color:#fff}
+.cal .d.t::after{background:#fff}
+
+.bars{grid-template-columns:repeat(3,1fr);gap:16px;align-items:end;height:220px;padding-top:32px}
+.bar{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.bar i{display:block;width:100%;max-width:72px;background:var(--pink-hell);border-radius:10px 10px 4px 4px}
+.bar.now i{background:var(--pink)}
+.bar .v{order:-1;font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.bar .m{font-size:13.2px;color:var(--grau-rose)}
+
+.facts{margin:40px 0 0;display:grid;gap:var(--col-gap)}
+@media (min-width:860px){.facts{grid-template-columns:repeat(3,1fr)}}
+.facts div{background:#fff;border-radius:var(--r-karte);padding:24px}
+.facts dt{font-weight:600;font-size:18px}
+.facts dd{margin:6px 0 0}
+
+#fragen .faq{margin-top:32px;max-width:none}
+.chap.last{padding-bottom:24px}
+.chap.last .final{margin-top:0}
+@media (min-width:1120px){.chap.last .final{padding:88px 24px}}
+
+/* Ohne sichtbare Linie: Datum als ruhige Überschrift */
+.thread,.when::before{display:none}
+.story{--ind:0px}
+.when{color:var(--pink-dunkel)}
+@media (min-width:1120px){.when{padding-left:0}}
+
+/* Ohne Daten: Inhalt über die ganze Breite */
+@media (min-width:1120px){.chap-body{grid-column:1 / 13}.chap.no-mark .chap-body{grid-column:1 / 9}}
+
+/* Bildschirmaufnahme statt Ausprobieren */
+.stage{justify-content:center;align-items:flex-end}
+.screen .demo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;display:block;background:var(--rose-weiss)}
+.demo-toggle{position:absolute;right:16px;bottom:16px;z-index:3;min-height:40px;padding:0 14px;border:0;border-radius:var(--r-klein);
+  background:rgba(45,27,36,.28);color:#fff;font:600 14px/1 var(--sans);cursor:pointer}
+.demo-toggle:hover{background:rgba(45,27,36,.42)}
+.demo-toggle:focus-visible{outline-color:#fff}
+@media (max-width:639px){.stage{padding:28px 16px 0}.phone{height:540px;margin:0 0 -24px}.demo-toggle{right:12px;bottom:12px}}
+
+/* Video-Knopf nur als Symbol (Pause: zwei Balken, Abspielen: Dreieck) */
+.demo-toggle{width:44px;height:44px;min-height:0;padding:0;border-radius:50%;display:grid;place-items:center;font-size:0}
+.demo-toggle::before{content:"";width:12px;height:14px;border-left:4px solid #fff;border-right:4px solid #fff;box-sizing:border-box}
+.demo-toggle[aria-pressed="true"]::before{width:0;height:0;border-style:solid;border-width:8px 0 8px 13px;border-color:transparent transparent transparent #fff;margin-left:4px}
+@media (max-width:639px){.phone{width:260px;height:520px}.demo-toggle{right:8px;bottom:8px;width:40px;height:40px}}
+
+/* Handy ganz sichtbar: oben und unten gleich viel Abstand */
+.stage{align-items:center;min-height:0;padding:56px 16px}
+.stage .phone{margin:0}
+@media (min-width:960px){.stage{padding:64px 28px;min-height:0}}
+@media (max-width:639px){.stage{padding:32px 16px}.stage .phone{margin:0}}
+
+/* Mockup im Format iPhone 16 (Bildschirm 393 × 852 pt, Dynamic Island 126 × 37 pt) */
+.stage .phone{width:322px;height:auto;padding:11px;border-radius:53px;box-sizing:border-box}
+.stage .screen{width:300px;height:auto;aspect-ratio:393 / 852;border-radius:42px}
+.stage .notch{top:8px;width:96px;height:28px}
+.screen .demo{object-position:center}
+@media (max-width:639px){
+  .stage .phone{width:258px;height:auto;padding:9px;border-radius:43px}
+  .stage .screen{width:240px;border-radius:34px}
+  .stage .notch{top:7px;width:77px;height:23px}
+}
+
+/* Schrittzahlen mittig über der Spalte, Linie von Zahl zu Zahl */
+.chap .steps{--sg:24px}
+.chap .steps li::before{left:50%;transform:translateX(-50%)}
+@media (min-width:760px){.chap .steps li:not(:last-child)::after{left:calc(50% + 32px);right:calc(-50% - var(--sg) + 32px)}}
+@media (min-width:1120px){.chap .steps{--sg:var(--col-gap)}}
+/* Handy: Nummer links neben dem Titel statt gross darüber */
+@media (max-width:759px){
+  .chap .steps{gap:24px}
+  .chap .steps li{padding:0 0 0 44px}
+  .chap .steps li::before{left:0;top:-2px;transform:none;font-size:32px}
+}
+
+/* Kategorien als Raster mit Symbol-Kachel statt Pillen */
+.card .cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 8px;margin-top:auto;padding-top:24px}
+.card .cat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:0;border-radius:0;background:none;font-size:13.2px;text-align:center;min-width:0}
+.card .cat .k{display:grid;place-items:center;width:44px;height:44px;border-radius:var(--r-klein);background:color-mix(in srgb,var(--c) 14%,#fff)}
+.card .cat .ico{font-size:20px}
+
+/* Balken: echte Höhen (vorher alle gleich hoch, weil die Flex-Spalte sie gestaucht hat) */
+.bars{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;height:240px;padding-top:24px}
+.bar{gap:8px}
+.bar .t{position:relative;flex:1;width:100%;max-width:56px}
+.bar .t i{position:absolute;left:0;right:0;bottom:0;max-width:none;width:auto}
+.bar .t .v{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);padding-bottom:4px;font-size:13.2px;font-style:normal;white-space:nowrap}
+.bar:not(.now) .v{font-weight:500;color:var(--grau-rose)}
+
+/* Kategorien mittig im freien Raum der Karte */
+.card .cats{margin-block:auto;padding-block:24px 0}
+@media (min-width:640px){.card .cats{padding-top:32px}}
+
+/* Nur vier Monate */
+.bars{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.bar .t{max-width:64px}
+
+/* Häufige Fragen: weisser Hintergrund über die ganze Breite */
+#fragen{background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax)}
+
+/* Desktop: Handy passt immer ganz in die Fensterhöhe (unter der festen Navigation) */
+@media (min-width:640px){
+  .stage{padding-block:40px}
+  .stage .phone{width:auto}
+  .stage .screen{width:auto;height:clamp(420px,calc(100vh - 76px - 80px - 22px - 24px),650px);height:clamp(420px,calc(100svh - 76px - 80px - 22px - 24px),650px)}
+}
+
+/* Kapitel «Auf dem Handy und am Computer» */
+#ueberall{background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax)}
+#ueberall .chap-lead a{color:var(--pink-dunkel);font-weight:600;text-decoration:none}
+.geraete-bild{margin:40px 0 0}
+.geraete-bild img{display:block;width:100%;height:auto}
+.geraete-punkte{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:20px}
+@media (min-width:860px){.geraete-punkte{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--col-gap)}}
+.geraete-punkte b{display:block;font-weight:600;font-size:18px}
+.geraete-punkte span{display:block;margin-top:4px}
+/* Geräte-Bild passt ganz in die Fensterhöhe (unter der festen Navigation) */
+@media (min-width:640px){.geraete-bild img{width:auto;max-width:100%;max-height:calc(100vh - 76px - 48px);max-height:calc(100svh - 76px - 48px);margin:0 auto}}
+
+/* Geräte: iPhone 16 Pro (immer), MacBook Air ab 1024px */
+.stage .devices{position:relative;display:flex;justify-content:center;align-items:flex-end}
+.stage .laptop{display:none}
+.stage .iphone{position:relative;width:min(258px,70vw);aspect-ratio:472 / 971;filter:drop-shadow(0 24px 32px rgba(45,27,36,.35))}
+@media (min-width:640px){.stage .iphone{width:auto;height:clamp(440px,calc(100svh - 76px - 80px),680px)}}
+.stage .ip-screen{position:absolute;left:4.025%;top:1.648%;width:91.737%;height:96.704%;overflow:hidden;background:#fff;border-radius:14.3% / 6.6%}
+.stage .lap-screen{position:absolute;left:8.247%;top:2.716%;width:83.537%;height:81.998%;overflow:hidden;background:#fff}
+.stage .ip-screen .demo,.stage .lap-screen .demo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.stage .ip-frame,.stage .lap-frame{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+@media (min-width:1024px){
+  .stage{padding-block:48px}
+  .stage .devices{width:min(100%,1100px,calc((100vh - 76px - 96px) * 1.5074));width:min(100%,1100px,calc((100svh - 76px - 96px) * 1.5074));margin-inline:auto}
+  .stage .laptop{display:block;position:relative;width:100%;aspect-ratio:3274 / 2172}
+  .stage .iphone{display:none}
+}
+
+/* Layout-Raster Desktop: 12 Spalten, 20px Abstand, Inhalt 1280px (= 320px Rand bei 1920px Fensterbreite) */
+:root{--cols:12;--col-gap:20px;--content:1280px}
+@media (min-width:1120px){
+  .wrap{max-width:calc(var(--content) + 2 * var(--gutter))}
+  .hero,.feat-grid,.honest,.steps{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap)}
+  .hero > :first-child{grid-column:1 / 6}
+  .hero > .stage{grid-column:6 / 13}
+  .steps{row-gap:28px}
+  .steps li{grid-column:span 3}
+  .steps li:not(:last-child)::after{right:-8px}
+  .feat-grid > .sec-head{grid-column:1 / 5}
+  .feat-grid > .feat-list{grid-column:6 / 13}
+  .honest > .sec-head{grid-column:1 / 6}
+  .honest > dl{grid-column:7 / 13}
+  .faq{max-width:calc((100% - 11 * var(--col-gap)) / 12 * 8 + 7 * var(--col-gap))}
+}
+/* Raster zum Kontrollieren einblenden: spendly.ch/?raster */
+.raster{position:fixed;inset:0;z-index:999;pointer-events:none}
+.raster .wrap{height:100%;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap)}
+.raster .wrap span{background:rgba(255,0,0,.1)}
+
+/* Sprachwahl im Footer: Knopf öffnet die Liste nach oben */
+.lang{position:relative}
+.lang-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 12px;border:1px solid color-mix(in srgb,var(--tinte) 16%,transparent);border-radius:var(--r-klein);background:var(--weiss);color:var(--tinte);font:500 14px/1 var(--sans);cursor:pointer;transition:border-color .2s var(--ease)}
+.lang-btn .ico{font-size:16px;color:var(--grau-rose);transition:transform .2s var(--ease)}
+.lang.open .lang-btn .ico{transform:rotate(180deg)}
+.lang-btn:focus-visible,.lang-list a:focus-visible{outline:2px solid var(--pink-dunkel);outline-offset:2px}
+.lang-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px}
+.lang-list a{display:block;color:var(--tinte);text-decoration:none}
+.lang-list a[aria-current]{font-weight:600;color:var(--pink-dunkel)}
+.lang-js .lang-list{display:none;position:absolute;left:0;bottom:calc(100% + 8px);z-index:20;min-width:200px;padding:6px;flex-direction:column;gap:2px;background:var(--weiss);border-radius:var(--r);box-shadow:var(--sch-schwebend)}
+.lang-js.open .lang-list{display:flex}
+.lang-js .lang-list a{padding:10px 12px;border-radius:var(--r-klein);font-size:15px}
+.foot .lang-list a:hover{text-decoration:none}
+@media (hover:hover){.lang-btn:hover{border-color:color-mix(in srgb,var(--tinte) 32%,transparent)}.lang-js .lang-list a:hover{background:var(--rose-flaeche)}}
+@media (prefers-reduced-motion:reduce){.lang-btn,.lang-btn .ico{transition:none}}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does Spendly cost?", "acceptedAnswer": {"@type": "Answer", "text": "Nothing. Spendly is a private project, with no subscription and no ads."}}, {"@type": "Question", "name": "Do I need to download an app?", "acceptedAnswer": {"@type": "Answer", "text": "No. Spendly runs in the browser on phone, tablet and computer. Just open app.spendly.ch. Apps for the App Store and Google Play are planned."}}, {"@type": "Question", "name": "Do I need an account?", "acceptedAnswer": {"@type": "Answer", "text": "Not to try it. You set up Spendly and see a preview. Only when you want to save your entries do you create an account with your email address."}}, {"@type": "Question", "name": "Can I connect Spendly to my bank?", "acceptedAnswer": {"@type": "Answer", "text": "No. You record your expenses yourself, your bank login stays with you."}}, {"@type": "Question", "name": "Can I add several accounts?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Salary account, savings account or cash: Spendly adds all accounts up into one total balance."}}, {"@type": "Question", "name": "Is there a dark mode?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. In settings you choose Light, Dark or like your device."}}, {"@type": "Question", "name": "Where is my data stored?", "acceptedAnswer": {"@type": "Answer", "text": "On servers in Frankfurt (EU). You will find the details in the privacy policy (in German)."}}, {"@type": "Question", "name": "Can I delete my account?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, any time. In settings you delete your account with all entries."}}]}</script>
+</head>
+<body>
+<a class="skip" href="#inhalt">Skip to content</a>
+
+<div class="nav-bar" id="nav-bar"><header class="wrap nav">
+  <a href="#" aria-label="Spendly home"><span class="logo"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1451.3 1451.3"><defs><style>
+      .lm0 {
+        fill: #e91e63;
+      }
+    </style></defs><g><path d="M1202.6,482.9l-327.4,36.8h-7.6c-34.8,0-65.4-26.4-68.8-61.9-4.2-38.2,22.9-72.3,61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7,25.7-174.5,91.8-188.4,144.6-25,95.2,91.8,151.6,278.8,220.4l-46.6,130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1,29.2-111.2,146-209.3,289.9-244,164.1-39.6,337.9,3.5,495.7,120.3l-18.1-159.2c-4.2-38.2,22.9-72.3,61.2-77.2,38.2-4.2,72.3,22.9,77.2,61.2l38.9,343.4c4.2,38.2-22.9,72.3-61.2,77.2h-.7v.7h-.1Z"/><path class="lm0" d="M934.3,1282.4c-54.9,20.9-118.9,31.3-187.7,31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8,158.5c7,37.5-18.8,73.7-56.3,80.6-4.2,0-8.3.7-12.5.7-33.4,0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8,11.1-52.1s26.4-25.7,45.2-28.5l324.7-57.7c37.5-7,73.7,18.8,80.6,56.3,7,37.5-18.8,73.7-56.3,80.6l-178.7,31.3c91.1,54.9,216.9,91.8,330.9,91.8s97.3-7,139.7-22.9c94.5-35.5,136.3-109.1,126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1,57.7,305.2,124.4,316.3,261.4,14.6,178.7-62.6,308.7-216.9,366.4h0l.7.7h.1Z"/></g></svg><span>Spendly</span></span></a>
+  <nav class="nav-links" aria-label="Main navigation">
+    <a class="btn btn-ghost" href="https://app.spendly.ch/?lang=en">Log in</a>
+    <a class="btn btn-primary" href="https://app.spendly.ch/?lang=en"><span class="long">Try it free</span><span class="short">Try it</span></a>
+  </nav>
+</header></div>
+
+<main id="inhalt" tabindex="-1">
+<section class="wrap fhero">
+  <h1>Where does your money actually go?</h1>
+  <p class="lead">Spendly is your everyday budget app. Record your expenses from anywhere and always see how much of the month is left.</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary btn-lg" href="https://app.spendly.ch/?lang=en">Try it free</a>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="stage">
+    <div class="devices">
+      <div class="laptop">
+        <div class="lap-screen">
+          <video id="demo-lap" class="demo" muted loop playsinline preload="none" poster="/assets/video/spendly-laptop.webp" data-src="/assets/video/spendly-laptop.mp4"
+            aria-label="Screen recording of Spendly on a computer: an expense of CHF 16 for restaurants with the note “Bäckerei” is entered."></video>
+        </div>
+        <img class="lap-frame" src="/assets/img/laptop-1800.webp" srcset="/assets/img/laptop-1200.webp 1200w, /assets/img/laptop-1800.webp 1800w, /assets/img/laptop-2400.webp 2400w" sizes="(min-width:1024px) 1100px, 1px" width="3274" height="2172" alt="" decoding="async">
+      </div>
+      <div class="iphone">
+        <div class="ip-screen">
+          <video id="demo" class="demo" muted loop playsinline preload="none" poster="/assets/video/spendly-handy.webp" data-src="/assets/video/spendly-handy.mp4"
+            aria-label="Screen recording of Spendly on a phone: an expense of CHF 16 for restaurants with the note “Bäcker” is entered, then the balance, available budget and circle update."></video>
+        </div>
+        <img class="ip-frame" src="/assets/img/iphone-rahmen.webp" width="472" height="971" alt="" decoding="async">
+      </div>
+    </div>
+    <button type="button" class="demo-toggle" id="demo-toggle" aria-pressed="false" aria-label="Pause video"></button>
+  </div>
+</section>
+
+<div class="wrap">
+<div class="story" id="story">
+
+  <section class="chap" id="ablauf">
+    <div class="chap-body">
+      <h2>Set up Spendly</h2>
+      <p class="chap-lead">Spendly briefly asks what you have in mind and sets everything up for you.</p>
+      <ol class="steps">
+        <li><h3>Choose a goal</h3><p>Save, keep track or find out where the money goes.</p></li>
+        <li><h3>Add an account</h3><p>Enter your account and current balance. You can add more accounts later.</p></li>
+        <li><h3>Set a budget</h3><p>Decide how much you want to spend per month. Spendly suggests suitable amounts.</p></li>
+        <li><h3>See the preview</h3><p>You see your finished Spendly. If you like it, save it with an account.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="chap" id="funktionen">
+    <div class="chap-body">
+      <h2>The month begins</h2>
+      <p class="chap-lead">Your budget is set, your accounts are there, and Spendly enters the fixed costs itself.</p>
+      <div class="bento two">
+        <article class="card">
+          <span class="ibox"><span class="ico ico-bank"></span></span>
+          <h3>All accounts in one place</h3>
+          <p>Spendly adds up your accounts into one total balance. Transfers between your accounts take one tap.</p>
+          <div class="mini" aria-hidden="true">
+            <div class="m-row"><span class="n">Personal account</span><span class="v">CHF 4’230.55</span></div>
+            <div class="m-row"><span class="n">Savings account</span><span class="v">CHF 2’250.00</span></div>
+            <div class="m-row m-sum"><span class="n">Total balance</span><span class="v">CHF 6’480.55</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <span class="ibox"><span class="ico ico-clock"></span></span>
+          <h3>Recurring entries</h3>
+          <p>Enter rent, salary and subscriptions once. After that, Spendly records them for you every month.</p>
+          <div class="mini" aria-hidden="true">
+            <div class="m-row"><span class="d">1.</span><span class="ico ico-house" style="--c:#fb923c"></span><span class="n">Rent</span><span class="v out">– 1’450.00</span></div>
+            <div class="m-row"><span class="d">3.</span><span class="ico ico-phone" style="--c:#a78bfa"></span><span class="n">Phone plan</span><span class="v out">– 29.00</span></div>
+            <div class="m-row"><span class="d">25.</span><span class="ico ico-coin" style="--c:#16a34a"></span><span class="n">Salary</span><span class="v in">+ 5’200.00</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="chap">
+    <div class="chap-body">
+      <h2>Coffee, groceries, bike service</h2>
+      <p class="chap-lead">Enter what you spend and see what it means for your month.</p>
+      <div class="bento three">
+        <article class="card big">
+          <span class="ibox"><span class="ico ico-coin"></span></span>
+          <h3>Monthly budget</h3>
+          <p>See at any time how much of the month is still available, down to the franc.</p>
+          <div class="mini budget" aria-hidden="true">
+            <div class="b-head"><span>Still available</span><b>CHF 622.60</b></div>
+            <div class="b-bar"><i style="width:74%"></i></div>
+            <div class="b-foot"><span>CHF 1’777.40 spent</span><span>Budget CHF 2’400.00</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <span class="ibox"><span class="ico ico-calendar"></span></span>
+          <h3>Calendar</h3>
+          <p>See what you spent on which day.</p>
+          <div class="mini cal" aria-hidden="true"><span class="h">Mo</span><span class="h">Tu</span><span class="h">We</span><span class="h">Th</span><span class="h">Fr</span><span class="h">Sa</span><span class="h">Su</span><span></span><span></span><span></span><span></span><span></span><span></span><span class="d x">1</span><span class="d">2</span><span class="d x">3</span><span class="d x">4</span><span class="d">5</span><span class="d x">6</span><span class="d x">7</span><span class="d">8</span><span class="d">9</span><span class="d x">10</span><span class="d">11</span><span class="d x">12</span><span class="d x">13</span><span class="d x">14</span><span class="d">15</span><span class="d">16</span><span class="d x">17</span><span class="d x t">18</span><span class="d">19</span><span class="d x">20</span><span class="d x">21</span><span class="d">22</span><span class="d">23</span><span class="d x">24</span><span class="d x">25</span><span class="d">26</span><span class="d x">27</span><span class="d x">28</span><span class="d">29</span><span class="d">30</span></div>
+        </article>
+        <article class="card">
+          <span class="ibox"><span class="ico ico-tag"></span></span>
+          <h3>Custom categories</h3>
+          <p>Create your own categories with colour and icon.</p>
+          <div class="cats" aria-hidden="true"><span class="cat" style="--c:#16a34a"><span class="k"><span class="ico ico-k-piggy"></span></span>Savings</span><span class="cat" style="--c:#4e8cf5"><span class="k"><span class="ico ico-k-travel"></span></span>Travel</span><span class="cat" style="--c:#f59e42"><span class="k"><span class="ico ico-k-takeaway"></span></span>Take-away</span><span class="cat" style="--c:#a78bfa"><span class="k"><span class="ico ico-k-subscription"></span></span>Subscriptions</span><span class="cat" style="--c:#38bdf8"><span class="k"><span class="ico ico-k-bike"></span></span>Bike</span><span class="cat" style="--c:#4ade80"><span class="k"><span class="ico ico-k-plant"></span></span>Plants</span><span class="cat" style="--c:#f472b6"><span class="k"><span class="ico ico-k-scissors"></span></span>Hairdresser</span><span class="cat" style="--c:#e8533a"><span class="k"><span class="ico ico-k-insurance"></span></span>Insurance</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="chap">
+    <div class="chap-body">
+      <h2>Looking back</h2>
+      <p class="chap-lead">Compare your months and find out which category costs the most.</p>
+      <div class="bento two">
+        <article class="card">
+          <span class="ibox"><span class="ico ico-combo-chart"></span></span>
+          <h3>Expenses per month</h3>
+          <div class="mini bars" aria-hidden="true">
+            <div class="bar"><span class="t"><i style="height:86%"><span class="v">2’150</span></i></span><span class="m">Aug</span></div>
+            <div class="bar"><span class="t"><i style="height:77%"><span class="v">1’920</span></i></span><span class="m">Sep</span></div>
+            <div class="bar"><span class="t"><i style="height:80%"><span class="v">2’010</span></i></span><span class="m">Oct</span></div>
+            <div class="bar now"><span class="t"><i style="height:71%"><span class="v">1’777</span></i></span><span class="m">Nov</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <span class="ibox"><span class="ico ico-shoppingbag"></span></span>
+          <h3>Most expensive categories in November</h3>
+          <div class="mini" aria-hidden="true">
+            <div class="m-row"><span class="ico ico-house" style="--c:#fb923c"></span><span class="n">Housing</span><span class="v out">– 1’450.00</span></div>
+            <div class="m-row"><span class="ico ico-shoppingbasket" style="--c:#34d399"></span><span class="n">Groceries</span><span class="v out">– 212.40</span></div>
+            <div class="m-row"><span class="ico ico-oev" style="--c:#f87171"></span><span class="n">Public transport</span><span class="v out">– 86.00</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="chap tagline" aria-label="What Spendly is about">
+    <p class="tagline-text"><span class="w">You</span> <span class="w">don’t</span> <span class="w">need</span> <span class="w">to</span> <span class="w">know</span> <span class="w">every</span> <span class="w">cent.</span><br class="br-d"> <span class="w">It’s</span> <span class="w">enough</span> <span class="w">to</span> <span class="w">know</span><br class="br-d"> <span class="w">what’s</span> <span class="w">left</span> <span class="w">of</span> <span class="w">the</span> <span class="w">month.</span></p>
+  </section>
+
+  <section class="chap" id="ueberall">
+    <div class="chap-body">
+      <h2>On your phone and computer</h2>
+      <p class="chap-lead">Spendly runs in your browser. Open <a href="https://app.spendly.ch/?lang=en">app.spendly.ch</a> on your phone, tablet or computer and you see the same numbers everywhere.</p>
+      <figure class="geraete-bild">
+        <picture>
+          <source type="image/avif" srcset="/assets/img/spendly-geraete-720.avif 720w, /assets/img/spendly-geraete-1200.avif 1200w, /assets/img/spendly-geraete-2000.avif 2000w" sizes="(min-width:1120px) 1280px, 100vw">
+          <source type="image/webp" srcset="/assets/img/spendly-geraete-720.webp 720w, /assets/img/spendly-geraete-1200.webp 1200w, /assets/img/spendly-geraete-2000.webp 2000w" sizes="(min-width:1120px) 1280px, 100vw">
+          <img src="/assets/img/spendly-geraete-1200.jpg" srcset="/assets/img/spendly-geraete-720.jpg 720w, /assets/img/spendly-geraete-1200.jpg 1200w, /assets/img/spendly-geraete-2000.jpg 2000w" sizes="(min-width:1120px) 1280px, 100vw" width="2000" height="1267" loading="lazy" decoding="async"
+          alt="Spendly on a laptop and a phone: the home screen with total balance, monthly budget and expenses by category.">
+        </picture>
+      </figure>
+      <ul class="geraete-punkte">
+        <li><b>Nothing to install</b><span>No App Store, no download. A bookmark is enough.</span></li>
+        <li><b>The same everywhere</b><span>What you enter on your phone while out, you see on your computer in the evening.</span></li>
+        <li><b>Like an app on your home screen</b><span>Add Spendly to your phone’s home screen and open it with one tap.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chap" id="daten">
+    <div class="chap-body">
+      <h2>Your numbers belong to you</h2>
+      <p class="chap-lead">Spendly is a small project from Switzerland.</p>
+      <dl class="facts">
+        <div><dt>No access to your bank account</dt><dd>Spendly does not connect to your bank. You enter what you spend yourself and so see where your money goes.</dd></div>
+        <div><dt>No ads</dt><dd>Spendly shows no ads and sells no data.</dd></div>
+        <div><dt>Stored in Frankfurt (EU)</dt><dd>Your entries are stored on servers in Frankfurt and sent encrypted.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="chap no-mark" id="fragen">
+    <div class="chap-body">
+      <h2>Common questions</h2>
+      <div class="faq">
+        <details><summary>What does Spendly cost?<span class="ico ico-arrow-down"></span></summary><p>Nothing. Spendly is a private project, with no subscription and no ads.</p></details>
+        <details><summary>Do I need to download an app?<span class="ico ico-arrow-down"></span></summary><p>No. Spendly runs in the browser on phone, tablet and computer. Just open app.spendly.ch. Apps for the App Store and Google Play are planned.</p></details>
+        <details><summary>Do I need an account?<span class="ico ico-arrow-down"></span></summary><p>Not to try it. You set up Spendly and see a preview. Only when you want to save your entries do you create an account with your email address.</p></details>
+        <details><summary>Can I connect Spendly to my bank?<span class="ico ico-arrow-down"></span></summary><p>No. You record your expenses yourself, your bank login stays with you.</p></details>
+        <details><summary>Can I add several accounts?<span class="ico ico-arrow-down"></span></summary><p>Yes. Salary account, savings account or cash: Spendly adds all accounts up into one total balance.</p></details>
+        <details><summary>Is there a dark mode?<span class="ico ico-arrow-down"></span></summary><p>Yes. In settings you choose Light, Dark or like your device.</p></details>
+        <details><summary>Where is my data stored?<span class="ico ico-arrow-down"></span></summary><p>On servers in Frankfurt (EU). You will find the details in the <a href="https://app.spendly.ch/datenschutz.html">privacy policy</a>(in German).</p></details>
+        <details><summary>Can I delete my account?<span class="ico ico-arrow-down"></span></summary><p>Yes, any time. In settings you delete your account with all entries.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="chap last" id="start">
+    <div class="chap-body">
+      <div class="final">
+        <h2>Start this month</h2>
+        <p>Set up Spendly and see where your money goes this month.</p>
+        <a class="btn btn-white btn-lg" href="https://app.spendly.ch/?lang=en">Try it free</a>
+        <p class="final-note">No subscription, no ads. You can delete your account at any time.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</div>
+</main>
+
+
+<footer class="wrap foot">
+  <span class="logo"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1451.3 1451.3"><defs><style>
+      .lm0 {
+        fill: #e91e63;
+      }
+    
+/* landing-page-design: Grundkurve, Zustände, Textumbruch, Skip-Link, Einblenden, Tagline */
+:root{--ease:cubic-bezier(.22,1,.36,1)}
+h1,h2,h3,summary{text-wrap:balance}
+p,dd,li{text-wrap:pretty}
+.skip{position:absolute;left:16px;top:-80px;z-index:100;padding:8px 12px;border-radius:var(--r-klein);background:var(--tinte);color:#fff;font-weight:600;text-decoration:none;transition:top .3s var(--ease)}
+.skip:focus{top:12px}
+main:focus{outline:none}
+.btn{transition:background .3s var(--ease),transform .3s var(--ease)}
+.btn:active{transform:scale(.98)}
+.final .final-note{font-size:16px;line-height:24px;margin:16px auto 0;opacity:.9}
+.js .chap.reveal{opacity:0;transform:translateY(32px)}
+.js .chap.reveal.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.chap.tagline{display:block;padding:64px 0;text-align:center}
+.tagline-text{margin:0 auto;max-width:680px;font:400 30px/36px var(--serif);color:var(--tinte);text-wrap:balance}
+.br-d{display:none}
+@media (min-width:640px){.tagline-text{font-size:40px;line-height:48px}.chap.tagline{padding-block:96px}}
+@media (min-width:860px){.br-d{display:inline}}
+.js .tagline-text .w{color:color-mix(in srgb,var(--tinte) 28%,var(--rose-weiss));transition:color .5s var(--ease)}
+.js .tagline-text .w.on{color:var(--tinte)}
+@media (prefers-reduced-motion:reduce){.js .chap.reveal{opacity:1;transform:none}.js .tagline-text .w{color:var(--tinte)}}
+</style></defs><g><path d="M1202.6,482.9l-327.4,36.8h-7.6c-34.8,0-65.4-26.4-68.8-61.9-4.2-38.2,22.9-72.3,61.2-77.2l179.4-20.2c-169.6-134.2-317-128.6-397-109.1-105.7,25.7-174.5,91.8-188.4,144.6-25,95.2,91.8,151.6,278.8,220.4l-46.6,130.7c-90.4-32.7-180.8-68.1-248.9-115.4-132.1-91.1-137-197.4-117.5-271.1,29.2-111.2,146-209.3,289.9-244,164.1-39.6,337.9,3.5,495.7,120.3l-18.1-159.2c-4.2-38.2,22.9-72.3,61.2-77.2,38.2-4.2,72.3,22.9,77.2,61.2l38.9,343.4c4.2,38.2-22.9,72.3-61.2,77.2h-.7v.7h-.1Z"/><path class="lm0" d="M934.3,1282.4c-54.9,20.9-118.9,31.3-187.7,31.3s-143.2-10.4-216.2-31.3c-63.3-18.1-121.7-42.4-173.1-70.9l27.8,158.5c7,37.5-18.8,73.7-56.3,80.6-4.2,0-8.3.7-12.5.7-33.4,0-62.6-23.6-68.1-57l-60.5-341.4c-3.5-18.1.7-36.8,11.1-52.1s26.4-25.7,45.2-28.5l324.7-57.7c37.5-7,73.7,18.8,80.6,56.3,7,37.5-18.8,73.7-56.3,80.6l-178.7,31.3c91.1,54.9,216.9,91.8,330.9,91.8s97.3-7,139.7-22.9c94.5-35.5,136.3-109.1,126.5-225.2-4.2-53.5-119.6-102.9-224.6-141.8l47.3-130.7c157.1,57.7,305.2,124.4,316.3,261.4,14.6,178.7-62.6,308.7-216.9,366.4h0l.7.7h.1Z"/></g></svg><span>Spendly</span></span>
+  <nav aria-label="Legal">
+    <a href="https://app.spendly.ch/datenschutz.html">Privacy</a>
+    <a href="https://app.spendly.ch/impressum.html">Imprint</a>
+    <a href="https://app.spendly.ch/nutzungsbedingungen.html">Terms of use</a>
+    <a href="https://app.spendly.ch/?lang=en">Log in</a>
+  </nav>
+  <div class="lang" id="lang">
+    <button type="button" class="lang-btn" id="lang-btn" aria-expanded="false" aria-controls="lang-list" hidden><span class="lang-cur">English</span><span class="ico ico-arrow-down" aria-hidden="true"></span></button>
+    <ul class="lang-list" id="lang-list" aria-label="Language">
+      <li><a href="/de/" hreflang="de" lang="de">Deutsch</a></li>
+      <li><a href="/fr/" hreflang="fr" lang="fr">Français</a></li>
+      <li><a href="/it/" hreflang="it" lang="it">Italiano</a></li>
+      <li><a href="/en/" hreflang="en" lang="en" aria-current="true">English</a></li>
+      <li><a href="/nl/" hreflang="nl" lang="nl">Nederlands</a></li>
+    </ul>
+  </div>
+  <span>© 2026 Spendly</span>
+</footer>
+
+<script>
+(function(){
+  var b=document.getElementById('demo-toggle'), ph=document.getElementById('demo'), lap=document.getElementById('demo-lap');
+  if(!b||!ph||!lap)return;
+  var wide=window.matchMedia?matchMedia('(min-width:1024px)'):{matches:false};
+  var paused=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function cur(){return wide.matches?lap:ph;}
+  function other(){return wide.matches?ph:lap;}
+  function play(v){var r=v.play();if(r&&r.catch)r.catch(function(){});}
+  function show(){var v=cur();other().pause();
+    if(!v.getAttribute('src')){v.src=v.getAttribute('data-src');v.preload='auto';}
+    if(!paused)play(v);}
+  function set(p){paused=p;b.setAttribute('aria-pressed',p);b.setAttribute('aria-label',p?'Play video':'Pause video');if(p)cur().pause();else play(cur());}
+  set(paused);show();
+  if(wide.addEventListener)wide.addEventListener('change',show);
+  b.addEventListener('click',function(){set(!paused);});
+  var bar=document.getElementById('nav-bar');
+  function stuck(){bar.classList.toggle('is-stuck',window.scrollY>8)} window.addEventListener('scroll',stuck,{passive:true}); stuck();
+})();
+</script>
+<script>
+if (/[?&]raster\b/.test(location.search)) {
+  var r = document.createElement('div'); r.className = 'raster'; r.setAttribute('aria-hidden', 'true');
+  r.innerHTML = '<div class="wrap">' + new Array(13).join('<span></span>') + '</div>';
+  document.body.appendChild(r);
+}
+</script>
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!('IntersectionObserver' in window)||reduce){document.documentElement.classList.remove('js');return;}
+  // Abschnitte steigen beim ersten Erscheinen leicht auf, nur einmal
+  var chaps=[].slice.call(document.querySelectorAll('.story > .chap:not(.tagline)'));
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -10% 0px'});
+  chaps.forEach(function(c){var r=c.getBoundingClientRect();if(r.top<innerHeight*0.9)return;c.classList.add('reveal');io.observe(c);});
+  // Tagline: Wort für Wort, sobald es die Linie bei 60 % der Fensterhöhe kreuzt
+  var wio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');wio.unobserve(e.target);}});},{rootMargin:'0px 0px -40% 0px'});
+  [].forEach.call(document.querySelectorAll('.tagline-text .w'),function(w){wio.observe(w);});
+})();
+</script>
+<script>
+/* Sprachwahl: Liste öffnet nach oben, Escape und Klick daneben schliessen. Die Wahl wird als Cookie gemerkt (für die Weiterleitung von spendly.ch/). */
+(function(){
+  var box=document.getElementById('lang'),btn=document.getElementById('lang-btn'),list=document.getElementById('lang-list');
+  if(!box||!btn||!list)return;
+  box.classList.add('lang-js');btn.hidden=false;
+  function set(o){box.classList.toggle('open',o);btn.setAttribute('aria-expanded',o);}
+  btn.addEventListener('click',function(){var o=!box.classList.contains('open');set(o);if(o){var a=list.querySelector('[aria-current]')||list.querySelector('a');a.focus();}});
+  box.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&box.classList.contains('open')){set(false);btn.focus();}
+    if((e.key==='ArrowDown'||e.key==='ArrowUp')&&box.classList.contains('open')){e.preventDefault();var l=[].slice.call(list.querySelectorAll('a')),i=l.indexOf(document.activeElement);i=e.key==='ArrowDown'?Math.min(l.length-1,i+1):Math.max(0,i-1);l[i].focus();}
+  });
+  document.addEventListener('click',function(e){if(!box.contains(e.target))set(false);});
+  box.addEventListener('focusout',function(e){if(e.relatedTarget&&!box.contains(e.relatedTarget))set(false);});
+  [].forEach.call(list.querySelectorAll('a'),function(a){a.addEventListener('click',function(){document.cookie='spendly_lang='+a.getAttribute('hreflang')+'; path=/; max-age=31536000; SameSite=Lax';});});
+})();
+</script>
+</body>
+</html>

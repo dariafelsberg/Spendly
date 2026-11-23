@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <script src="assets/js/theme.js"></script>
+  <script src="assets/js/i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#e91e63">
   <link rel="icon" type="image/vnd.microsoft.icon" href="assets/icons/favicon/spendly_favicon_48.ico" sizes="16x16 32x32 48x48">
@@ -18,7 +19,8 @@
   <main class="legal-page">
     <a class="legal-back" href="javascript:history.length > 1 ? history.back() : location.assign('index.html')"><span class="ico ico-arrow-left"></span> Zurück</a>
     <h1 class="legal-title">Datenschutzerklärung</h1>
-    <div class="legal-body">
+    <p class="legal-lang-note">Dieser Text ist nur auf Deutsch verfügbar.</p>
+    <div class="legal-body" data-no-i18n>
     <p>Diese Datenschutzerklärung gilt für die Webseite spendly.ch und die App app.spendly.ch.
       Sie informiert nach dem Schweizer Datenschutzgesetz (DSG), welche Personendaten Spendly
       bearbeitet, wozu und wo.</p>
@@ -46,10 +48,19 @@
       weiter. Es gibt keine automatisierten Einzelentscheidungen und kein Profiling.</p>
 
     <p><strong>Cookies und lokaler Speicher</strong><br>
-      Die Webseite spendly.ch setzt keine Cookies. Die App speichert im lokalen Speicher deines
+      Die Webseite spendly.ch setzt nur ein Cookie, und nur wenn du unten auf der Seite eine
+      Sprache wählst: «spendly_lang» merkt sich diese Sprache für ein Jahr, damit spendly.ch dich
+      beim nächsten Besuch gleich in dieser Sprache begrüsst. Die App speichert im lokalen Speicher deines
       Browsers (localStorage) deine Anmeldung, eine Kopie deiner Daten, damit Spendly schnell
-      lädt und offline funktioniert, sowie Einstellungen wie die Darstellung (hell oder dunkel).
+      lädt und offline funktioniert, sowie Einstellungen wie die Darstellung (hell oder dunkel),
+      die Sprache, die Hauptwährung und zuletzt geladene Wechselkurse.
       Diese Daten bleiben auf deinem Gerät.</p>
+
+    <p><strong>Wechselkurse</strong><br>
+      Erfasst du einen Betrag in einer fremden Währung, holt der Server von Spendly (Vercel) den
+      Referenzkurs der Europäischen Zentralbank beim Dienst Frankfurter (frankfurter.dev). Dabei
+      werden nur die beiden Währungen und das Datum übermittelt, keine Angaben zu dir und nicht
+      deine IP-Adresse.</p>
 
     <p><strong>Wer die Daten für Spendly bearbeitet</strong></p>
     <ul>

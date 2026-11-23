@@ -52,8 +52,13 @@ function catIcon(cat) {
 }
 // Für <option>-Texte (dort ist kein HTML möglich): nur eigene Kategorien zeigen ihr Emoji.
 function catOptionLabel(cat) {
-  return esc(cat.icon ? cat.name : `${cat.emoji} ${cat.name}`);
+  return esc(cat.icon ? catName(cat.name) : `${cat.emoji} ${cat.name}`);
 }
+// Name einer Kategorie in der gewählten Sprache. Gespeichert wird immer der deutsche Name,
+// eigene Kategorien bleiben, wie man sie benannt hat (nicht im Wörterbuch).
+function catName(name) { return t(name); }
+// «1 Eintrag» / «5 Einträge»
+function nEntries(n) { return n === 1 ? t('1 Eintrag') : t('{n} Einträge', { n }); }
 
 // ── SICHERHEIT: eigene Texte (Namen, Notizen …) nie als HTML einfügen
 // esc() macht aus < > & " ' harmlose Zeichen, damit eingegebener Text nicht
@@ -71,6 +76,7 @@ let state = {
   appliedRecurringMonths: [],
   customExpenseCats: [], customIncomeCats: [],
   goals: [], debts: [],
+  currency: 'CHF', lang: null,   // Hauptwährung und Sprache (mit dem Account synchronisiert)
   entryType: 'expense', editId: null,
   accountEditId: null, recurringEditId: null, recurringType: 'income',
   customCatEditId: null, customCatType: 'expense',
@@ -88,6 +94,8 @@ function sanitizeState() {
   if (!Array.isArray(state.goals))              state.goals = [];
   if (!Array.isArray(state.debts))              state.debts = [];
   state.debts.forEach(d => { if (!Array.isArray(d.payments)) d.payments = []; });
+  if (!I18N.currencies.includes(state.currency)) state.currency = 'CHF';
+  if (!I18N.langs.includes(state.lang)) state.lang = null;
   state.entries = state.entries.filter(e => e && typeof e.date === 'string' && typeof e.amount === 'number');
   // Migration: alte globale Monats-Markierung (appliedRecurringMonths) auf das
   // neue Pro-Regel-Tracking (lastAppliedMonth) übertragen, damit Regeln aus
@@ -284,6 +292,7 @@ function loadState() {
       Object.assign(state, res.data);
       sanitizeState();
       _markSynced(_payload());
+      if (_syncLocalePrefs()) return; // andere Sprache/Währung im Account: Seite lädt neu
       applyDueRecurring();
       // localStorage als Cache aktualisieren
       _persistLocal();
@@ -295,6 +304,16 @@ function loadState() {
       serverLoaded = true; _finishLoad();
       if (!navigator.onLine) showToast('Du bist offline', { type: 'offline', text: 'Du siehst den zuletzt gespeicherten Stand. Neue Einträge werden übertragen, sobald du wieder online bist.', duration: 8000 });
     });
+}
+
+// Sprache und Hauptwährung aus dem Account auf dieses Gerät übernehmen (localStorage,
+// weil i18n.js sie schon im <head> braucht). Weicht etwas ab, lädt die Seite neu.
+function _syncLocalePrefs() {
+  let reload = false;
+  if (state.currency && state.currency !== cur()) { I18N.setCur(state.currency); reload = true; }
+  if (state.lang && state.lang !== I18N.lang) { I18N.setLang(state.lang); reload = true; }
+  if (reload) { _persistLocal(); location.reload(); }
+  return reload;
 }
 
 // true, sobald der erste Server-Abgleich in loadState() durch ist.
@@ -315,7 +334,7 @@ function _claimLocalData(userId) {
   let owner = null;
   try { owner = localStorage.getItem(OWNER_KEY); } catch(e) {}
   if (owner && owner !== userId) {
-    Object.assign(state, {
+    Object.assign(state, { currency: 'CHF', lang: null,
       balance: 0, budget: 0, entries: [], accounts: [],
       recurringIncome: [], recurringExpense: [], recurringTransfers: [],
       appliedRecurringMonths: [], customExpenseCats: [], customIncomeCats: [],
@@ -331,8 +350,8 @@ function _claimLocalData(userId) {
 }
 
 function _payload() {
-  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats, goals, debts } = state;
-  return { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats, goals, debts };
+  const { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats, goals, debts, currency, lang } = state;
+  return { balance, budget, entries, accounts, recurringIncome, recurringExpense, recurringTransfers, appliedRecurringMonths, customExpenseCats, customIncomeCats, goals, debts, currency, lang };
 }
 
 function _persistLocal() {
@@ -454,13 +473,13 @@ function entryRowInner(e) {
     return `
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
-          <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
+          <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} ${t('Interne Überweisung')}</div>
           <div class="tx-note">${formatRelDate(e.date)} · ${e.note ? esc(e.note) + ' · ' : ''}${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}</div>
         </div>
-        <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}</div>
+        <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}${baseCurHtml(e)}</div>
         <div class="tx-actions">
-          <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})"><span class="ico ico-pencil"></span></button>
-          <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})"><span class="ico ico-trash"></span></button>
+          <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})" aria-label="${t('Bearbeiten')}"><span class="ico ico-pencil"></span></button>
+          <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})" aria-label="${t('Löschen')}"><span class="ico ico-trash"></span></button>
         </div>`;
   }
   const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
@@ -468,19 +487,62 @@ function entryRowInner(e) {
   const isAccOnly = e.type === 'account-only';
   const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
   const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${esc(acc.name)}</span>` : '';
-  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:var(--surface);color:var(--transfer-text);">nur Konto</span>` : '';
+  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:var(--surface);color:var(--transfer-text);">${t('nur Konto')}</span>` : '';
   return `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
-        <div class="tx-cat-label">${catIcon(cat)} ${esc(e.category)}</div>
+        <div class="tx-cat-label">${catIcon(cat)} ${esc(catName(e.category))}</div>
         <div class="tx-note">${formatRelDate(e.date)}${(e.note || accTag || accOnlyBadge) ? ' · ' : ''}${e.note ? esc(e.note) + (accTag || accOnlyBadge ? ' · ' : '') : ''}${accTag}${accOnlyBadge}</div>
         ${tagChipsHtml(e.tags)}
       </div>
-      <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
+      <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}${baseCurHtml(e)}${e.fx ? `<span class="tx-fx">${formatNum(e.fx.amt)} ${esc(e.fx.cur)}</span>` : ''}</div>
       <div class="tx-actions">
-        <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})"><span class="ico ico-pencil"></span></button>
-        <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})"><span class="ico ico-trash"></span></button>
+        <button class="tx-btn" onclick="editEntry(${jsArg(e.id)})" aria-label="${t('Bearbeiten')}"><span class="ico ico-pencil"></span></button>
+        <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})" aria-label="${t('Löschen')}"><span class="ico ico-trash"></span></button>
       </div>`;
+}
+
+// Einträge von vor einem Wechsel der Hauptwährung behalten ihre alte Währung (e.base)
+function baseCurHtml(e) { return e.base && e.base !== cur() ? ' ' + esc(e.base) : ''; }
+
+// ── FREMDWÄHRUNG: Kurse der Europäischen Zentralbank über unsere Funktion api/rates.js
+// (keine fremde Adresse im Browser, CSP bleibt 'self'). Kurse werden pro Tag im Gerät gemerkt,
+// damit es auch offline mit dem letzten bekannten Kurs geht.
+const FX_CACHE_KEY = 'spendly_fx';
+function _fxCache() { try { return JSON.parse(localStorage.getItem(FX_CACHE_KEY)) || {}; } catch (e) { return {}; } }
+function _fxRemember(key, val) {
+  try {
+    const c = _fxCache(); c[key] = val;
+    const keys = Object.keys(c); if (keys.length > 200) keys.slice(0, keys.length - 200).forEach(k => delete c[k]);
+    localStorage.setItem(FX_CACHE_KEY, JSON.stringify(c));
+  } catch (e) {}
+}
+// Kurs from→to für ein Datum (YYYY-MM-DD). Ergebnis { rate, date, stale } oder null.
+// stale: Kurs eines anderen Tages aus dem Gerät, weil der Server nicht erreichbar war.
+function fxRate(from, to, date) {
+  if (from === to) return Promise.resolve({ rate: 1, date, stale: false });
+  const today = dateKey(new Date());
+  const day = !date || date > today ? today : date;
+  const key = `${from}-${to}-${day}`;
+  const hit = _fxCache()[key];
+  if (hit && day < today) return Promise.resolve({ ...hit, stale: false });
+  return fetch(`/api/rates?from=${from}&to=${to}&date=${day}`)
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(d => {
+      if (!d || !(d.rate > 0)) return Promise.reject();
+      const val = { rate: d.rate, date: d.date || day };
+      _fxRemember(key, val);
+      return { ...val, stale: false };
+    })
+    .catch(() => {
+      if (hit) return { ...hit, stale: false };
+      // Letzter bekannter Kurs dieses Paars (nächstes Datum davor, sonst irgendeiner)
+      const c = _fxCache();
+      const same = Object.keys(c).filter(k => k.startsWith(`${from}-${to}-`)).sort();
+      const before = same.filter(k => k.slice(-10) <= day);
+      const k = before.pop() || same.pop();
+      return k ? { ...c[k], stale: true } : null;
+    });
 }
 
 // Kontoart: 'saving' = Sparkonto (unter Planen mit Sparzielen verknüpfbar), sonst Alltagskonto
@@ -717,13 +779,14 @@ function showToast(title, { text = '', type = 'success', action = null, duration
       ${text ? '<div class="toast-text"></div>' : ''}
       ${action ? '<button type="button" class="toast-action"></button>' : ''}
     </div>
-    ${simple ? '' : '<button type="button" class="toast-close" aria-label="Meldung schliessen"><span class="ico ico-close"></span></button>'}
+    ${simple ? '' : `<button type="button" class="toast-close" aria-label="${t('Meldung schliessen')}"><span class="ico ico-close"></span></button>`}
     ${action && !sticky ? '<span class="toast-timer" aria-hidden="true"></span>' : ''}`;
-  el.querySelector('.toast-title').textContent = title;
-  if (text) el.querySelector('.toast-text').textContent = text;
+  // Texte laufen durch t(): fertige deutsche Sätze werden hier übersetzt (Sätze mit Werten übersetzt der Aufrufer)
+  el.querySelector('.toast-title').textContent = t(title);
+  if (text) el.querySelector('.toast-text').textContent = t(text);
   if (action) {
     const btn = el.querySelector('.toast-action');
-    btn.textContent = action.label;
+    btn.textContent = t(action.label);
     // replace: die Meldung bleibt stehen, onClick zeigt mit demselben key die Folgemeldung an ihrem Platz
     btn.onclick = () => { if (!action.replace) removeToast(item); action.onClick(); };
   }
@@ -795,8 +858,13 @@ function deleteWithUndo(doDelete, title, text = 'Du kannst es noch ein paar Seku
 function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-function formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function formatDate(d) { return d ? new Date(d).toLocaleDateString('de-CH') : ''; }
+function formatNum(n) { return Number(n).toLocaleString(I18N.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function formatDate(d) { return d ? new Date(d).toLocaleDateString(I18N.locale) : ''; }
+// Betrag mit Hauptwährung, z.B. «CHF 12.50»
+function money(n) { return cur() + ' ' + formatNum(n); }
+// Datum als Text in der gewählten Sprache, z.B. fmtDate(d, { month: 'long', year: 'numeric' })
+function fmtDate(d, opts) { return (d instanceof Date ? d : new Date(String(d).length === 10 ? d + 'T00:00:00' : d)).toLocaleDateString(I18N.locale, opts); }
+function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
 // Relatives Datum für Listen: "Heute", "Gestern", sonst "Mo, 12.10." (anderes Jahr: "Mo, 12.10.2025")
 function formatRelDate(d) {
   if (!d) return '';
@@ -804,17 +872,29 @@ function formatRelDate(d) {
   const date = new Date(y, m - 1, day);
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const diff = Math.round((today - date) / 86400000);
-  if (diff === 0) return 'Heute';
-  if (diff === 1) return 'Gestern';
-  if (diff === -1) return 'Morgen';
-  const wd = date.toLocaleDateString('de-CH', { weekday: 'short' }).replace('.', '');
-  return `${wd}, ${day}.${m}.${y !== today.getFullYear() ? y : ''}`;
+  if (diff === 0) return t('Heute');
+  if (diff === 1) return t('Gestern');
+  if (diff === -1) return t('Morgen');
+  const wd = date.toLocaleDateString(I18N.locale, { weekday: 'short' }).replace('.', '');
+  const dm = date.toLocaleDateString(I18N.locale, y !== today.getFullYear() ? { day: 'numeric', month: 'numeric', year: 'numeric' } : { day: 'numeric', month: 'numeric' });
+  return `${wd}, ${dm}`;
 }
 // Betrag aus einem Eingabefeld lesen: akzeptiert "12,50", "12.50" und "1'200.50"
-function parseAmount(v) { return parseFloat(String(v).trim().replace(/[\s'’]/g, '').replace(',', '.')); }
+// Auch «1.250,50» (Niederländisch) und «1 250.50» (Französisch): das letzte Komma oder der letzte Punkt ist der Dezimaltrenner
+function parseAmount(v) {
+  let x = String(v).trim().replace(/[\s'’]/g, '');
+  const dec = Math.max(x.lastIndexOf(','), x.lastIndexOf('.'));
+  if (dec >= 0 && x.length - dec - 1 !== 3 || (x.match(/[.,]/g) || []).length > 1) {
+    x = dec >= 0 ? x.slice(0, dec).replace(/[.,]/g, '') + '.' + x.slice(dec + 1) : x;
+  } else if (dec >= 0 && x[dec] === ',') {
+    x = x.replace(',', '.');
+  }
+  return parseFloat(x);
+}
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
-// ── START: Daten laden (die Seitendatei folgt danach)
+// ── START: Seite übersetzen, Daten laden (die Seitendatei folgt danach)
+translatePage();
 loadState();
 
 // ── KATEGORIE-AUSWAHL MIT SYMBOLEN
@@ -849,7 +929,7 @@ function enhanceCatSelect(sel) {
   const optHtml = (o, withSub) => {
     const generic = 'icon' in o.dataset;
     const ico = generic ? (o.dataset.icon ? iconHtml(o.dataset.icon) : '') : look(o.value);
-    const name = generic ? o.textContent : o.value;
+    const name = generic ? o.textContent : catName(o.value);
     const sub = withSub && o.dataset.sub ? `<span class="cat-select-sub">${esc(o.dataset.sub)}</span>` : '';
     return (ico ? `<span class="cat-select-ico">${ico}</span>` : '') +
       (sub ? `<span class="cat-select-text"><span class="cat-select-name">${esc(name)}</span>${sub}</span>` : `<span class="cat-select-name">${esc(name)}</span>`);
@@ -857,7 +937,7 @@ function enhanceCatSelect(sel) {
   const renderBtn = () => {
     const opt = sel.options[sel.selectedIndex];
     btn.classList.toggle('is-empty', !opt || !opt.value);
-    btn.innerHTML = opt && opt.value ? optHtml(opt, false) : `<span class="cat-select-name">${esc(sel.dataset.placeholder || 'Kategorie auswählen')}</span>`;
+    btn.innerHTML = opt && opt.value ? optHtml(opt, false) : `<span class="cat-select-name">${esc(t(sel.dataset.placeholder || 'Kategorie auswählen'))}</span>`;
   };
   const renderList = () => {
     // Platzhalter ("Kategorie auswählen", value="") nicht in der Liste zeigen
@@ -879,8 +959,10 @@ function enhanceCatSelect(sel) {
     const below = window.innerHeight - r.bottom - 12, above = r.top - 12;
     const up = below < 220 && above > below;
     const max = Math.min(320, up ? above : below);
-    list.style.left = r.left + 'px';
-    list.style.width = r.width + 'px';
+    // data-list-width: Liste breiter als der Knopf, rechtsbündig darunter (z.B. Sprache/Währung)
+    const w = Math.min(Math.max(r.width, +sel.dataset.listWidth || 0), window.innerWidth - 24);
+    list.style.left = Math.max(12, w > r.width ? r.right - w : r.left) + 'px';
+    list.style.width = w + 'px';
     list.style.maxHeight = max + 'px';
     list.style.top = up ? (r.top - 4 - Math.min(max, list.scrollHeight)) + 'px' : (r.bottom + 4) + 'px';
   };
@@ -982,9 +1064,9 @@ function setFieldError(el, msg) {
     box.className = 'field-error';
     box.id = id;
     box.setAttribute('role', 'alert');
-    ctrl.after(box);
+    (ctrl.closest('.amount-field') || ctrl).after(box);
   }
-  box.textContent = msg;
+  box.textContent = t(msg);
   ctrl.classList.add('is-invalid');
   ctrl.setAttribute('aria-invalid', 'true');
   ctrl.setAttribute('aria-describedby', id);

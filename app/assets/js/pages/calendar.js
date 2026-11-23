@@ -72,11 +72,11 @@ function renderCalendar() {
 
   const year = calViewDate.getFullYear(), month = calViewDate.getMonth();
   const now2 = new Date();
-  document.getElementById('calMonthLabel').textContent = calViewDate.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  document.getElementById('calMonthLabel').textContent = fmtDate(calViewDate, { month: 'long', year: 'numeric' });
 
   // Next month for desktop
   const nextMonthDate = new Date(year, month + 1, 1);
-  if (label2) label2.textContent = nextMonthDate.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  if (label2) label2.textContent = fmtDate(nextMonthDate, { month: 'long', year: 'numeric' });
 
   // Disable next button if already showing current+next (desktop) or current (mobile)
   const nextBtn = document.getElementById('calNavNext');
@@ -143,11 +143,11 @@ function renderDayDetail(dateObj) {
   const previews = getRecurringPreviewsForMonth(year, month - 1).filter(e => e.date === key);
   const entries = [...real, ...previews];
   const detailEl = document.getElementById('dayDetail');
-  document.getElementById('dayDetailTitle').textContent = dateObj.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long' });
+  document.getElementById('dayDetailTitle').textContent = fmtDate(dateObj, { weekday: 'long', day: 'numeric', month: 'long' });
   detailEl.style.display = '';
   if (!entries.length) {
     document.getElementById('dayDetailTotal').textContent = '';
-    document.getElementById('dayDetailList').innerHTML = '<div class="empty-tx">Keine Einträge an diesem Tag.</div>';
+    document.getElementById('dayDetailList').innerHTML = `<div class="empty-tx">${t('Keine Einträge an diesem Tag.')}</div>`;
     return;
   }
   // Nur echte (bereits gebuchte) Einträge fliessen in die Summe ein — geplante
@@ -156,7 +156,7 @@ function renderDayDetail(dateObj) {
   const realForNet = real.filter(e => e.type !== 'transfer');
   if (realForNet.length) {
     const net = realForNet.reduce((s, e) => s + (e.type==='income' ? e.amount : -e.amount), 0);
-    totalEl.textContent = (net >= 0 ? '+' : '−') + 'CHF ' + formatNum(Math.abs(net));
+    totalEl.textContent = (net >= 0 ? '+' : '−') + money(Math.abs(net));
     totalEl.style.color = net >= 0 ? 'var(--income-text)' : 'var(--danger-text)';
   } else if (real.length) {
     totalEl.textContent = 'Überweisung';
@@ -169,14 +169,14 @@ function renderDayDetail(dateObj) {
     if (e.type === 'transfer') {
       const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
       const toAcc   = state.accounts.find(a => a.id === e.toAccountId);
-      const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} geplant</span>` : '';
+      const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} ${t('geplant')}</span>` : '';
       return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
         <div class="tx-cat-dot" style="background:#7c93ff"></div>
         <div class="tx-info">
-          <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} Interne Überweisung</div>
+          <div class="tx-cat-label">${iconHtml('transfer', '#7c93ff')} ${t('Interne Überweisung')}</div>
           <div class="tx-note">${fromAcc ? esc(fromAcc.name) : '?'} → ${toAcc ? esc(toAcc.name) : '?'}${plannedBadge}</div>
         </div>
-        <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}</div>
+        <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}${baseCurHtml(e)}</div>
       </div>`;
     }
     const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
@@ -184,15 +184,15 @@ function renderDayDetail(dateObj) {
     const isAccOnly = e.type === 'account-only';
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
     const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${esc(acc.name)}</span>` : '';
-    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">nur Konto</span>` : '';
-    const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} geplant</span>` : '';
+    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">${t('nur Konto')}</span>` : '';
+    const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} ${t('geplant')}</span>` : '';
     return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
-        <div class="tx-cat-label">${catIcon(cat)} ${esc(e.category)}</div>
+        <div class="tx-cat-label">${catIcon(cat)} ${esc(catName(e.category))}</div>
         <div class="tx-note">${e.note ? esc(e.note) + (acc || isAccOnly || e.isPreview ? ' · ' : '') : ''}${accTag}${accOnlyBadge}${plannedBadge}</div>
       </div>
-      <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}</div>
+      <div class="tx-amount ${isInc ? 'income' : 'expense'}">${isInc ? '+' : '−'}${formatNum(e.amount)}${baseCurHtml(e)}${e.fx ? `<span class="tx-fx">${formatNum(e.fx.amt)} ${esc(e.fx.cur)}</span>` : ''}</div>
     </div>`;
   }).join('');
 }

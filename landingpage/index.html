@@ -486,6 +486,22 @@ a:has(> .logo){text-decoration:none}
 .raster{position:fixed;inset:0;z-index:999;pointer-events:none}
 .raster .wrap{height:100%;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap)}
 .raster .wrap span{background:rgba(255,0,0,.1)}
+
+/* Sprachwahl im Footer: Knopf öffnet die Liste nach oben */
+.lang{position:relative}
+.lang-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 12px;border:1px solid color-mix(in srgb,var(--tinte) 16%,transparent);border-radius:var(--r-klein);background:var(--weiss);color:var(--tinte);font:500 14px/1 var(--sans);cursor:pointer;transition:border-color .2s var(--ease)}
+.lang-btn .ico{font-size:16px;color:var(--grau-rose);transition:transform .2s var(--ease)}
+.lang.open .lang-btn .ico{transform:rotate(180deg)}
+.lang-btn:focus-visible,.lang-list a:focus-visible{outline:2px solid var(--pink-dunkel);outline-offset:2px}
+.lang-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px}
+.lang-list a{display:block;color:var(--tinte);text-decoration:none}
+.lang-list a[aria-current]{font-weight:600;color:var(--pink-dunkel)}
+.lang-js .lang-list{display:none;position:absolute;left:0;bottom:calc(100% + 8px);z-index:20;min-width:200px;padding:6px;flex-direction:column;gap:2px;background:var(--weiss);border-radius:var(--r);box-shadow:var(--sch-schwebend)}
+.lang-js.open .lang-list{display:flex}
+.lang-js .lang-list a{padding:10px 12px;border-radius:var(--r-klein);font-size:15px}
+.foot .lang-list a:hover{text-decoration:none}
+@media (hover:hover){.lang-btn:hover{border-color:color-mix(in srgb,var(--tinte) 32%,transparent)}.lang-js .lang-list a:hover{background:var(--rose-flaeche)}}
+@media (prefers-reduced-motion:reduce){.lang-btn,.lang-btn .ico{transition:none}}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Was kostet Spendly?", "acceptedAnswer": {"@type": "Answer", "text": "Nichts. Spendly ist ein privates Projekt, es gibt kein Abo und keine Werbung."}}, {"@type": "Question", "name": "Muss ich eine App herunterladen?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Spendly läuft im Browser auf Handy, Tablet und Computer. Du öffnest app.spendly.ch. Apps für den App Store und Google Play sind geplant."}}, {"@type": "Question", "name": "Brauche ich einen Account?", "acceptedAnswer": {"@type": "Answer", "text": "Zum Ausprobieren nicht. Du richtest Spendly ein und siehst eine Vorschau. Erst wenn du deine Einträge speichern willst, erstellst du einen Account mit deiner E-Mail-Adresse."}}, {"@type": "Question", "name": "Kann ich Spendly mit meiner Bank verbinden?", "acceptedAnswer": {"@type": "Answer", "text": "Nein. Du erfasst deine Ausgaben selbst, dein Bankzugang bleibt bei dir."}}, {"@type": "Question", "name": "Kann ich mehrere Konten erfassen?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. Lohnkonto, Sparkonto oder Bargeld: Spendly zählt alle Konten zu einem Gesamtguthaben zusammen."}}, {"@type": "Question", "name": "Gibt es einen dunklen Modus?", "acceptedAnswer": {"@type": "Answer", "text": "Ja. In den Einstellungen wählst du Hell, Dunkel oder wie dein Gerät."}}, {"@type": "Question", "name": "Wo sind meine Daten gespeichert?", "acceptedAnswer": {"@type": "Answer", "text": "Auf Servern in Frankfurt (EU). Die Details findest du in der Datenschutzerklärung."}}, {"@type": "Question", "name": "Kann ich meinen Account wieder löschen?", "acceptedAnswer": {"@type": "Answer", "text": "Ja, jederzeit. In den Einstellungen löschst du deinen Account mit allen Einträgen."}}]}</script>
 </head>
@@ -739,6 +755,16 @@ main:focus{outline:none}
     <a href="https://app.spendly.ch/nutzungsbedingungen.html">Nutzungsbedingungen</a>
     <a href="https://app.spendly.ch/">Anmelden</a>
   </nav>
+  <div class="lang" id="lang">
+    <button type="button" class="lang-btn" id="lang-btn" aria-expanded="false" aria-controls="lang-list" hidden><span class="lang-cur">Deutsch</span><span class="ico ico-arrow-down" aria-hidden="true"></span></button>
+    <ul class="lang-list" id="lang-list" aria-label="Sprache">
+      <li><a href="/de/" hreflang="de" lang="de" aria-current="true">Deutsch</a></li>
+      <li><a href="/fr/" hreflang="fr" lang="fr">Français</a></li>
+      <li><a href="/it/" hreflang="it" lang="it">Italiano</a></li>
+      <li><a href="/en/" hreflang="en" lang="en">English</a></li>
+      <li><a href="/nl/" hreflang="nl" lang="nl">Nederlands</a></li>
+    </ul>
+  </div>
   <span>© 2026 Spendly</span>
 </footer>
 
@@ -780,6 +806,23 @@ if (/[?&]raster\b/.test(location.search)) {
   // Tagline: Wort für Wort, sobald es die Linie bei 60 % der Fensterhöhe kreuzt
   var wio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');wio.unobserve(e.target);}});},{rootMargin:'0px 0px -40% 0px'});
   [].forEach.call(document.querySelectorAll('.tagline-text .w'),function(w){wio.observe(w);});
+})();
+</script>
+<script>
+/* Sprachwahl: Liste öffnet nach oben, Escape und Klick daneben schliessen. Die Wahl wird als Cookie gemerkt (für die Weiterleitung von spendly.ch/). */
+(function(){
+  var box=document.getElementById('lang'),btn=document.getElementById('lang-btn'),list=document.getElementById('lang-list');
+  if(!box||!btn||!list)return;
+  box.classList.add('lang-js');btn.hidden=false;
+  function set(o){box.classList.toggle('open',o);btn.setAttribute('aria-expanded',o);}
+  btn.addEventListener('click',function(){var o=!box.classList.contains('open');set(o);if(o){var a=list.querySelector('[aria-current]')||list.querySelector('a');a.focus();}});
+  box.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&box.classList.contains('open')){set(false);btn.focus();}
+    if((e.key==='ArrowDown'||e.key==='ArrowUp')&&box.classList.contains('open')){e.preventDefault();var l=[].slice.call(list.querySelectorAll('a')),i=l.indexOf(document.activeElement);i=e.key==='ArrowDown'?Math.min(l.length-1,i+1):Math.max(0,i-1);l[i].focus();}
+  });
+  document.addEventListener('click',function(e){if(!box.contains(e.target))set(false);});
+  box.addEventListener('focusout',function(e){if(e.relatedTarget&&!box.contains(e.relatedTarget))set(false);});
+  [].forEach.call(list.querySelectorAll('a'),function(a){a.addEventListener('click',function(){document.cookie='spendly_lang='+a.getAttribute('hreflang')+'; path=/; max-age=31536000; SameSite=Lax';});});
 })();
 </script>
 </body>

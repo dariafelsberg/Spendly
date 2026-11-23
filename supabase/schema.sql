@@ -61,7 +61,7 @@ begin
      'balance', 'budget', 'entries', 'accounts',
      'recurringIncome', 'recurringExpense', 'recurringTransfers',
      'appliedRecurringMonths', 'customExpenseCats', 'customIncomeCats',
-     'goals', 'debts'
+     'goals', 'debts', 'currency', 'lang'
    ]);
 
   insert into public.user_data as u (user_id, payload, updated_at)

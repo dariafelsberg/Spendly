@@ -1,4 +1,84 @@
 {
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/(index\\.html)?",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "spendly_lang",
+          "value": "(?<l>de|fr|it|en|nl)"
+        }
+      ],
+      "destination": "/:l/",
+      "permanent": false
+    },
+    {
+      "source": "/(index\\.html)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^fr.*"
+        }
+      ],
+      "destination": "/fr/",
+      "permanent": false
+    },
+    {
+      "source": "/(index\\.html)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^it.*"
+        }
+      ],
+      "destination": "/it/",
+      "permanent": false
+    },
+    {
+      "source": "/(index\\.html)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^en.*"
+        }
+      ],
+      "destination": "/en/",
+      "permanent": false
+    },
+    {
+      "source": "/(index\\.html)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^nl.*"
+        }
+      ],
+      "destination": "/nl/",
+      "permanent": false
+    },
+    {
+      "source": "/(index\\.html)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "^de.*"
+        }
+      ],
+      "destination": "/de/",
+      "permanent": false
+    },
+    {
+      "source": "/(index\\.html)?",
+      "destination": "/de/",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

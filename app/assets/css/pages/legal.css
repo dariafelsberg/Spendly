@@ -45,3 +45,14 @@ body {
   font-size: var(--fs-note);
   margin-bottom: 0 !important;
 }
+
+/* Hinweis «Nur auf Deutsch» (Rechtstexte werden nicht übersetzt) */
+.legal-lang-note {
+  margin: 0 0 var(--sp-md);
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: var(--fs-note);
+}
+html[lang="de"] .legal-lang-note { display: none; }

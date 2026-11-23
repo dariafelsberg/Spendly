@@ -8,6 +8,8 @@
 //  ist eine zusätzliche Bremse pro Gerät.
 // ══════════════════════════════════════════════════════════
 
+translatePage(); // Seite sofort übersetzen (siehe i18n.js)
+
 const ATTEMPTS_KEY    = 'budgetApp_authAttempts'; // { count, lockUntil }
 const MAX_ATTEMPTS    = 5;
 const LOCK_MS         = 60 * 1000;        // 60s Sperre
@@ -74,11 +76,11 @@ function saveProfile() {
   const errEl = document.getElementById('profileError');
   errEl.textContent = '';
   if (username.length < 3) {
-    errEl.textContent = 'Der Benutzername braucht mindestens 3 Zeichen.';
+    errEl.textContent = t('Der Benutzername braucht mindestens 3 Zeichen.');
     return;
   }
   if (!email || !emailEl.checkValidity()) {
-    errEl.textContent = 'Bitte gib eine gültige E-Mail-Adresse ein.';
+    errEl.textContent = t('Bitte gib eine gültige E-Mail-Adresse ein.');
     return;
   }
   const emailChanged = email !== _profileEmail.toLowerCase();
@@ -91,8 +93,8 @@ function saveProfile() {
     })
     .catch(error => {
       errEl.textContent = error && error.code === 'email_exists'
-        ? 'Diese E-Mail-Adresse wird schon verwendet.'
-        : 'Das hat nicht geklappt. Bitte prüfe deine Verbindung und versuche es erneut.';
+        ? t('Diese E-Mail-Adresse wird schon verwendet.')
+        : t('Das hat nicht geklappt. Bitte prüfe deine Verbindung und versuche es erneut.');
     })
     .finally(() => { btn.disabled = false; });
 }
@@ -122,10 +124,10 @@ async function savePassword() {
   const errEl = document.getElementById('passwordError');
   const btn = document.getElementById('passwordSaveBtn');
   errEl.textContent = '';
-  if (!current) { errEl.textContent = 'Bitte gib dein aktuelles Passwort ein.'; return; }
+  if (!current) { errEl.textContent = t('Bitte gib dein aktuelles Passwort ein.'); return; }
   const pwMiss = pwMissing(password);
   if (pwMiss.length) { errEl.textContent = pwMissingText('Nicht gespeichert', pwMiss); return; }
-  if (password !== confirm) { errEl.textContent = 'Passwörter stimmen nicht überein.'; return; }
+  if (password !== confirm) { errEl.textContent = t('Passwörter stimmen nicht überein.'); return; }
   btn.disabled = true;
   try {
     const { data } = await sb.auth.getSession();
@@ -133,21 +135,21 @@ async function savePassword() {
     const check = await sb.auth.signInWithPassword({ email, password: current });
     if (check.error) {
       errEl.textContent = check.error.status === 400
-        ? 'Das aktuelle Passwort stimmt nicht.'
-        : 'Verbindungsfehler. Bitte erneut versuchen.';
+        ? t('Das aktuelle Passwort stimmt nicht.')
+        : t('Verbindungsfehler. Bitte erneut versuchen.');
       return;
     }
     const { error } = await sb.auth.updateUser({ password });
     if (error) {
       errEl.textContent = error.code === 'same_password'
-        ? 'Das neue Passwort muss sich vom alten unterscheiden.'
-        : 'Das Passwort konnte nicht geändert werden.';
+        ? t('Das neue Passwort muss sich vom alten unterscheiden.')
+        : t('Das Passwort konnte nicht geändert werden.');
       return;
     }
     closePasswordModal();
     showToast('Passwort geändert');
   } catch (e) {
-    errEl.textContent = 'Verbindungsfehler. Bitte erneut versuchen.';
+    errEl.textContent = t('Verbindungsfehler. Bitte erneut versuchen.');
   } finally {
     btn.disabled = false;
   }
@@ -158,7 +160,7 @@ async function savePassword() {
 // user_data werden dadurch mitgelöscht (siehe supabase/schema.sql).
 function _deleteAccountInput() { return document.getElementById('deleteAccountInput'); }
 function updateDeleteAccountBtn() {
-  document.getElementById('deleteAccountBtn').disabled = _deleteAccountInput().value.trim().toUpperCase() !== 'LÖSCHEN';
+  document.getElementById('deleteAccountBtn').disabled = _deleteAccountInput().value.trim().toUpperCase() !== t('LÖSCHEN');
 }
 function openDeleteAccountModal() {
   _deleteAccountInput().value = '';
@@ -186,7 +188,7 @@ function confirmDeleteAccount() {
       window.top.location.href = 'login.html';
     })
     .catch(() => {
-      errEl.textContent = 'Der Account konnte nicht gelöscht werden. Bitte prüfe deine Verbindung und versuche es erneut.';
+      errEl.textContent = t('Der Account konnte nicht gelöscht werden. Bitte prüfe deine Verbindung und versuche es erneut.');
       btn.disabled = false;
     });
 }
@@ -261,7 +263,7 @@ function showStep(step) {
   }
   ['onbGoalError', 'onbAccountError', 'onbBudgetError', 'loginError', 'registerError'].forEach(id => {
     const el = document.getElementById(id);
-    if (el && !el.textContent.startsWith('Zu viele')) el.textContent = '';
+    if (el && !el.dataset.lockout) el.textContent = '';
   });
   const notice = document.getElementById('registerExistsNotice');
   if (notice) notice.style.display = 'none';
@@ -286,13 +288,13 @@ function handleStart(event) {
 const _onb = { goal: '', account: null, budget: 0 };
 window._onb = _onb; // liest die Vorschau (preview.html) im iframe
 function _parseAmount(v) { return parseFloat(String(v).trim().replace(/[\s'’]/g, '').replace(',', '.')); }
-function _formatNum(n) { return Number(n).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function _formatNum(n) { return Number(n).toLocaleString(I18N.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function _uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
 function onbGoalNext(event) {
   if (event) event.preventDefault();
   const picked = document.querySelector('input[name="onbGoal"]:checked');
-  if (!picked) { document.getElementById('onbGoalError').textContent = 'Wähle ein Ziel aus oder tippe auf «Später».'; return false; }
+  if (!picked) { document.getElementById('onbGoalError').textContent = t('Wähle ein Ziel aus oder tippe auf «Später».'); return false; }
   _onb.goal = picked.value;
   showStep('account');
   return false;
@@ -316,9 +318,9 @@ function onbAccountNext(event) {
   const raw = document.getElementById('onbAccountBalance').value.trim();
   const balance = _parseAmount(raw);
   const err = document.getElementById('onbAccountError');
-  if (!name) { err.textContent = 'Gib dem Konto einen Namen, zum Beispiel Raiffeisen, oder tippe auf «Später».'; return false; }
-  if (!raw) { err.textContent = 'Gib das aktuelle Guthaben ein, zum Beispiel 1250.50, oder tippe auf «Später».'; return false; }
-  if (isNaN(balance)) { err.textContent = 'Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'; return false; }
+  if (!name) { err.textContent = t('Gib dem Konto einen Namen, zum Beispiel Raiffeisen, oder tippe auf «Später».'); return false; }
+  if (!raw) { err.textContent = t('Gib das aktuelle Guthaben ein, zum Beispiel 1250.50, oder tippe auf «Später».'); return false; }
+  if (isNaN(balance)) { err.textContent = t('Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'); return false; }
   _onb.account = { id: (_onb.account && _onb.account.id) || _uid(), name, balance, visible: true };
   showStep('budget');
   return false;
@@ -327,7 +329,7 @@ function onbBudgetNext(event) {
   if (event) event.preventDefault();
   const val = _parseAmount(document.getElementById('onbBudget').value);
   const err = document.getElementById('onbBudgetError');
-  if (isNaN(val) || val <= 0) { err.textContent = 'Gib einen Betrag ein, zum Beispiel 2000, oder tippe auf «Später».'; return false; }
+  if (isNaN(val) || val <= 0) { err.textContent = t('Gib einen Betrag ein, zum Beispiel 2000, oder tippe auf «Später».'); return false; }
   _onb.budget = val;
   showPreview();
   return false;
@@ -444,14 +446,14 @@ function togglePw(inputId, btn) {
 // Passwortvorgaben (gleich wie die Liste unter dem Balken). Gibt zurück, was noch fehlt.
 function pwMissing(val) {
   const miss = [];
-  if (val.length < 8) miss.push('mindestens 8 Zeichen');
-  if (!(/[A-Z]/.test(val) && /[a-z]/.test(val))) miss.push('Gross- und Kleinbuchstaben');
-  if (!/[0-9]/.test(val)) miss.push('eine Zahl');
-  if (!/[^A-Za-z0-9]/.test(val)) miss.push('ein Sonderzeichen');
+  if (val.length < 8) miss.push(t('mindestens 8 Zeichen'));
+  if (!(/[A-Z]/.test(val) && /[a-z]/.test(val))) miss.push(t('Gross- und Kleinbuchstaben'));
+  if (!/[0-9]/.test(val)) miss.push(t('eine Zahl'));
+  if (!/[^A-Za-z0-9]/.test(val)) miss.push(t('ein Sonderzeichen'));
   return miss;
 }
 function pwMissingText(what, miss) {
-  return what + ', weil dem Passwort noch ' + (miss.length > 1 ? miss.slice(0, -1).join(', ') + ' und ' + miss[miss.length - 1] : miss[0]) + ' fehlt. Ergänze es, bis alle Vorgaben grün sind.';
+  return t('{was}, weil dem Passwort noch {fehlt} fehlt. Ergänze es, bis alle Vorgaben grün sind.', { was: t(what), fehlt: miss.length > 1 ? miss.slice(0, -1).join(', ') + ' ' + t('und') + ' ' + miss[miss.length - 1] : miss[0] });
 }
 
 function updatePwStrength() { showPwStrength('regPassword', 'pwStrength'); }
@@ -479,7 +481,7 @@ function showPwStrength(inputId, outputId) {
     { label: 'Sehr stark', cls: 'strong', bars: 4 },
   ];
   const lvl = levels[Math.min(score, levels.length - 1)];
-  const tip = val.length >= 8 && mixed && digit && special && val.length < 12 ? 'Länger ist noch sicherer' : '';
+  const tip = val.length >= 8 && mixed && digit && special && val.length < 12 ? t('Länger ist noch sicherer') : '';
   if (!el.querySelector('.pw-bars')) {
     el.innerHTML = '<div class="pw-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>'
       + '<div class="pw-meta"><span class="pw-label"></span><span class="pw-tip"></span></div>'
@@ -490,17 +492,17 @@ function showPwStrength(inputId, outputId) {
     b.classList.toggle('on', i < lvl.bars);
     b.classList.toggle('head', i === lvl.bars - 1);
   });
-  el.querySelector('.pw-label').textContent = lvl.label;
+  el.querySelector('.pw-label').textContent = t(lvl.label);
   el.querySelector('.pw-tip').textContent = tip;
   // Alle Passwortvorgaben als Liste: rot mit ×, solange eine fehlt, grün mit Häkchen, wenn erfüllt
   const reqs = [
-    [val.length >= 8, 'Mindestens 8 Zeichen'],
-    [mixed, 'Gross- und Kleinbuchstaben'],
-    [digit, 'Mindestens eine Zahl'],
-    [special, 'Mindestens ein Sonderzeichen'],
+    [val.length >= 8, t('Mindestens 8 Zeichen')],
+    [mixed, t('Gross- und Kleinbuchstaben')],
+    [digit, t('Mindestens eine Zahl')],
+    [special, t('Mindestens ein Sonderzeichen')],
   ];
   el.querySelector('.pw-reqs').innerHTML = reqs.map(([ok, text]) =>
-    `<li class="pw-req${ok ? ' ok' : ''}"><span class="ico ico-${ok ? 'check' : 'close'}" aria-hidden="true"></span>${text}<span class="sr-only">${ok ? ', erfüllt' : ', fehlt'}</span></li>`).join('');
+    `<li class="pw-req${ok ? ' ok' : ''}"><span class="ico ico-${ok ? 'check' : 'close'}" aria-hidden="true"></span>${text}<span class="sr-only">, ${t(ok ? 'erfüllt' : 'fehlt')}</span></li>`).join('');
 }
 
 function updateLockoutUI() {
@@ -509,10 +511,10 @@ function updateLockoutUI() {
   const err = document.getElementById('loginError');
   if (remaining > 0) {
     btn.disabled = true;
-    err.textContent = `Zu viele Fehlversuche. Bitte in ${Math.ceil(remaining / 1000)}s erneut versuchen.`;
+    err.textContent = t('Zu viele Fehlversuche. Bitte in {s}s erneut versuchen.', { s: Math.ceil(remaining / 1000) }); err.dataset.lockout = '1';
   } else {
     btn.disabled = false;
-    if (err.textContent.startsWith('Zu viele')) err.textContent = '';
+    if (err.dataset.lockout) { err.textContent = ''; delete err.dataset.lockout; }
   }
 }
 
@@ -536,7 +538,7 @@ async function handleLogin(event) {
     errEl.textContent = '';
 
     if (!email.includes('@')) {
-        errEl.textContent = "Bitte mit deiner E-Mail-Adresse anmelden.";
+        errEl.textContent = t("Bitte mit deiner E-Mail-Adresse anmelden.");
         return;
     }
 
@@ -547,7 +549,7 @@ async function handleLogin(event) {
     try {
         result = await sb.auth.signInWithPassword({ email, password });
     } catch (e) {
-        errEl.textContent = "Verbindungsfehler. Bitte erneut versuchen.";
+        errEl.textContent = t("Verbindungsfehler. Bitte erneut versuchen.");
         return;
     }
 
@@ -557,14 +559,14 @@ async function handleLogin(event) {
         window.location.href = "index.html";
     } else if (!result.error.status) {
         // supabase-js meldet Netzwerkfehler als Fehler ohne HTTP-Status
-        errEl.textContent = "Verbindungsfehler. Bitte erneut versuchen.";
+        errEl.textContent = t("Verbindungsfehler. Bitte erneut versuchen.");
     } else if (result.error.code === 'email_not_confirmed') {
         errEl.textContent =
-            "Bitte bestätige zuerst deine E-Mail-Adresse über den Link, den wir dir geschickt haben.";
+            t("Bitte bestätige zuerst deine E-Mail-Adresse über den Link, den wir dir geschickt haben.");
     } else {
         registerFailedAttempt();
         updateLockoutUI();
-        errEl.textContent = "E-Mail oder Passwort falsch";
+        errEl.textContent = t("E-Mail oder Passwort falsch");
     }
 }
 
@@ -596,19 +598,19 @@ async function handleRegister(event) {
             }
         });
     } catch (e) {
-        errEl.textContent = "Verbindungsfehler. Bitte erneut versuchen.";
+        errEl.textContent = t("Verbindungsfehler. Bitte erneut versuchen.");
         return;
     }
 
     const { data, error } = result;
     if (error) {
         if (error.code === 'user_already_exists') {
-            errEl.textContent = "Diese E-Mail-Adresse ist bereits vergeben.";
+            errEl.textContent = t("Diese E-Mail-Adresse ist bereits vergeben.");
             if (notice) notice.style.display = '';
         } else if (error.code === 'weak_password') {
-            errEl.textContent = "Passwort ist zu schwach. Bitte ein längeres Passwort wählen.";
+            errEl.textContent = t("Passwort ist zu schwach. Bitte ein längeres Passwort wählen.");
         } else {
-            errEl.textContent = error.message || "Registrierung fehlgeschlagen.";
+            errEl.textContent = error.message || t("Registrierung fehlgeschlagen.");
         }
         return;
     }
@@ -626,12 +628,12 @@ async function handleRegister(event) {
     // E-Mail-Bestätigung ist aktiv. Bei bereits registrierter Adresse liefert
     // Supabase einen Benutzer ohne Identitäten zurück (ohne Fehler).
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-        errEl.textContent = "Diese E-Mail-Adresse ist bereits vergeben.";
+        errEl.textContent = t("Diese E-Mail-Adresse ist bereits vergeben.");
         if (notice) notice.style.display = '';
         return;
     }
     errEl.textContent =
-        "Fast geschafft! Wir haben dir eine E-Mail geschickt. Bitte bestätige deine Adresse über den Link und melde dich dann an.";
+        t("Fast geschafft! Wir haben dir eine E-Mail geschickt. Bitte bestätige deine Adresse über den Link und melde dich dann an.");
 }
 
 function openResetConfirm() {
@@ -672,7 +674,7 @@ async function sendResetEmail() {
   errEl.textContent = '';
 
   if (!email || !email.includes('@')) {
-    errEl.textContent = 'Bitte eine gültige E-Mail-Adresse eingeben.';
+    errEl.textContent = t('Bitte eine gültige E-Mail-Adresse eingeben.');
     return;
   }
 
@@ -684,17 +686,17 @@ async function sendResetEmail() {
       redirectTo: window.location.origin + '/reset-password.html',
     });
     if (error && error.status === 429) {
-      errEl.textContent = 'Zu viele Anfragen. Bitte in ein paar Minuten erneut versuchen.';
+      errEl.textContent = t('Zu viele Anfragen. Bitte in ein paar Minuten erneut versuchen.');
       return;
     }
     // Sonst immer Erfolg zeigen (kein User-Enumeration)
     document.getElementById('resetInputStep').style.display = 'none';
     document.getElementById('resetSentStep').style.display = '';
   } catch (e) {
-    errEl.textContent = 'Verbindungsfehler. Bitte erneut versuchen.';
+    errEl.textContent = t('Verbindungsfehler. Bitte erneut versuchen.');
   } finally {
     btn.disabled    = false;
-    btn.textContent = 'Link senden';
+    btn.textContent = t('Link senden');
   }
 }
 

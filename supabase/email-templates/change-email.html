@@ -1,15 +1,15 @@
 <!-- Supabase → Authentication → Emails → Templates → "Change Email Address"
-     Betreff: Spendly – neue E-Mail-Adresse bestätigen -->
-<div style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #222;">
-  <h2 style="color: #e91e63;">Neue E-Mail-Adresse bestätigen</h2>
-  <p>Hallo {{ .Data.username }},</p>
-  <p>bitte bestätige, dass deine Spendly-Adresse von {{ .Email }} zu {{ .NewEmail }} geändert werden soll:</p>
+     Betreff (Subject): Spendly – confirm your new email address -->
+<div lang="en" style="font-family: Arial, Helvetica, sans-serif; max-width: 480px; margin: 0 auto; color: #222;">
+  <h2 style="color: #e91e63;">Confirm your new email address</h2>
+  <p>Hi {{ .Data.username }},</p>
+  <p>please confirm that your Spendly address should change from {{ .Email }} to {{ .NewEmail }}:</p>
   <p style="margin: 28px 0;">
     <a href="{{ .ConfirmationURL }}"
        style="background: #e91e63; color: #fff; padding: 12px 22px; border-radius: 10px; text-decoration: none; font-weight: bold;">
-      Änderung bestätigen
+      Confirm change
     </a>
   </p>
-  <p style="font-size: 13px; color: #666;">Falls du das nicht warst, ignoriere diese E-Mail.</p>
-  <p>Dein Spendly-Team</p>
+  <p style="font-size: 13px; color: #666;">If this was not you, ignore this email.</p>
+  <p>Your Spendly team</p>
 </div>

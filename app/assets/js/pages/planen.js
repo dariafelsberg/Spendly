@@ -12,7 +12,6 @@
  *   Ansicht über die Adresse: #konto-<id> (Sparkonto), #schuld-<id> (Schuld), sonst Übersicht.
  ========================================================== */
 
-const round2 = n => Math.round(n * 100) / 100;
 const GOAL_COLORS = ['var(--primary)', '#ff8ab3', '#ffc2d9', 'var(--transfer)', '#f59e42', '#34d399'];
 let goalEditId = null, debtEditId = null, payDebtId = null, allocAccountId = null, goalAccountPrev = '';
 let showAllRates = false;
@@ -32,7 +31,7 @@ function monthsUntil(ym) {
   return (y - now.getFullYear()) * 12 + (m - 1 - now.getMonth());
 }
 function monthLabel(d, short = false) {
-  return d.toLocaleDateString('de-CH', short ? { month: 'short', year: 'numeric' } : { month: 'long', year: 'numeric' });
+  return d.toLocaleDateString(I18N.locale, short ? { month: 'short', year: 'numeric' } : { month: 'long', year: 'numeric' });
 }
 function ymLabel(ym, short = false) {
   if (!ym) return '';
@@ -98,42 +97,42 @@ function overviewHtml() {
 
   const accRows = savingAccounts().map(a => {
     const n = goalsOn(a.id).length, free = accountFree(a.id);
-    const sub = n ? `${n === 1 ? '1 Ziel' : n + ' Ziele'}, CHF ${formatNum(free)} frei` : 'noch kein Ziel';
+    const sub = n ? t(n === 1 ? '1 Ziel, {betrag} frei' : '{n} Ziele, {betrag} frei', { n, betrag: money(free) }) : t('noch kein Ziel');
     return `<a class="pl-row pl-link" href="#konto-${esc(a.id)}">
         <span class="pl-row-main"><span class="pl-name">${esc(a.name)}</span><span class="pl-sub">${sub}</span></span>
         <span class="pl-amt">${formatNum(a.balance)}</span><span class="ico ico-arrow-right pl-chev" aria-hidden="true"></span></a>`;
   }).join('');
 
   return `
-    <section class="pl-net" aria-label="Netto-Vermögen">
-      <div class="pl-label">Netto-Vermögen</div>
-      <div class="pl-hero">CHF ${formatNum(net)}</div>
+    <section class="pl-net" aria-label="${t('Netto-Vermögen')}">
+      <div class="pl-label">${t('Netto-Vermögen')}</div>
+      <div class="pl-hero">${money(net)}</div>
       <div class="pl-stack" aria-hidden="true">
         <span style="width:${pct(everyday)};background:var(--primary-dark)"></span><span style="width:${pct(saving)};background:#ff8ab3"></span><span style="width:${pct(debtSum)};background:var(--primary-light)"></span>
       </div>
       <div class="pl-legend">
-        <span><i style="background:var(--primary-dark)"></i>Alltag ${formatNum(everyday)}</span>
-        <span><i style="background:#ff8ab3"></i>Sparen ${formatNum(saving)}</span>
-        <span><i style="background:var(--primary-light)"></i>Schulden ${formatNum(debtSum)}</span>
+        <span><i style="background:var(--primary-dark)"></i>${t('Alltag')} ${formatNum(everyday)}</span>
+        <span><i style="background:#ff8ab3"></i>${t('Sparen')} ${formatNum(saving)}</span>
+        <span><i style="background:var(--primary-light)"></i>${t('Schulden')} ${formatNum(debtSum)}</span>
       </div>
     </section>
 
     <section class="pl-section">
-      <h2 class="pl-h">Sparkonten</h2>
-      ${accRows ? `<div class="pl-list">${accRows}</div>` : `<p class="pl-empty">Noch kein Sparkonto. Du legst eines an, wenn du ein Sparziel hinzufügst, oder in den Einstellungen unter Konten.</p>`}
+      <h2 class="pl-h">${t('Sparkonten')}</h2>
+      ${accRows ? `<div class="pl-list">${accRows}</div>` : `<p class="pl-empty">${t('Noch kein Sparkonto. Du legst eines an, wenn du ein Sparziel hinzufügst, oder in den Einstellungen unter Konten.')}</p>`}
     </section>
 
     <section class="pl-section">
-      <h2 class="pl-h">Sparziele <button class="pl-h-link" onclick="openGoalModal()">Neues Ziel</button></h2>
-      ${state.goals.length ? `<div class="pl-list">${state.goals.map(goalRowHtml).join('')}</div>` : `<p class="pl-empty">Noch kein Sparziel. Leg eines an, zum Beispiel für Ferien oder einen Notgroschen.</p>`}
+      <h2 class="pl-h">${t('Sparziele')} <button class="pl-h-link" onclick="openGoalModal()">${t('Neues Ziel')}</button></h2>
+      ${state.goals.length ? `<div class="pl-list">${state.goals.map(goalRowHtml).join('')}</div>` : `<p class="pl-empty">${t('Noch kein Sparziel. Leg eines an, zum Beispiel für Ferien oder einen Notgroschen.')}</p>`}
     </section>
 
     <section class="pl-section">
-      <h2 class="pl-h">Schulden <button class="pl-h-link" onclick="openDebtModal()">Neue Schuld</button></h2>
+      <h2 class="pl-h">${t('Schulden')} <button class="pl-h-link" onclick="openDebtModal()">${t('Neue Schuld')}</button></h2>
       ${owe.length ? debtChartCardHtml(owe) : ''}
-      ${owe.length ? `<h3 class="pl-h3">Ich schulde</h3><div class="pl-list">${owe.map(debtRowHtml).join('')}</div>` : ''}
-      ${owed.length ? `<h3 class="pl-h3">Mir schuldet</h3><div class="pl-list">${owed.map(debtRowHtml).join('')}</div>` : ''}
-      ${!state.debts.length ? `<p class="pl-empty">Keine Schulden erfasst. Hier behältst du Kredite, Abzahlungen und geliehenes Geld im Blick.</p>` : ''}
+      ${owe.length ? `<h3 class="pl-h3">${t('Ich schulde')}</h3><div class="pl-list">${owe.map(debtRowHtml).join('')}</div>` : ''}
+      ${owed.length ? `<h3 class="pl-h3">${t('Mir schuldet')}</h3><div class="pl-list">${owed.map(debtRowHtml).join('')}</div>` : ''}
+      ${!state.debts.length ? `<p class="pl-empty">${t('Keine Schulden erfasst. Hier behältst du Kredite, Abzahlungen und geliehenes Geld im Blick.')}</p>` : ''}
     </section>`;
 }
 
@@ -142,9 +141,9 @@ function goalRowHtml(g) {
   const saved = g.saved || 0;
   const reached = saved >= g.target;
   const per = goalPerMonth(g);
-  const parts = [acc ? esc(acc.name) : 'Ohne Konto'];
-  if (g.targetDate) parts.push('bis ' + ymLabel(g.targetDate));
-  const sub = parts.join(', ') + (reached ? ', <b class="pl-ok">erreicht</b>' : per ? `, CHF ${formatNum(per)} pro Monat` : '');
+  const parts = [acc ? esc(acc.name) : t('Ohne Konto')];
+  if (g.targetDate) parts.push(t('bis {datum}', { datum: ymLabel(g.targetDate) }));
+  const sub = parts.join(', ') + (reached ? `, <b class="pl-ok">${t('erreicht')}</b>` : per ? ', ' + t('{betrag} pro Monat', { betrag: money(per) }) : '');
   const w = Math.min(100, g.target ? saved / g.target * 100 : 0);
   return `<button class="pl-row pl-goal" onclick="openGoalModal(${jsArg(g.id)})">
       <span class="pl-row-top"><span class="pl-row-main"><span class="pl-name">${esc(g.name)}</span><span class="pl-sub">${sub}</span></span>
@@ -155,11 +154,11 @@ function goalRowHtml(g) {
 function debtRowHtml(d) {
   const rem = debtRemaining(d);
   const owed = d.direction === 'owed';
-  const sub = d.rate ? `CHF ${formatNum(d.rate)} am ${d.dueDay || 1}.${d.interest ? ', ' + String(d.interest).replace('.', '.') + ' %' : ''}` : (d.person ? esc(d.person) : 'ohne feste Rate');
+  const sub = d.rate ? t('{betrag} am {tag}.', { betrag: money(d.rate), tag: d.dueDay || 1 }) + (d.interest ? ', ' + Number(d.interest).toLocaleString(I18N.locale) + ' %' : '') : (d.person ? esc(d.person) : t('ohne feste Rate'));
   const w = d.amount ? (1 - rem / d.amount) * 100 : 0;
   return `<a class="pl-row pl-link pl-goal" href="#schuld-${esc(d.id)}">
-      <span class="pl-row-top"><span class="pl-row-main"><span class="pl-name">${esc(d.name)}</span><span class="pl-sub">${rem <= 0 ? '<b class="pl-ok">abbezahlt</b>' : sub}</span></span>
-      <span class="pl-amt${owed ? ' pl-pos' : ''}">${formatNum(rem)}<small>von ${formatNum(d.amount)}</small></span><span class="ico ico-arrow-right pl-chev" aria-hidden="true"></span></span>
+      <span class="pl-row-top"><span class="pl-row-main"><span class="pl-name">${esc(d.name)}</span><span class="pl-sub">${rem <= 0 ? `<b class="pl-ok">${t('abbezahlt')}</b>` : sub}</span></span>
+      <span class="pl-amt${owed ? ' pl-pos' : ''}">${formatNum(rem)}<small>${t('von {betrag}', { betrag: formatNum(d.amount) })}</small></span><span class="ico ico-arrow-right pl-chev" aria-hidden="true"></span></span>
       <span class="pl-bar pl-bar-paid"><span style="width:${Math.max(0, Math.min(100, w)).toFixed(1)}%"></span></span></a>`;
 }
 
@@ -171,8 +170,8 @@ function debtChartCardHtml(owe) {
   const withEnd = open.filter(p => p.plan.end);
   const allEnd = open.length && withEnd.length === open.length;
   const end = allEnd ? new Date(Math.max(...withEnd.map(p => p.plan.end))) : null;
-  const head = `<div class="pl-chart-head"><div><div class="pl-label">Noch offen, alle Schulden</div><div class="pl-chart-total">CHF ${formatNum(total)}</div></div>
-      <div class="pl-chart-end"><div class="pl-label">Schuldenfrei</div><div class="pl-ok">${end ? monthLabel(end, true) : total > 0 ? 'offen' : 'jetzt'}</div></div></div>`;
+  const head = `<div class="pl-chart-head"><div><div class="pl-label">${t('Noch offen, alle Schulden')}</div><div class="pl-chart-total">${money(total)}</div></div>
+      <div class="pl-chart-end"><div class="pl-label">${t('Schuldenfrei')}</div><div class="pl-ok">${end ? monthLabel(end, true) : t(total > 0 ? 'offen' : 'jetzt')}</div></div></div>`;
   if (!withEnd.length) return `<div class="card pl-chart">${head}</div>`;
   // Monatswerte: heute + jede künftige Rate
   const now = new Date(); now.setDate(1);
@@ -189,17 +188,17 @@ function debtChartCardHtml(owe) {
   const Y = v => (pad + (1 - v / max) * (H - 2 * pad)).toFixed(1);
   const line = values.map((v, m) => `${m ? 'L' : 'M'}${X(m)},${Y(v)}`).join(' ');
   const dots = withEnd.length > 1 ? withEnd.filter(p => +p.plan.end !== +end).map(p => {
-    const m = p.plan.rows.length; return `<circle cx="${X(m)}" cy="${Y(values[m])}" r="4" class="pl-dot-end"><title>${esc(p.d.name)} fertig</title></circle>`;
+    const m = p.plan.rows.length; return `<circle cx="${X(m)}" cy="${Y(values[m])}" r="4" class="pl-dot-end"><title>${esc(t('{name} fertig', { name: p.d.name }))}</title></circle>`;
   }).join('') : '';
   // Beschriftung: heute, Jahreswechsel (höchstens 3), Ende
-  const labels = [`<span style="left:0">heute</span>`];
+  const labels = [`<span style="left:0">${t('heute')}</span>`];
   const yearMarks = [];
   for (let m = 1; m < months; m++) { const d = new Date(now.getFullYear(), now.getMonth() + m, 1); if (d.getMonth() === 0) yearMarks.push({ m, t: d.getFullYear() }); }
   const step = Math.ceil(yearMarks.length / 3) || 1;
   yearMarks.filter((_, i) => i % step === 0).forEach(y => { if (y.m / (months - 1) < .85 && y.m / (months - 1) > .15) labels.push(`<span style="left:${(y.m / (months - 1) * 100).toFixed(1)}%">${y.t}</span>`); });
   labels.push(`<span style="right:0">${end ? monthLabel(end, true) : ''}</span>`);
   return `<div class="card pl-chart">${head}
-      <svg class="pl-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Restbetrag sinkt bis ${end ? monthLabel(end) : 'später'}">
+      <svg class="pl-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(t('Restbetrag sinkt bis {datum}', { datum: end ? monthLabel(end) : t('später') }))}">
         <path d="${line} L${W},${H} L0,${H} Z" class="pl-area"/><path d="${line}" class="pl-line" vector-effect="non-scaling-stroke"/>
         <circle cx="0" cy="${Y(values[0])}" r="4" class="pl-dot-now"/>${dots}
       </svg>
@@ -216,36 +215,36 @@ function accountDetailHtml(id) {
     (free > 0 ? `<span style="width:${(free / total * 100).toFixed(1)}%;background:var(--surface)"></span>` : '');
   const rows = goals.map((g, i) => `<button class="pl-row" onclick="openGoalModal(${jsArg(g.id)})">
       <span class="pl-swatch" style="background:${GOAL_COLORS[i % GOAL_COLORS.length]}"></span>
-      <span class="pl-row-main"><span class="pl-name">${esc(g.name)}</span><span class="pl-sub">Ziel ${formatNum(g.target)}${g.targetDate ? ' bis ' + ymLabel(g.targetDate) : ''}</span></span>
+      <span class="pl-row-main"><span class="pl-name">${esc(g.name)}</span><span class="pl-sub">${t('Ziel {betrag}', { betrag: formatNum(g.target) })}${g.targetDate ? ' ' + t('bis {datum}', { datum: ymLabel(g.targetDate) }) : ''}</span></span>
       <span class="pl-amt">${formatNum(g.saved || 0)}<small>${g.target ? Math.round((g.saved || 0) / g.target * 100) : 0} %</small></span></button>`).join('');
   const freeRow = `<div class="pl-row"><span class="pl-swatch pl-swatch-free"></span>
-      <span class="pl-row-main"><span class="pl-name">${free < 0 ? 'Zu viel zugeteilt' : 'Noch frei'}</span><span class="pl-sub">${free < 0 ? 'mehr zugeteilt, als auf dem Konto ist' : 'keinem Ziel zugeteilt'}</span></span>
+      <span class="pl-row-main"><span class="pl-name">${t(free < 0 ? 'Zu viel zugeteilt' : 'Noch frei')}</span><span class="pl-sub">${t(free < 0 ? 'mehr zugeteilt, als auf dem Konto ist' : 'keinem Ziel zugeteilt')}</span></span>
       <span class="pl-amt${free < 0 ? ' pl-neg' : ''}">${formatNum(free)}</span></div>`;
   const deposits = state.entries
     .filter(e => (e.type === 'transfer' && e.toAccountId === id) || (e.type === 'income' && e.accountId === id))
     .sort((x, y) => y.date.localeCompare(x.date)).slice(0, 5)
     .map(e => {
       const from = e.type === 'transfer' ? state.accounts.find(x => x.id === e.fromAccountId) : null;
-      const title = e.note || (e.type === 'transfer' ? 'Überweisung' : e.category);
-      const sub = new Date(e.date + 'T00:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }) + (from ? ', von ' + esc(from.name) : '');
+      const title = e.note || (e.type === 'transfer' ? t('Überweisung') : catName(e.category));
+      const sub = fmtDate(e.date, { day: 'numeric', month: 'short' }) + (from ? ', ' + esc(t('von {name}', { name: from.name })) : '');
       return `<div class="pl-row"><span class="pl-row-main"><span class="pl-name">${esc(title)}</span><span class="pl-sub">${sub}</span></span><span class="pl-amt pl-pos">+${formatNum(e.amount)}</span></div>`;
     }).join('');
   return `
-    <a class="pl-back" href="#"><span class="ico ico-arrow-left" aria-hidden="true"></span>Planen</a>
+    <a class="pl-back" href="#"><span class="ico ico-arrow-left" aria-hidden="true"></span>${t('Planen')}</a>
     <h2 class="pl-title">${esc(a.name)}</h2>
-    <div class="pl-hero">CHF ${formatNum(a.balance)}</div>
-    <div class="pl-sub-lg">${goals.length === 1 ? '1 Sparziel' : goals.length + ' Sparziele'}</div>
+    <div class="pl-hero">${money(a.balance)}</div>
+    <div class="pl-sub-lg">${goals.length === 1 ? t('1 Sparziel') : t('{n} Sparziele', { n: goals.length })}</div>
     <section class="pl-section">
-      <h3 class="pl-h">So ist das Geld verteilt</h3>
+      <h3 class="pl-h">${t('So ist das Geld verteilt')}</h3>
       <div class="pl-alloc" aria-hidden="true">${segs || '<span style="width:100%;background:var(--surface)"></span>'}</div>
       <div class="pl-list">${rows}${freeRow}</div>
     </section>
     ${goals.length
-      ? `<button class="btn-save pl-wide" onclick="openAllocModal(${jsArg(id)})"${free <= 0 ? ' disabled' : ''}>Freies Geld einem Ziel zuteilen</button>`
-      : `<button class="btn-save pl-wide" onclick="openGoalModal(null, ${jsArg(id)})">Sparziel hinzufügen</button>`}
+      ? `<button class="btn-save pl-wide" onclick="openAllocModal(${jsArg(id)})"${free <= 0 ? ' disabled' : ''}>${t('Freies Geld einem Ziel zuteilen')}</button>`
+      : `<button class="btn-save pl-wide" onclick="openGoalModal(null, ${jsArg(id)})">${t('Sparziel hinzufügen')}</button>`}
     <section class="pl-section">
-      <h3 class="pl-h">Letzte Einzahlungen</h3>
-      ${deposits ? `<div class="pl-list">${deposits}</div>` : '<p class="pl-empty">Noch keine Einzahlungen. Überweisungen auf dieses Konto erscheinen hier.</p>'}
+      <h3 class="pl-h">${t('Letzte Einzahlungen')}</h3>
+      ${deposits ? `<div class="pl-list">${deposits}</div>` : `<p class="pl-empty">${t('Noch keine Einzahlungen. Überweisungen auf dieses Konto erscheinen hier.')}</p>`}
     </section>`;
 }
 
@@ -257,36 +256,36 @@ function debtDetailHtml(id) {
   const plan = debtSchedule(d);
   const w = d.amount ? Math.max(0, Math.min(100, (1 - rem / d.amount) * 100)) : 0;
   const kv = [];
-  if (d.rate) kv.push(['Monatsrate', 'CHF ' + formatNum(d.rate)]);
-  if (rem <= 0) kv.push(['Status', '<span class="pl-ok">abbezahlt</span>']);
-  else if (plan.end) kv.push([owed ? 'Zurück bis' : 'Fertig bezahlt', `<span class="pl-ok">${monthLabel(plan.end, true)}</span>`]);
-  if (d.interest && rem > 0 && plan.end) kv.push(['Zins total noch', 'CHF ' + formatNum(plan.totalInterest)]);
-  if (d.interest) kv.push(['Zins', String(d.interest) + ' %']);
+  if (d.rate) kv.push([t('Monatsrate'), money(d.rate)]);
+  if (rem <= 0) kv.push([t('Status'), `<span class="pl-ok">${t('abbezahlt')}</span>`]);
+  else if (plan.end) kv.push([t(owed ? 'Zurück bis' : 'Fertig bezahlt'), `<span class="pl-ok">${monthLabel(plan.end, true)}</span>`]);
+  if (d.interest && rem > 0 && plan.end) kv.push([t('Zins total noch'), money(plan.totalInterest)]);
+  if (d.interest) kv.push([t('Zins'), Number(d.interest).toLocaleString(I18N.locale) + ' %']);
   const paid = d.payments.slice().sort((x, y) => y.date.localeCompare(x.date));
-  const shortDate = dt => dt.toLocaleDateString('de-CH', { month: 'short', year: 'numeric' });
+  const shortDate = dt => dt.toLocaleDateString(I18N.locale, { month: 'short', year: 'numeric' });
   const paidRows = paid.slice(0, showAllRates ? paid.length : 2).reverse().map(p => `<div class="pl-plan-row is-paid">
       <span class="pl-plan-dot"><span class="ico ico-check" aria-hidden="true"></span></span><span class="pl-plan-date">${shortDate(new Date(p.date + 'T00:00:00'))}</span>
-      <span class="pl-plan-what">bezahlt</span><span class="pl-plan-amt">CHF ${formatNum(p.amount)}</span>
-      <button class="tx-btn delete" onclick="deletePayment(${jsArg(d.id)}, ${jsArg(p.id)})" aria-label="Zahlung löschen"><span class="ico ico-trash"></span></button></div>`).join('');
+      <span class="pl-plan-what">${t('bezahlt')}</span><span class="pl-plan-amt">${money(p.amount)}</span>
+      <button class="tx-btn delete" onclick="deletePayment(${jsArg(d.id)}, ${jsArg(p.id)})" aria-label="${t('Zahlung löschen')}"><span class="ico ico-trash"></span></button></div>`).join('');
   const future = plan.rows.slice(0, showAllRates ? plan.rows.length : 3).map((r, i) => `<div class="pl-plan-row${i === 0 ? ' is-next' : ''}">
       <span class="pl-plan-dot"></span><span class="pl-plan-date">${shortDate(r.date)}</span>
-      <span class="pl-plan-what">${i === 0 ? (r.date < new Date(new Date().toDateString()) ? 'fällig' : 'nächste Rate') : 'Rate'}</span><span class="pl-plan-amt">CHF ${formatNum(r.amount)}</span></div>`).join('');
+      <span class="pl-plan-what">${t(i === 0 ? (r.date < new Date(new Date().toDateString()) ? 'fällig' : 'nächste Rate') : 'Rate')}</span><span class="pl-plan-amt">${money(r.amount)}</span></div>`).join('');
   const more = plan.rows.length > 3 || paid.length > 2;
   const planBox = d.rate
-    ? `<section class="pl-section"><h3 class="pl-h">Abzahlplan${more ? ` <button class="pl-h-link" onclick="toggleAllRates()">${showAllRates ? 'Weniger zeigen' : `Alle ${plan.rows.length} Raten`}</button>` : ''}</h3>
-        ${plan.never ? '<p class="pl-warn">Die Rate ist kleiner als der Zins. So wird die Schuld nie kleiner. Erhöhe die Monatsrate.</p>' : ''}
-        ${paidRows || future ? `<div class="card pl-plan">${paidRows}${future}</div>` : '<p class="pl-empty">Alles bezahlt.</p>'}</section>`
-    : `<section class="pl-section"><h3 class="pl-h">Zahlungen</h3>${paidRows ? `<div class="card pl-plan">${paidRows}</div>` : '<p class="pl-empty">Noch keine Zahlung erfasst. Ohne feste Rate trägst du jede Zahlung selbst ein.</p>'}</section>`;
+    ? `<section class="pl-section"><h3 class="pl-h">${t('Abzahlplan')}${more ? ` <button class="pl-h-link" onclick="toggleAllRates()">${showAllRates ? t('Weniger zeigen') : t('Alle {n} Raten', { n: plan.rows.length })}</button>` : ''}</h3>
+        ${plan.never ? `<p class="pl-warn">${t('Die Rate ist kleiner als der Zins. So wird die Schuld nie kleiner. Erhöhe die Monatsrate.')}</p>` : ''}
+        ${paidRows || future ? `<div class="card pl-plan">${paidRows}${future}</div>` : `<p class="pl-empty">${t('Alles bezahlt.')}</p>`}</section>`
+    : `<section class="pl-section"><h3 class="pl-h">${t('Zahlungen')}</h3>${paidRows ? `<div class="card pl-plan">${paidRows}</div>` : `<p class="pl-empty">${t('Noch keine Zahlung erfasst. Ohne feste Rate trägst du jede Zahlung selbst ein.')}</p>`}</section>`;
   return `
-    <div class="pl-top-row"><a class="pl-back" href="#"><span class="ico ico-arrow-left" aria-hidden="true"></span>Planen</a>
-      <button class="pl-h-link" onclick="openDebtModal(${jsArg(d.id)})">Bearbeiten</button></div>
+    <div class="pl-top-row"><a class="pl-back" href="#"><span class="ico ico-arrow-left" aria-hidden="true"></span>${t('Planen')}</a>
+      <button class="pl-h-link" onclick="openDebtModal(${jsArg(d.id)})">${t('Bearbeiten')}</button></div>
     <h2 class="pl-title">${esc(d.name)}</h2>
-    <div class="pl-hero${owed ? ' pl-pos' : ''}">CHF ${formatNum(rem)}</div>
-    <div class="pl-sub-lg">noch offen von CHF ${formatNum(d.amount)}${d.person ? ', ' + esc(d.person) : ''}</div>
+    <div class="pl-hero${owed ? ' pl-pos' : ''}">${money(rem)}</div>
+    <div class="pl-sub-lg">${t('noch offen von {betrag}', { betrag: money(d.amount) })}${d.person ? ', ' + esc(d.person) : ''}</div>
     <div class="pl-bar pl-bar-paid pl-bar-lg"><span style="width:${w.toFixed(1)}%"></span></div>
     ${kv.length ? `<div class="pl-kv">${kv.map(([k, v]) => `<div class="card"><div class="pl-label">${k}</div><div class="pl-kv-v">${v}</div></div>`).join('')}</div>` : ''}
     ${planBox}
-    ${rem > 0 ? `<button class="btn-save pl-wide" onclick="openPayModal(${jsArg(d.id)})"><span class="ico ico-check" aria-hidden="true"></span> ${owed ? 'Rückzahlung erhalten' : d.rate ? 'Rate bezahlt' : 'Zahlung erfassen'}</button>` : ''}`;
+    ${rem > 0 ? `<button class="btn-save pl-wide" onclick="openPayModal(${jsArg(d.id)})"><span class="ico ico-check" aria-hidden="true"></span> ${t(owed ? 'Rückzahlung erhalten' : d.rate ? 'Rate bezahlt' : 'Zahlung erfassen')}</button>` : ''}`;
 }
 function toggleAllRates() { showAllRates = !showAllRates; render(); }
 
@@ -294,9 +293,9 @@ function toggleAllRates() { showAllRates = !showAllRates; render(); }
 function fillGoalAccountSelect(selected) {
   const sel = document.getElementById('goalAccount');
   sel.innerHTML = savingAccounts().map(a =>
-      `<option value="${esc(a.id)}" data-icon="piggy" data-sub="CHF ${formatNum(accountFree(a.id, goalEditId))} frei">${esc(a.name)}</option>`).join('') +
-    `<option value="__none" data-icon="banned" data-sub="Den Stand trägst du selbst ein">Ohne Konto</option>` +
-    `<option value="__new" data-icon="plus">Neues Sparkonto anlegen</option>`;
+      `<option value="${esc(a.id)}" data-icon="piggy" data-sub="${esc(t('{betrag} frei', { betrag: money(accountFree(a.id, goalEditId)) }))}">${esc(a.name)}</option>`).join('') +
+    `<option value="__none" data-icon="banned" data-sub="${t('Den Stand trägst du selbst ein')}">${t('Ohne Konto')}</option>` +
+    `<option value="__new" data-icon="plus">${t('Neues Sparkonto anlegen')}</option>`;
   sel.value = selected || '__none';
   goalAccountPrev = sel.value;
 }
@@ -305,7 +304,7 @@ function goalAccountValue() { const v = document.getElementById('goalAccount').v
 function openGoalModal(id = null, accountId = null) {
   goalEditId = id;
   const g = id ? state.goals.find(x => x.id === id) : null;
-  document.getElementById('goalModalTitle').textContent = g ? 'Sparziel bearbeiten' : 'Sparziel hinzufügen';
+  document.getElementById('goalModalTitle').textContent = t(g ? 'Sparziel bearbeiten' : 'Sparziel hinzufügen');
   document.getElementById('goalName').value = g ? g.name : '';
   document.getElementById('goalTarget').value = g ? g.target : '';
   document.getElementById('goalDate').value = g ? (g.targetDate || '') : '';
@@ -331,10 +330,10 @@ function updateGoalHint() {
   const accId = goalAccountValue();
   const saved = parseAmount(document.getElementById('goalSaved').value) || 0;
   const hint = document.getElementById('goalSavedHint');
-  document.getElementById('goalSavedLabel').textContent = accId ? 'Davon schon gespart (CHF)' : 'Schon gespart (CHF)';
-  if (!accId) { hint.textContent = 'Den Stand änderst du später hier.'; hint.classList.remove('is-warn'); return; }
+  document.getElementById('goalSavedLabel').textContent = t(accId ? 'Davon schon gespart ({w})' : 'Schon gespart ({w})', { w: cur() });
+  if (!accId) { hint.textContent = t('Den Stand änderst du später hier.'); hint.classList.remove('is-warn'); return; }
   const left = round2(accountFree(accId, goalEditId) - saved);
-  hint.textContent = left >= 0 ? `Danach noch CHF ${formatNum(left)} frei auf dem Sparkonto.` : `Das sind CHF ${formatNum(-left)} mehr, als auf dem Sparkonto frei ist.`;
+  hint.textContent = left >= 0 ? t('Danach noch {betrag} frei auf dem Sparkonto.', { betrag: money(left) }) : t('Das sind {betrag} mehr, als auf dem Sparkonto frei ist.', { betrag: money(-left) });
   hint.classList.toggle('is-warn', left < 0);
 }
 function saveGoal() {
@@ -347,7 +346,7 @@ function saveGoal() {
   if (isNaN(target) || target <= 0) { showError('Sparziel nicht gespeichert', 'Der Zielbetrag fehlt. Gib einen Betrag über 0 ein.', 'goalTarget'); return; }
   if (saved < 0) { showError('Sparziel nicht gespeichert', 'Der gesparte Betrag kann nicht negativ sein. Gib 0 oder mehr ein.', 'goalSaved'); return; }
   if (accountId && saved > accountFree(accountId, goalEditId)) {
-    showError('Sparziel nicht gespeichert', `Auf dem Sparkonto sind nur CHF ${formatNum(accountFree(accountId, goalEditId))} frei. Gib höchstens diesen Betrag ein.`, 'goalSaved');
+    showError('Sparziel nicht gespeichert', t('Auf dem Sparkonto sind nur {betrag} frei. Gib höchstens diesen Betrag ein.', { betrag: money(accountFree(accountId, goalEditId)) }), 'goalSaved');
     return;
   }
   if (goalEditId) {
@@ -358,7 +357,7 @@ function saveGoal() {
   }
   const wasNew = !goalEditId;
   saveState(); closeGoalModal(); render();
-  showToast(wasNew ? 'Sparziel gespeichert' : 'Gespeichert', wasNew ? { text: `«${name}» steht jetzt unter Sparziele.` } : {});
+  showToast(wasNew ? 'Sparziel gespeichert' : 'Gespeichert', wasNew ? { text: t('«{name}» steht jetzt unter Sparziele.', { name }) } : {});
 }
 function deleteGoal() {
   const id = goalEditId;
@@ -383,7 +382,7 @@ function saveSavingAccount() {
   closeSavingAccountModal();
   fillGoalAccountSelect(acc.id);
   updateGoalHint();
-  showToast('Sparkonto angelegt', { text: `«${name}» ist mit diesem Sparziel verknüpft.` });
+  showToast('Sparkonto angelegt', { text: t('«{name}» ist mit diesem Sparziel verknüpft.', { name }) });
 }
 
 // ── FREIES GELD EINEM ZIEL ZUTEILEN
@@ -391,9 +390,9 @@ function openAllocModal(accountId) {
   allocAccountId = accountId;
   const acc = state.accounts.find(a => a.id === accountId);
   const goals = goalsOn(accountId);
-  document.getElementById('allocSub').textContent = `Auf «${acc.name}» sind CHF ${formatNum(accountFree(accountId))} frei.`;
+  document.getElementById('allocSub').textContent = t('Auf «{name}» sind {betrag} frei.', { name: acc.name, betrag: money(accountFree(accountId)) });
   const sel = document.getElementById('allocGoal');
-  sel.innerHTML = goals.map(g => `<option value="${esc(g.id)}" data-icon="" data-sub="${formatNum(g.saved || 0)} von ${formatNum(g.target)}">${esc(g.name)}</option>`).join('');
+  sel.innerHTML = goals.map(g => `<option value="${esc(g.id)}" data-icon="" data-sub="${esc(t('{betrag} von {ziel}', { betrag: formatNum(g.saved || 0), ziel: formatNum(g.target) }))}">${esc(g.name)}</option>`).join('');
   sel.value = (goals.find(g => (g.saved || 0) < g.target) || goals[0]).id;
   onAllocGoalChange();
   document.getElementById('allocModal').classList.add('show');
@@ -411,22 +410,22 @@ function saveAlloc() {
   const free = accountFree(allocAccountId);
   if (!g) { showError('Nicht zugeteilt', 'Das Sparziel fehlt. Wähle ein Sparziel aus.', 'allocGoal'); return; }
   if (isNaN(amount) || amount <= 0) { showError('Nicht zugeteilt', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'allocAmount'); return; }
-  if (amount > free) { showError('Nicht zugeteilt', `Es sind nur CHF ${formatNum(free)} frei. Gib höchstens diesen Betrag ein.`, 'allocAmount'); return; }
+  if (amount > free) { showError('Nicht zugeteilt', t('Es sind nur {betrag} frei. Gib höchstens diesen Betrag ein.', { betrag: money(free) }), 'allocAmount'); return; }
   g.saved = round2((g.saved || 0) + amount);
   saveState(); closeAllocModal(); render();
-  showToast('Zugeteilt', { text: `«${g.name}» hat jetzt CHF ${formatNum(g.saved)} von ${formatNum(g.target)}.` });
+  showToast('Zugeteilt', { text: t('«{name}» hat jetzt {betrag} von {ziel}.', { name: g.name, betrag: money(g.saved), ziel: formatNum(g.target) }) });
 }
 
 // ── SCHULD HINZUFÜGEN / BEARBEITEN
 function fillAccountSelect(sel, selected) {
   const list = state.accounts.filter(a => !isSavingAccount(a)).concat(savingAccounts());
-  sel.innerHTML = '<option value="">Kein Konto</option>' + list.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
+  sel.innerHTML = `<option value="">${t('Kein Konto')}</option>` + list.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
   sel.value = selected && list.some(a => a.id === selected) ? selected : (list[0] ? list[0].id : '');
 }
 function openDebtModal(id = null) {
   debtEditId = id;
   const d = id ? state.debts.find(x => x.id === id) : null;
-  document.getElementById('debtModalTitle').textContent = d ? 'Schuld bearbeiten' : 'Schuld hinzufügen';
+  document.getElementById('debtModalTitle').textContent = t(d ? 'Schuld bearbeiten' : 'Schuld hinzufügen');
   document.getElementById('debtDirection').value = d ? (d.direction || 'owe') : 'owe';
   document.getElementById('debtName').value = d ? d.name : '';
   document.getElementById('debtPerson').value = d ? (d.person || '') : '';
@@ -435,7 +434,7 @@ function openDebtModal(id = null) {
   document.getElementById('debtRate').value = d && d.rate ? d.rate : '';
   document.getElementById('debtInterest').value = d && d.interest ? d.interest : '';
   const day = document.getElementById('debtDueDay');
-  day.innerHTML = Array.from({ length: 28 }, (_, i) => `<option value="${i + 1}">${i + 1}. des Monats</option>`).join('');
+  day.innerHTML = Array.from({ length: 28 }, (_, i) => `<option value="${i + 1}">${t('{tag}. des Monats', { tag: i + 1 })}</option>`).join('');
   day.value = String(d ? (d.dueDay || 1) : 1);
   fillAccountSelect(document.getElementById('debtAccount'), d ? d.accountId : '');
   document.getElementById('debtDeleteBtn').hidden = !d;
@@ -444,10 +443,10 @@ function openDebtModal(id = null) {
 }
 function updateDebtFormUi() {
   const owed = document.getElementById('debtDirection').value === 'owed';
-  document.getElementById('debtPersonLabel').textContent = owed ? 'Wer (optional)' : 'Bei wem (optional)';
-  document.getElementById('debtName').placeholder = owed ? 'z.B. Lea, Konzerttickets' : 'z.B. Privatkredit';
-  document.getElementById('debtPerson').placeholder = owed ? 'z.B. Lea' : 'z.B. Bank Cler';
-  document.getElementById('debtAccountLabel').textContent = owed ? 'Zurück auf Konto' : 'Bezahlt von Konto';
+  document.getElementById('debtPersonLabel').textContent = t(owed ? 'Wer (optional)' : 'Bei wem (optional)');
+  document.getElementById('debtName').placeholder = t(owed ? 'z.B. Lea, Konzerttickets' : 'z.B. Privatkredit');
+  document.getElementById('debtPerson').placeholder = t(owed ? 'z.B. Lea' : 'z.B. Bank Cler');
+  document.getElementById('debtAccountLabel').textContent = t(owed ? 'Zurück auf Konto' : 'Bezahlt von Konto');
 }
 function syncDebtOpen() {
   // «Noch offen» folgt dem Anfangsbetrag, solange man es nicht selbst ändert
@@ -498,13 +497,13 @@ function openPayModal(id) {
   const owed = d.direction === 'owed';
   const rem = debtRemaining(d);
   const next = debtSchedule(d).rows[0];
-  document.getElementById('payTitle').textContent = owed ? 'Rückzahlung erhalten' : d.rate ? 'Rate bezahlt' : 'Zahlung erfassen';
+  document.getElementById('payTitle').textContent = t(owed ? 'Rückzahlung erhalten' : d.rate ? 'Rate bezahlt' : 'Zahlung erfassen');
   document.getElementById('paySub').textContent = owed
-    ? `Wird als Einnahme «Rückzahlung» erfasst. Noch offen: CHF ${formatNum(rem)}.`
-    : `Wird als Ausgabe «Schulden» erfasst und zählt zu deinem Monatsbudget. Noch offen: CHF ${formatNum(rem)}.`;
+    ? t('Wird als Einnahme «Rückzahlung» erfasst. Noch offen: {betrag}.', { betrag: money(rem) })
+    : t('Wird als Ausgabe «Schulden» erfasst und zählt zu deinem Monatsbudget. Noch offen: {betrag}.', { betrag: money(rem) });
   document.getElementById('payAmount').value = (next ? next.amount : rem).toFixed(2);
   document.getElementById('payDate').valueAsDate = new Date();
-  document.getElementById('payAccountLabel').textContent = owed ? 'Auf Konto' : 'Von Konto';
+  document.getElementById('payAccountLabel').textContent = t(owed ? 'Auf Konto' : 'Von Konto');
   fillAccountSelect(document.getElementById('payAccount'), d.accountId);
   document.getElementById('payModal').classList.add('show');
 }
@@ -525,8 +524,8 @@ function savePayment() {
   applyAccountDelta(accountId, amount, entry.type);
   d.payments.push({ id: uid(), date, amount, interest, principal, entryId: entry.id });
   saveState(); closePayModal(); render();
-  if (debtRemaining(d) <= 0) showToast(owed ? 'Alles zurückbezahlt' : 'Schuld abbezahlt', { text: `«${d.name}» ist vollständig ${owed ? 'zurückbezahlt' : 'abbezahlt'}.` });
-  else showToast('Gespeichert', { text: `Noch offen: CHF ${formatNum(debtRemaining(d))}.` });
+  if (debtRemaining(d) <= 0) showToast(owed ? 'Alles zurückbezahlt' : 'Schuld abbezahlt', { text: t(owed ? '«{name}» ist vollständig zurückbezahlt.' : '«{name}» ist vollständig abbezahlt.', { name: d.name }) });
+  else showToast('Gespeichert', { text: t('Noch offen: {betrag}.', { betrag: money(debtRemaining(d)) }) });
 }
 function deletePayment(debtId, payId) {
   deleteWithUndo(() => {

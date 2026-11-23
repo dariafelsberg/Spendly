@@ -96,6 +96,8 @@ Pfeil-S aus zwei Pfeilen (oben schwarz, unten `spendly-pink`), daneben «Spendly
 
 Du-Form, kurz, ohne Fachjargon. Schweizer Rechtschreibung (ss, kein ß). Beträge `4’218.40`, `1’250.00 CHF`, Ausgaben `– 86.35`. Das Wichtigste zuerst, keine Füllwörter, keine Gedankenstriche im Satz.
 
+Weitere Sprachen: Französisch, Italienisch, Englisch, Niederländisch, ebenfalls Du-Form (fr «tu», it «tu», nl «je»). Zahlen und Datum richten sich nach der Sprache (`de-CH`, `fr-CH`, `it-CH`, `en-CH`, `nl-NL`). Anführungszeichen: de, fr, it «…», en und nl “…”. Platz für längere Texte lassen: Französisch und Niederländisch sind oft 20–30 % länger.
+
 ## 11. Nicht erlaubt
 
 - Verläufe (auch nicht im Logo), Glas-Effekte, Neon, Schatten auf Flächen

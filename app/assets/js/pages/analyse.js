@@ -61,7 +61,7 @@ function syncInsightsWindow() {
 function renderInsightsView() {
   const now = new Date();
   const label = document.getElementById('insightsMonthLabel');
-  if (label) label.textContent = insightsViewDate.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  if (label) label.textContent = fmtDate(insightsViewDate, { month: 'long', year: 'numeric' });
   const nextBtn = document.getElementById('insightsNavNext');
   if (nextBtn) {
     const disabled = insightsViewDate.getFullYear() === now.getFullYear() && insightsViewDate.getMonth() === now.getMonth();
@@ -114,7 +114,7 @@ function renderTagFilter() {
     const on = tag.toLowerCase() === insightsTag.toLowerCase();
     return `<button type="button" class="tag-filter-chip${on ? ' on' : ''}" aria-pressed="${on}" onclick="setInsightsTag(${jsArg(tag)})">${label}</button>`;
   };
-  box.innerHTML = chip('', 'Alle') + tags.map(t => chip(t.name, "#" + esc(t.name))).join('');
+  box.innerHTML = chip('', esc(t('Alle'))) + tags.map(t => chip(t.name, "#" + esc(t.name))).join('');
 }
 function renderTagSummary() {
   const box = document.getElementById('tagSummary');
@@ -122,8 +122,8 @@ function renderTagSummary() {
   const spent = list.filter(e => e.type === 'expense').reduce((s, e) => s + e.amount, 0);
   const earned = list.filter(e => e.type === 'income').reduce((s, e) => s + e.amount, 0);
   const dates = list.map(e => e.date).sort();
-  const fmt = d => new Date(d + 'T00:00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'short', year: 'numeric' });
-  const range = !dates.length ? '' : dates[0] === dates[dates.length - 1] ? fmt(dates[0]) : `${fmt(dates[0])} bis ${fmt(dates[dates.length - 1])}`;
+  const fmt = d => fmtDate(d, { day: 'numeric', month: 'short', year: 'numeric' });
+  const range = !dates.length ? '' : dates[0] === dates[dates.length - 1] ? fmt(dates[0]) : t('{von} bis {bis}', { von: fmt(dates[0]), bis: fmt(dates[dates.length - 1]) });
   // Ausgaben nach Kategorie als dünne Balken
   const byCat = {};
   list.filter(e => e.type === 'expense').forEach(e => { byCat[e.category] = (byCat[e.category] || 0) + e.amount; });
@@ -132,15 +132,15 @@ function renderTagSummary() {
   const rows = cats.map(([name, sum]) => {
     const c = ALL_CATS.find(x => x.name === name) || { color: '#ccc', emoji: '?' };
     return `<div class="tag-cat-row">
-        <span class="tag-cat-name">${catIcon(c)} ${esc(name)}</span><span class="tag-cat-amt">${formatNum(sum)}</span>
+        <span class="tag-cat-name">${catIcon(c)} ${esc(catName(name))}</span><span class="tag-cat-amt">${formatNum(sum)}</span>
         <span class="tag-cat-bar"><span style="width:${(sum / max * 100).toFixed(1)}%;background:${c.color}"></span></span></div>`;
   }).join('');
   box.innerHTML = `
     <div class="tag-summary-head">
-      <div><div class="section-label">#${esc(insightsTag)}, ausgegeben</div><div class="tag-summary-total">CHF ${formatNum(spent)}</div></div>
-      <button type="button" class="tag-summary-clear" onclick="setInsightsTag('')" aria-label="Filter aufheben"><span class="ico ico-close"></span></button>
+      <div><div class="section-label">${esc(t('#{tag}, ausgegeben', { tag: insightsTag }))}</div><div class="tag-summary-total">${money(spent)}</div></div>
+      <button type="button" class="tag-summary-clear" onclick="setInsightsTag('')" aria-label="${t('Filter aufheben')}"><span class="ico ico-close"></span></button>
     </div>
-    <div class="tag-summary-sub">${list.length === 1 ? '1 Eintrag' : list.length + ' Einträge'}${range ? ', ' + range : ''}${earned ? `, CHF ${formatNum(earned)} eingenommen` : ''}</div>
+    <div class="tag-summary-sub">${nEntries(list.length)}${range ? ', ' + range : ''}${earned ? ', ' + t('{betrag} eingenommen', { betrag: money(earned) }) : ''}</div>
     ${rows ? `<div class="tag-cats">${rows}</div>` : ''}`;
 }
 
@@ -171,27 +171,31 @@ function renderInsightsReview() {
       .reduce((s, e) => s + e.amount, 0);
   };
   const cur = sumUntil(insightsViewDate), before = sumUntil(prev);
-  const prevName = prev.toLocaleDateString('de-CH', { month: 'long' });
-  const curName = insightsViewDate.toLocaleDateString('de-CH', { month: 'long' });
+  const prevName = fmtDate(prev, { month: 'long' });
+  const curName = fmtDate(insightsViewDate, { month: 'long' });
   if (!cur && !before) { box.hidden = true; return; }
   box.hidden = false;
   const text = document.getElementById('insightsReviewText');
   const sub = document.getElementById('insightsReviewSub');
-  const when = isCurrent ? 'Bis heute hast du' : `Im ${curName} hast du`;
-  const compare = isCurrent ? `als im ${prevName} bis zum ${day}.` : `als im ${prevName}.`;
+  const v = { monat: curName, vormonat: prevName, tag: day };
   if (!before) {
-    text.textContent = `Im ${prevName} hast du keine Ausgaben erfasst, darum gibt es noch keinen Vergleich.`;
+    text.textContent = t('Im {vormonat} hast du keine Ausgaben erfasst, darum gibt es noch keinen Vergleich.', v);
   } else {
     const diff = Math.round((cur - before) / before * 100);
-    text.textContent = diff === 0
-      ? `${when} gleich viel ausgegeben ${compare}`
-      : `${when} ${Math.abs(diff)} % ${diff < 0 ? 'weniger' : 'mehr'} ausgegeben ${compare}`;
+    v.pct = Math.abs(diff);
+    // Ganze Sätze, damit jede Sprache ihre eigene Wortstellung haben kann
+    const key = diff === 0
+      ? (isCurrent ? 'Bis heute hast du gleich viel ausgegeben wie im {vormonat} bis zum {tag}.' : 'Im {monat} hast du gleich viel ausgegeben wie im {vormonat}.')
+      : diff < 0
+        ? (isCurrent ? 'Bis heute hast du {pct} % weniger ausgegeben als im {vormonat} bis zum {tag}.' : 'Im {monat} hast du {pct} % weniger ausgegeben als im {vormonat}.')
+        : (isCurrent ? 'Bis heute hast du {pct} % mehr ausgegeben als im {vormonat} bis zum {tag}.' : 'Im {monat} hast du {pct} % mehr ausgegeben als im {vormonat}.');
+    text.textContent = t(key, v);
     text.classList.toggle('good', diff < 0);
     text.classList.toggle('bad', diff > 0);
   }
   sub.textContent = isCurrent
-    ? `CHF ${formatNum(cur)} bis heute, CHF ${formatNum(before)} im ${prevName} bis zum ${day}.`
-    : `CHF ${formatNum(cur)} im ${curName}, CHF ${formatNum(before)} im ${prevName}`;
+    ? t('{betrag} bis heute, {vorher} im {vormonat} bis zum {tag}.', { betrag: money(cur), vorher: money(before), vormonat: prevName, tag: day })
+    : t('{betrag} im {monat}, {vorher} im {vormonat}', { betrag: money(cur), vorher: money(before), monat: curName, vormonat: prevName });
 }
 // Netto (Einnahmen − Ausgaben − interne Überweisungen, z. B. Sparen) pro
 // Monat. Geplante Vorschau-Einträge zählen nicht mit, da sie noch nicht
@@ -214,13 +218,13 @@ function computeMonthlyNet(monthsBack, anchorDate = new Date()) {
 function renderInsightsChart() {
   const el = document.getElementById('insightsChart');
   if (!el) return;
-  const monthNames = ['Jan','Feb','Mrz','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  const monthNames = [...Array(12)].map((_, i) => fmtDate(new Date(2000, i, 1), { month: 'short' }).replace('.', ''));
   // Noch gar keine Einträge: Erklärung statt acht Nullen über einer leeren Fläche
   el.parentElement.classList.toggle('is-empty', !state.entries.length);
   if (!state.entries.length) {
     el.innerHTML = `<div class="insights-empty">
-      <p>Sobald du Einnahmen und Ausgaben erfasst, siehst du hier, wie viel dir jeden Monat übrig bleibt.</p>
-      <a class="empty-cta" href="index.html">Eintrag erfassen</a>
+      <p>${t('Sobald du Einnahmen und Ausgaben erfasst, siehst du hier, wie viel dir jeden Monat übrig bleibt.')}</p>
+      <a class="empty-cta" href="index.html">${t('Eintrag erfassen')}</a>
     </div>`;
     return;
   }
@@ -239,7 +243,7 @@ function renderInsightsChart() {
     // Leere Monate (Bilanz 0) ohne Zahl, damit man sofort sieht, wo es Daten gibt.
     const valCls = `insights-bar-value${isNeg ? ' negative' : ''}${isSelected ? ' active' : ''}`;
     return `
-      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${monthNames[d.month]} ${d.year}: ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}" title="${monthNames[d.month]} ${d.year} · ${d.net >= 0 ? '+' : '−'}CHF ${formatNum(Math.abs(d.net))}">
+      <div class="insights-bar-col" onclick="selectInsightsMonth(${d.year},${d.month})" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="${monthNames[d.month]} ${d.year}: ${d.net >= 0 ? '+' : '−'}${money(Math.abs(d.net))}" title="${monthNames[d.month]} ${d.year} · ${d.net >= 0 ? '+' : '−'}${money(Math.abs(d.net))}">
         <div class="${valCls}"${d.net === 0 ? ' aria-hidden="true"' : ''}>${d.net === 0 ? '&nbsp;' : formatSignedCompactChf(d.net)}</div>
         <div class="insights-bar-track">
           <div class="insights-bar-zero-line" style="top:${zeroTop}px"></div>
@@ -255,9 +259,9 @@ function formatSignedCompactChf(n) {
   const abs = Math.abs(n);
   const sign = n > 0 ? '+' : n < 0 ? '−' : '';
   if (abs >= 100000) {
-    return sign + (abs / 1000).toLocaleString('de-CH', { maximumFractionDigits: 0 }) + 'k';
+    return sign + (abs / 1000).toLocaleString(I18N.locale, { maximumFractionDigits: 0 }) + 'k';
   }
-  return sign + Math.round(abs).toLocaleString('de-CH');
+  return sign + Math.round(abs).toLocaleString(I18N.locale);
 }
 // Aufgeklappte Kategorien bleiben beim Neuzeichnen und Monatswechsel offen.
 const openInsightsCats = new Set();
@@ -279,7 +283,7 @@ function renderInsightsMonthList() {
     .sort((a, b) => new Date(b.date) - new Date(a.date));
   listEl.querySelectorAll('.insights-cat-group').forEach(el => el.remove());
   if (countEl) countEl.textContent = entries.length;
-  if (!entries.length) { if (emptyEl) { emptyEl.textContent = 'Keine Einträge in diesem Monat.'; emptyEl.style.display = 'block'; } return; }
+  if (!entries.length) { if (emptyEl) { emptyEl.textContent = t('Keine Einträge in diesem Monat.'); emptyEl.style.display = 'block'; } return; }
   if (emptyEl) emptyEl.style.display = 'none';
 
   const groups = {};
@@ -305,7 +309,7 @@ function renderInsightsMonthList() {
       group.innerHTML = `
         <div class="insights-cat-header" onclick="toggleInsightsCat(this)" role="button" tabindex="0" aria-expanded="${openInsightsCats.has(g.name)}">
           <div class="tx-cat-dot" style="background:${cat.color}"></div>
-          <div class="insights-cat-name">${catIcon(cat)} ${esc(g.name)}</div>
+          <div class="insights-cat-name">${catIcon(cat)} ${esc(catName(g.name))}</div>
           <span class="insights-cat-count">${g.entries.length}</span>
           ${totalHtml}
           <span class="insights-cat-chevron ico ico-arrow-down"></span>

@@ -7,7 +7,7 @@
 function initHome() {
   const now = new Date();
   // Der Monat steht als grosser Titel über den Karten
-  document.getElementById('monthLabel').textContent = now.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  document.getElementById('monthLabel').textContent = fmtDate(now, { month: 'long', year: 'numeric' });
   document.getElementById('entryDate').valueAsDate = now;
   populateCategorySelect('expense');
   render();
@@ -74,8 +74,8 @@ function onbNext(step, skip = false) {
     const raw = document.getElementById('onbAccountBalance').value.trim();
     const balance = raw ? parseAmount(raw) : 0;
     const err = document.getElementById('onbError1');
-    if (!name) { err.textContent = 'Gib dem Konto einen Namen oder überspringe den Schritt.'; return; }
-    if (isNaN(balance)) { err.textContent = 'Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'; return; }
+    if (!name) { err.textContent = t('Gib dem Konto einen Namen oder überspringe den Schritt.'); return; }
+    if (isNaN(balance)) { err.textContent = t('Das Guthaben ist keine gültige Zahl, zum Beispiel 1250.50.'); return; }
     err.textContent = '';
     state.accounts.push({ id: uid(), name, balance, visible: true });
     saveState(); renderTopBar();
@@ -83,7 +83,7 @@ function onbNext(step, skip = false) {
   if (step === 2 && !skip) {
     const val = parseAmount(document.getElementById('onbBudget').value);
     const err = document.getElementById('onbError2');
-    if (isNaN(val) || val <= 0) { err.textContent = 'Gib einen Betrag ein, zum Beispiel 2000, oder überspringe den Schritt.'; return; }
+    if (isNaN(val) || val <= 0) { err.textContent = t('Gib einen Betrag ein, zum Beispiel 2000, oder überspringe den Schritt.'); return; }
     err.textContent = '';
     state.budget = val;
     saveState(); renderBudgetCard(); renderDonut();
@@ -113,16 +113,16 @@ function renderTopBar() {
   } else if (totalEl._rolling) rollNumber(totalEl, total);
   else animateNumber(totalEl, total);
   const eye = document.getElementById('balanceEye');
-  if (eye) { eye.querySelector('.ico').className = 'ico ' + (hidden ? 'ico-eye_closed' : 'ico-eye_open'); eye.setAttribute('aria-label', hidden ? 'Guthaben anzeigen' : 'Guthaben verbergen'); }
+  if (eye) { eye.querySelector('.ico').className = 'ico ' + (hidden ? 'ico-eye_closed' : 'ico-eye_open'); eye.setAttribute('aria-label', t(hidden ? 'Guthaben anzeigen' : 'Guthaben verbergen')); }
   const pillsEl = document.getElementById('accountPills');
   if (vis.length) {
     pillsEl.innerHTML = vis.map(a =>
-      `<div class="account-pill-item"><span class="pill-name">${esc(a.name)}</span><span class="pill-val">CHF ${hidden ? '••••' : formatNum(a.balance)}</span></div>`
+      `<div class="account-pill-item"><span class="pill-name">${esc(a.name)}</span><span class="pill-val">${cur()} ${hidden ? '••••' : formatNum(a.balance)}</span></div>`
     ).join('');
     pillsEl.style.display = 'flex';
   } else {
     // Noch kein Konto: statt nur "0.00" direkt zeigen, was zu tun ist
-    pillsEl.innerHTML = '<button class="account-pill-item account-pill-add" onclick="toggleAppMenu(true)"><span class="ico ico-plus" aria-hidden="true"></span> Konto hinzufügen</button>';
+    pillsEl.innerHTML = '<button class="account-pill-item account-pill-add" onclick="toggleAppMenu(true)"><span class="ico ico-plus" aria-hidden="true"></span> ' + t('Konto hinzufügen') + '</button>';
     pillsEl.style.display = 'flex';
   }
 }
@@ -157,14 +157,14 @@ function renderBudgetCard() {
   display.classList.toggle('is-empty', !state.budget);
   if (cta) cta.hidden = !!state.budget;
   if (!state.budget) {
-    display.textContent = 'Noch kein Budget';
-    sub.textContent = 'Leg fest, wie viel du pro Monat ausgeben willst.';
+    display.textContent = t('Noch kein Budget');
+    sub.textContent = t('Leg fest, wie viel du pro Monat ausgeben willst.');
     sub.className = 'budget-sub';
     return;
   }
-  display.textContent = 'CHF ' + formatNum(state.budget);
+  display.textContent = money(state.budget);
   const rem = state.budget - spent;
-  sub.textContent = rem >= 0 ? `Noch CHF ${formatNum(rem)} verfügbar` : `CHF ${formatNum(Math.abs(rem))} überzogen!`;
+  sub.textContent = rem >= 0 ? t('Noch {betrag} verfügbar', { betrag: money(rem) }) : t('{betrag} überzogen!', { betrag: money(Math.abs(rem)) });
   sub.className = 'budget-sub' + (rem < 0 ? ' over' : '');
 }
 
@@ -181,17 +181,17 @@ function renderDonut() {
   document.getElementById('categoriesGrid').hidden = isEmpty;
   centerEl.classList.toggle('is-empty', isEmpty && !state.budget);
   if (isEmpty && !state.budget) {
-    centerEl.textContent = 'Noch keine';
-    centerLabel.textContent = 'Ausgaben im ' + new Date().toLocaleDateString('de-CH', { month: 'long' });
+    centerEl.textContent = t('Noch keine');
+    centerLabel.textContent = t('Ausgaben im {monat}', { monat: fmtDate(new Date(), { month: 'long' }) });
     centerSub.textContent = '';
   } else if (!state.budget) {
-    centerEl.textContent = 'CHF ' + formatNum(spent);
+    centerEl.textContent = money(spent);
     centerLabel.textContent = 'ausgegeben';
     centerSub.textContent = '';
   } else {
-    centerEl.textContent = (rest < 0 ? '−CHF ' : 'CHF ') + formatNum(Math.abs(rest));
-    centerLabel.textContent = rest < 0 ? 'über dem Budget' : 'noch verfügbar';
-    centerSub.textContent = 'von CHF ' + formatNum(state.budget);
+    centerEl.textContent = (rest < 0 ? '−' : '') + money(Math.abs(rest));
+    centerLabel.textContent = t(rest < 0 ? 'über dem Budget' : 'noch verfügbar');
+    centerSub.textContent = t('von {betrag}', { betrag: money(state.budget) });
   }
   centerEl.classList.toggle('over', state.budget > 0 && rest < 0);
   const nowKey = monthKey(new Date());
@@ -243,7 +243,7 @@ function renderDonut() {
       lbl.dataset.cat = c.name;
       const name = document.createElement('span');
       name.className = 'donut-label-name';
-      name.textContent = c.name;
+      name.textContent = catName(c.name);
       lbl.append(name);
       labelsEl.appendChild(lbl);
     }
@@ -269,7 +269,7 @@ function renderDonut() {
       const amt = catTotals[c.name];
       return `<div class="cat-chip used" data-cat="${esc(c.name)}" style="--cat-bg:${esc(c.color)}15;--cat-border:${esc(c.color)}44">
       <div class="cat-dot" style="background:${esc(c.color)}"></div>
-      <span class="cat-name">${catIcon(c)} ${esc(c.name)}</span>
+      <span class="cat-name">${catIcon(c)} ${esc(catName(c.name))}</span>
       <span class="cat-amount expense">−${formatNum(amt)}</span>
     </div>`;
     }).join('');
@@ -365,6 +365,9 @@ function setEntryType(type) {
   const transferGroup = document.getElementById('transferAccountsGroup');
   const tagsGroup = document.getElementById('entryTagsGroup');
   if (tagsGroup) tagsGroup.style.display = type === 'transfer' ? 'none' : '';
+  // Überweisungen zwischen eigenen Konten immer in der Hauptwährung
+  const curSel = document.getElementById('entryCurrency');
+  if (curSel) { curSel.hidden = type === 'transfer'; if (type === 'transfer') { curSel.value = cur(); onFxInput(true); } }
   if (type === 'transfer') {
     if (catGroup) catGroup.style.display = 'none';
     if (accGroup) accGroup.style.display = 'none';
@@ -391,7 +394,7 @@ function moveTypeIndicator(type) {
 function populateCategorySelect(type) {
   const sel = document.getElementById('entryCategory');
   if (!sel) return;
-  sel.innerHTML = '<option value="" selected disabled>Kategorie auswählen</option>' +
+  sel.innerHTML = `<option value="" selected disabled>${t('Kategorie auswählen')}</option>` +
     (type === 'income' ? allIncomeCats() : allExpenseCats())
     .map(c => `<option value="${esc(c.name)}">${catOptionLabel(c)}</option>`).join('');
 }
@@ -399,8 +402,8 @@ function populateAccountSelect(selectedId = '') {
   const sel = document.getElementById('entryAccount');
   if (!sel) return;
   // Konto ist Pflicht, sobald es Konten gibt: statt "Kein Konto" steht "Konto auswählen"
-  sel.innerHTML = `<option value="" disabled ${!selectedId ? 'selected' : ''}>Konto auswählen</option>` +
-    state.accounts.map(a => `<option value="${esc(a.id)}" ${a.id === selectedId ? 'selected' : ''}>${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
+  sel.innerHTML = `<option value="" disabled ${!selectedId ? 'selected' : ''}>${t('Konto auswählen')}</option>` +
+    state.accounts.map(a => `<option value="${esc(a.id)}" ${a.id === selectedId ? 'selected' : ''}>${esc(a.name)} (${money(a.balance)})</option>`).join('');
   const grp = document.getElementById('accountSelectGroup');
   if (grp) grp.style.display = state.accounts.length ? '' : 'none';
 }
@@ -408,7 +411,7 @@ function populateTransferAccountSelects(fromId = '', toId = '') {
   const fromSel = document.getElementById('entryFromAccount');
   const toSel   = document.getElementById('entryToAccount');
   if (!fromSel || !toSel) return;
-  const opts = state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (CHF ${formatNum(a.balance)})</option>`).join('');
+  const opts = state.accounts.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${money(a.balance)})</option>`).join('');
   fromSel.innerHTML = opts;
   toSel.innerHTML = opts;
   if (fromId) fromSel.value = fromId; else if (state.accounts.length) fromSel.selectedIndex = 0;
@@ -425,7 +428,7 @@ function trySetTransferType() {
 function openEntryModal(editId = null) {
   if (!editId) dismissFirstEntryHint();
   state.editId = editId;
-  document.getElementById('entryModalTitle').textContent = editId ? 'Eintrag bearbeiten' : 'Eintrag hinzufügen';
+  document.getElementById('entryModalTitle').textContent = t(editId ? 'Eintrag bearbeiten' : 'Eintrag hinzufügen');
   if (editId) {
     const e = state.entries.find(x => x.id === editId);
     setEntryType(e.type || 'expense');
@@ -433,6 +436,12 @@ function openEntryModal(editId = null) {
     document.getElementById('entryNote').value   = e.note || '';
     document.getElementById('entryDate').value   = e.date;
     setEntryTags(e.tags || []);
+    fillCurrencySelect(e.fx ? e.fx.cur : cur());
+    if (e.fx) {
+      document.getElementById('entryAmount').value = e.fx.amt;
+      fx = { rate: e.fx.rate, date: e.fx.rateDate, manual: true, stale: false, loading: false };
+    }
+    onFxInput(false);
     document.getElementById('typeToggle').style.display = 'none';
     if (e.type === 'transfer') {
       populateTransferAccountSelects(e.fromAccountId, e.toAccountId);
@@ -450,6 +459,8 @@ function openEntryModal(editId = null) {
     document.getElementById('entryNote').value   = '';
     document.getElementById('entryDate').valueAsDate = new Date();
     setEntryTags([]);
+    fillCurrencySelect(cur());
+    onFxInput(true);
     document.getElementById('typeToggle').style.display = '';
     populateAccountSelect(defaultAccountId());
   }
@@ -493,6 +504,15 @@ function saveEntry() {
   commitTagInput();
   const tags = entryTags.slice();
   if (isNaN(amount) || amount <= 0) { showError('Nicht gespeichert', 'Der Betrag fehlt. Gib einen Betrag über 0 ein.', 'entryAmount'); return; }
+  // Fremdwährung: gespeichert wird der genaue Betrag in der Hauptwährung (inkl. Auslandsgebühr des Kontos)
+  const fxCur = document.getElementById('entryCurrency').value || cur();
+  let fxData = null, mainAmount = amount;
+  if (fxCur !== cur()) {
+    if (!(fx.rate > 0)) { showError('Nicht gespeichert', 'Der Kurs fehlt. Trag den Kurs bei «Kurs ändern» selbst ein.', 'fxRateInput'); document.getElementById('fxRateEdit').hidden = false; return; }
+    const calc = fxCalc(amount, fx.rate, accountId);
+    mainAmount = calc.total;
+    fxData = { cur: fxCur, amt: round2(amount), rate: fx.rate, rateDate: fx.date || date, fee: calc.fee, feePct: calc.pct };
+  }
   if (!category) { showError('Nicht gespeichert', 'Die Kategorie fehlt. Wähle eine Kategorie aus.', 'entryCategory'); return; }
   if (!accountId && state.accounts.length > 0) { showError('Nicht gespeichert', 'Das Konto fehlt. Wähle ein Konto aus.', 'entryAccount'); return; }
   if (state.editId) {
@@ -506,18 +526,106 @@ function saveEntry() {
       if (type === 'expense' || type === 'account-only') {
         type = document.getElementById('accountOnlyCheck')?.checked ? 'account-only' : 'expense';
       }
-      Object.assign(e, { type, amount, category, note, date, accountId });
+      Object.assign(e, { type, amount: mainAmount, category, note, date, accountId });
       if (tags.length) e.tags = tags; else delete e.tags;
-      applyAccountDelta(accountId, amount, e.type);
+      if (fxData) e.fx = fxData; else delete e.fx;
+      delete e.base; // bearbeitet = jetzt in der aktuellen Hauptwährung
+      applyAccountDelta(accountId, mainAmount, e.type);
     }
   } else {
     const aoChecked = document.getElementById('accountOnlyCheck')?.checked;
     const finalType = (state.entryType === 'expense' && aoChecked) ? 'account-only' : state.entryType;
-    state.entries.push({ id: uid(), type: finalType, amount, category, note, date, accountId, ...(tags.length ? { tags } : {}) });
+    state.entries.push({ id: uid(), type: finalType, amount: mainAmount, category, note, date, accountId, ...(tags.length ? { tags } : {}), ...(fxData ? { fx: fxData } : {}) });
     rememberEntryPrefs(state.entryType === 'income' ? 'income' : 'expense', category, accountId);
-    applyAccountDelta(accountId, amount, finalType);
+    applyAccountDelta(accountId, mainAmount, finalType);
   }
   saveState(); render(); closeEntryModal(); showToast('Gespeichert');
+}
+
+// ── FREMDWÄHRUNG IM EINTRAG
+// fx: aktueller Kurs im Fenster. manual = von Hand geändert (wird nicht mehr überschrieben).
+let fx = { rate: 0, date: '', manual: false, stale: false, loading: false };
+let _fxReq = 0;
+function fillCurrencySelect(selected) {
+  const sel = document.getElementById('entryCurrency');
+  if (!sel) return;
+  const main = cur();
+  const top = [main, ...['EUR', 'USD', 'GBP', 'CHF'].filter(c => c !== main)];
+  const rest = I18N.currencies.filter(c => !top.includes(c)).sort();
+  sel.innerHTML = [...top, ...rest].map(c => `<option value="${c}" title="${esc(I18N.currencyName(c))}">${c}</option>`).join('');
+  sel.value = selected && I18N.currencies.includes(selected) ? selected : main;
+  fx = { rate: 0, date: '', manual: false, stale: false, loading: false };
+}
+// Gebühr des gewählten Kontos (Prozent) und genaue Rechnung, auf Rappen gerundet
+function fxCalc(amount, rate, accountId) {
+  const acc = state.accounts.find(a => a.id === accountId);
+  const pct = acc && acc.fee > 0 ? acc.fee : 0;
+  const base = amount * rate;
+  const fee = round2(base * pct / 100);
+  return { base: round2(base), fee, pct, total: round2(round2(base) + fee) };
+}
+// refetch: Währung oder Datum geändert → Kurs neu holen (ausser er wurde von Hand gesetzt und nur der Betrag ändert sich)
+function onFxInput(refetch) {
+  const sel = document.getElementById('entryCurrency');
+  const box = document.getElementById('fxBox');
+  if (!sel || !box) return;
+  const c = sel.value || cur();
+  const foreign = c !== cur() && state.entryType !== 'transfer';
+  box.hidden = !foreign;
+  if (!foreign) { fx.rate = 0; return; }
+  if (refetch) {
+    fx = { rate: 0, date: '', manual: false, stale: false, loading: true };
+    document.getElementById('fxRateEdit').hidden = true;
+    const req = ++_fxReq;
+    const date = document.getElementById('entryDate').value || dateKey(new Date());
+    renderFx();
+    fxRate(c, cur(), date).then(r => {
+      if (req !== _fxReq || fx.manual) return;
+      fx = r ? { rate: r.rate, date: r.date, manual: false, stale: r.stale, loading: false }
+             : { rate: 0, date: '', manual: false, stale: false, loading: false };
+      if (!r) document.getElementById('fxRateEdit').hidden = false;
+      renderFx();
+    });
+  }
+  renderFx();
+}
+function renderFx() {
+  const c = document.getElementById('entryCurrency').value;
+  const main = cur();
+  const amount = parseAmount(document.getElementById('entryAmount').value);
+  const accountId = document.getElementById('entryAccount').value;
+  const totalEl = document.getElementById('fxTotal'), noteEl = document.getElementById('fxFeeNote'), detail = document.getElementById('fxDetail');
+  document.getElementById('fxRateLabel').textContent = `1 ${c} =`;
+  document.getElementById('fxRateCur').textContent = main;
+  const rateInput = document.getElementById('fxRateInput');
+  if (document.activeElement !== rateInput) rateInput.value = fx.rate > 0 ? fx.rate : '';
+  detail.classList.remove('is-stale', 'is-missing');
+  if (fx.loading) { totalEl.textContent = '…'; noteEl.textContent = ''; detail.textContent = t('Kurs wird geladen …'); return; }
+  if (!(fx.rate > 0)) {
+    totalEl.textContent = '–'; noteEl.textContent = '';
+    detail.textContent = t('Kein Kurs verfügbar. Trag den Kurs selbst ein.');
+    detail.classList.add('is-missing');
+    return;
+  }
+  const calc = fxCalc(isNaN(amount) ? 0 : amount, fx.rate, accountId);
+  totalEl.textContent = `${formatNum(calc.total)} ${main}`;
+  noteEl.textContent = calc.pct ? t('inkl. Gebühr') : '';
+  const rateTxt = fx.rate.toLocaleString(I18N.locale, { maximumFractionDigits: 6 });
+  const when = fx.manual ? t('Eigener Kurs') : t('Kurs vom {datum}', { datum: fmtDate(fx.date, { day: 'numeric', month: 'numeric' }) });
+  let txt = `${when}: 1 ${c} = ${rateTxt} ${main}`;
+  if (calc.pct) txt += ', ' + t('Gebühr {pct} % = {betrag}', { pct: calc.pct.toLocaleString(I18N.locale), betrag: `${formatNum(calc.fee)} ${main}` });
+  if (fx.stale) { txt += '. ' + t('Offline: letzter bekannter Kurs.'); detail.classList.add('is-stale'); }
+  detail.textContent = txt;
+}
+function toggleFxRateEdit() {
+  const box = document.getElementById('fxRateEdit');
+  box.hidden = !box.hidden;
+  if (!box.hidden) document.getElementById('fxRateInput').focus();
+}
+function onFxRateTyped() {
+  const v = parseAmount(document.getElementById('fxRateInput').value);
+  if (!isNaN(v) && v > 0) { fx = { ...fx, rate: v, manual: true, stale: false, loading: false }; _fxReq++; }
+  renderFx();
 }
 
 function toggleTxList() {
@@ -627,8 +735,8 @@ function setEntryTags(list) {
 function renderEntryTags() {
   const el = document.getElementById('entryTagChips');
   if (!el) return;
-  el.innerHTML = entryTags.map((t, i) =>
-    `<span class="tag-chip tag-chip-lg">#${esc(t)}<button type="button" class="tag-chip-x" onclick="removeEntryTag(${i})" aria-label="Tag ${esc(t)} entfernen"><span class="ico ico-close"></span></button></span>`).join('');
+  el.innerHTML = entryTags.map((tag, i) =>
+    `<span class="tag-chip tag-chip-lg">#${esc(tag)}<button type="button" class="tag-chip-x" onclick="removeEntryTag(${i})" aria-label="${esc(t('Tag {tag} entfernen', { tag }))}"><span class="ico ico-close"></span></button></span>`).join('');
 }
 function addEntryTag(raw) {
   let t = normTag(raw);
@@ -659,14 +767,14 @@ function showTagSugg() {
   const q = normTag(inp.value);
   const list = tagSuggestions(q);
   const exact = q && allTags().some(t => t.name.toLowerCase() === q.toLowerCase());
-  const items = list.map(t => {
-    const i = t.name.toLowerCase().indexOf(q.toLowerCase());
-    const name = q && i >= 0 ? esc(t.name.slice(0, i)) + '<mark>' + esc(t.name.slice(i, i + q.length)) + '</mark>' + esc(t.name.slice(i + q.length)) : esc(t.name);
-    return { value: t.name, html: `<span>#${name}</span><span class="tag-sugg-n">${t.n === 1 ? '1 Eintrag' : t.n + ' Einträge'}</span>` };
+  const items = list.map(tg => {
+    const i = tg.name.toLowerCase().indexOf(q.toLowerCase());
+    const name = q && i >= 0 ? esc(tg.name.slice(0, i)) + '<mark>' + esc(tg.name.slice(i, i + q.length)) + '</mark>' + esc(tg.name.slice(i + q.length)) : esc(tg.name);
+    return { value: tg.name, html: `<span>#${name}</span><span class="tag-sugg-n">${nEntries(tg.n)}</span>` };
   });
-  if (q && !exact && !entryTags.some(t => t.toLowerCase() === q.toLowerCase())) items.push({ value: q, html: `<span>Neuer Tag «#${esc(q)}»</span><span class="ico ico-plus" aria-hidden="true"></span>`, isNew: true });
+  if (q && !exact && !entryTags.some(t => t.toLowerCase() === q.toLowerCase())) items.push({ value: q, html: `<span>${esc(t('Neuer Tag «#{tag}»', { tag: q }))}</span><span class="ico ico-plus" aria-hidden="true"></span>`, isNew: true });
   if (!items.length) { hideTagSugg(); return; }
-  box.innerHTML = (!q ? '<div class="tag-sugg-head">Zuletzt verwendet</div>' : '') + items.map((it, i) =>
+  box.innerHTML = (!q ? `<div class="tag-sugg-head">${t('Zuletzt verwendet')}</div>` : '') + items.map((it, i) =>
     `<div class="tag-sugg-item${it.isNew ? ' is-new' : ''}" role="option" id="entryTagOpt${i}" data-value="${esc(it.value)}">${it.html}</div>`).join('');
   box.hidden = false;
   inp.setAttribute('aria-expanded', 'true');
