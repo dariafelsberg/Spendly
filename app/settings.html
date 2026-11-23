@@ -178,6 +178,32 @@
       </div>
     </div>
 
+    <!-- DEINE DATEN: eine Kopie herunterladen (Recht auf Datenübertragbarkeit, siehe datenschutz.html) -->
+    <div class="settings-section settings-export">
+      <div class="settings-section-header">
+        <span class="settings-section-icon"><span class="ico ico-package"></span></span>
+        <div>
+          <div class="settings-section-title">Deine Daten</div>
+        </div>
+      </div>
+      <div class="settings-list">
+        <button type="button" class="settings-item export-item" onclick="exportEntriesCsv(this)">
+          <span class="settings-item-info">
+            <span class="settings-item-name">Einträge als Tabelle</span>
+            <span class="settings-item-val">Datei für Excel, Numbers oder Google Sheets (CSV)</span>
+          </span>
+          <span class="export-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+        </button>
+        <button type="button" class="settings-item export-item" onclick="exportBackupJson(this)">
+          <span class="settings-item-info">
+            <span class="settings-item-name">Vollständige Sicherung</span>
+            <span class="settings-item-val">Alle Konten, Ziele, Schulden und Einstellungen (JSON)</span>
+          </span>
+          <span class="export-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+        </button>
+      </div>
+    </div>
+
     <!-- RECHTLICHES -->
     <nav class="legal-links">
       <a href="impressum.html" target="_top">Impressum</a>

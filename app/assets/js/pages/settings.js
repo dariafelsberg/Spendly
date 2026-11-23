@@ -559,3 +559,88 @@ function changeCurrency(code) {
   saveState();
   setTimeout(_reloadAll, 150);
 }
+
+// ── DEINE DATEN HERUNTERLADEN ───────────────────────────────
+// CSV: nur die Einträge, für Excel und Co. (Semikolon, UTF-8 mit BOM, Punkt als
+// Dezimalzeichen wie in der Schweiz, Datum JJJJ-MM-TT).
+// JSON: alles, was auch in Supabase gespeichert ist (_payload aus main.js).
+function _exportNotReady() {
+  if (serverLoaded || state.entries.length || state.accounts.length) return false;
+  showToast('Deine Daten werden noch geladen', { type: 'error', text: 'Versuche es in ein paar Sekunden noch einmal.', key: 'export' });
+  return true;
+}
+// Zelle für CSV: Anführungszeichen verdoppeln. Texte, die mit = + - @ beginnen,
+// bekommen ein ' davor, damit Excel sie nicht als Formel ausführt.
+function _csvCell(v) {
+  if (v === null || v === undefined) return '';
+  let s = String(v);
+  if (typeof v !== 'number' && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return /[";\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function _entryCsvRow(e) {
+  const accName = id => { const a = state.accounts.find(x => x.id === id); return a ? a.name : ''; };
+  const isTransfer = e.type === 'transfer';
+  const type = isTransfer ? t('Interne Überweisung')
+    : e.type === 'income' ? t('Einnahme')
+    : e.type === 'account-only' ? t('Ausgabe') + ' (' + t('nur Konto') + ')'
+    : t('Ausgabe');
+  const sign = (e.type === 'expense' || e.type === 'account-only') ? -1 : 1;
+  const fx = e.fx || null;
+  return [
+    e.date,
+    type,
+    isTransfer ? '' : catName(e.category || ''),
+    Number((sign * e.amount).toFixed(2)),
+    e.base || cur(),
+    accName(isTransfer ? e.fromAccountId : e.accountId),
+    isTransfer ? accName(e.toAccountId) : '',
+    e.note || '',
+    Array.isArray(e.tags) ? e.tags.map(x => '#' + x).join(' ') : '',
+    fx ? Number(fx.amt) : '',
+    fx ? fx.cur : '',
+    fx && fx.rate ? Number(fx.rate) : '',
+    fx && fx.feePct ? Number(fx.feePct) : '',
+  ];
+}
+function exportEntriesCsv() {
+  if (_exportNotReady()) return;
+  if (!state.entries.length) {
+    showToast('Noch keine Einträge', { type: 'error', text: 'Erfasse zuerst einen Eintrag. Danach kannst du deine Einträge als Tabelle herunterladen.', key: 'export' });
+    return;
+  }
+  const head = ['Datum', 'Typ', 'Kategorie', 'Betrag', 'Währung', 'Konto', 'Nach Konto', 'Notiz', 'Tags',
+    'Originalbetrag', 'Originalwährung', 'Kurs', 'Auslandgebühr (%)'].map(h => t(h));
+  const rows = state.entries.slice()
+    .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0)
+    .map(_entryCsvRow);
+  const csv = '﻿' + [head, ...rows].map(r => r.map(_csvCell).join(';')).join('\r\n') + '\r\n';
+  _saveExport('spendly-eintraege-' + dateKey(new Date()) + '.csv', csv, 'text/csv;charset=utf-8', 'Einträge heruntergeladen');
+}
+function exportBackupJson() {
+  if (_exportNotReady()) return;
+  const data = { app: 'Spendly', format: 1, exportedAt: new Date().toISOString(), data: _payload() };
+  _saveExport('spendly-sicherung-' + dateKey(new Date()) + '.json', JSON.stringify(data, null, 2), 'application/json', 'Sicherung heruntergeladen');
+}
+// iPhone und iPad: Teilen-Fenster («In Dateien sichern»), weil Downloads in der
+// installierten App dort nicht zuverlässig gehen. Sonst ein normaler Download.
+function _saveExport(name, text, mime, doneTitle) {
+  const file = new File([text], name, { type: mime });
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIos && navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file] }).catch(err => { if (!err || err.name !== 'AbortError') _blobDownload(file, doneTitle); });
+    return;
+  }
+  _blobDownload(file, doneTitle);
+}
+function _blobDownload(file, doneTitle) {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = file.name;
+  a.hidden = true;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showToast(doneTitle, { text: t('Die Datei {name} liegt in deinen Downloads.', { name: file.name }), key: 'export' });
+}

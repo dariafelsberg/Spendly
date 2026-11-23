@@ -725,3 +725,41 @@ html.embed-modal-open body {
   font-size: var(--fs-note);
   color: var(--muted);
 }
+
+/* ── DEINE DATEN: zwei Zeilen zum Herunterladen (CSV und JSON) */
+.export-item {
+  width: 100%;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color .15s cubic-bezier(.22, 1, .36, 1);
+}
+.export-item .settings-item-name,
+.export-item .settings-item-val { display: block; }
+.export-item .settings-item-name { white-space: normal; }
+.export-dl {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  color: var(--primary-dark);
+  transition: background-color .15s cubic-bezier(.22, 1, .36, 1);
+}
+.export-dl svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.export-item:active { background: var(--primary-light); }
+@media (hover: hover) {
+  .export-item:hover .export-dl { background: var(--primary-light); }
+}
