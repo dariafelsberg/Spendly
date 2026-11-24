@@ -2,15 +2,15 @@
  *
  * Die Karten stehen im HTML in der Reihenfolge, in der man sie sieht:
  * Anmeldung, Sprache und Währung, Monatsbudget, Konten, Wiederkehrend,
- * Eigene Kategorien, Darstellung, Deine Daten, Rechtliches.
+ * Eigene Kategorien, Darstellung, Deine Daten, Hilfe & Feedback, Abmelden, Rechtliches.
  *
  * Aufbau dieser Datei:
  *   1. Eingebettet im Menü-Fenster (embed-mode)
  *   2. Grundlagen für alle Breiten (Karten, Listen, Budget, Reiter)
  *   3. Handy und Tablet (bis 1023px): Zeilen zweizeilig, Reiter ohne Symbole
  *   4. Computer (ab 1024px): Konten und Wiederkehrend als Tabelle
- *   5. Darstellung, Sprache und Währung, Deine Daten
- *   6. Anmeldung (Name, Abmelden) und Fenster «Eigene Kategorie»
+ *   5. Darstellung, Sprache und Währung, Deine Daten, Hilfe, Abmelden
+ *   6. Anmeldung (Name, E-Mail) und Fenster «Eigene Kategorie»
  *   Die Zeile «Account bearbeiten» steht in auth.css (gleich wie auf account.html).
  */
 
@@ -124,14 +124,6 @@ html.embed-modal-open body {
 }
 .settings-add-btn:active {
   background: var(--primary-light);
-}
-
-/* Eigene Kategorien: Zwischentitel Ausgaben / Einnahmen */
-.cat-subhead {
-  padding: 8px 0 4px;
-  font-size: var(--fs-label);
-  font-weight: 500;
-  color: var(--muted);
 }
 
 /* Fenster «Eigene Kategorie»: Reiter Ausgabe/Einnahme und Emoji-Feld */
@@ -525,8 +517,8 @@ html.embed-modal-open body {
   color: var(--muted);
 }
 
-/* ── DEINE DATEN: zwei Zeilen zum Herunterladen (CSV und JSON) */
-.export-item {
+/* ── ZEILEN MIT AKTION: Deine Daten (Herunterladen) und Hilfe (E-Mail) */
+.settings-action {
   width: 100%;
   border: 0;
   font: inherit;
@@ -535,10 +527,10 @@ html.embed-modal-open body {
   cursor: pointer;
   transition: background-color .15s cubic-bezier(.22, 1, .36, 1);
 }
-.export-item .settings-item-name,
-.export-item .settings-item-val { display: block; }
-.export-item .settings-item-name { white-space: normal; }
-.export-dl {
+.settings-action .settings-item-name,
+.settings-action .settings-item-val { display: block; }
+.settings-action .settings-item-name { white-space: normal; }
+.settings-action-ico {
   width: 36px;
   height: 36px;
   display: flex;
@@ -549,7 +541,7 @@ html.embed-modal-open body {
   color: var(--primary-dark);
   transition: background-color .15s cubic-bezier(.22, 1, .36, 1);
 }
-.export-dl svg {
+.settings-action-ico svg {
   width: 22px;
   height: 22px;
   fill: none;
@@ -558,14 +550,75 @@ html.embed-modal-open body {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.export-item:active { background: var(--primary-light); }
+.settings-action-ico .ico { width: 20px; height: 20px; }
+a.settings-action { text-decoration: none; }
+.settings-action:active { background: var(--primary-light); }
 @media (hover: hover) {
-  .export-item:hover .export-dl { background: var(--primary-light); }
+  .settings-action:hover .settings-action-ico { background: var(--primary-light); }
+}
+
+/* Deine Daten: Hinweis, wo die Daten liegen */
+.data-trust {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-xs);
+  margin: var(--sp-sm) 2px 0;
+  font-size: var(--fs-note);
+  line-height: 1.45;
+  color: var(--muted);
+}
+.data-trust .ico {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.data-trust a { color: var(--primary-dark); font-weight: 600; }
+
+/* ── KONTAKTFORMULAR (Fenster «Nachricht schreiben») */
+.contact-message {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.45;
+  font-family: inherit;
+}
+.contact-count { text-align: right; }
+.contact-reply {
+  font-size: var(--fs-body);
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.contact-direct {
+  margin-top: var(--sp-md);
+  text-align: center;
+  font-size: var(--fs-note);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.contact-direct a { color: var(--primary-dark); font-weight: 600; }
+
+/* ── ABMELDEN: breiter, ruhiger Knopf ganz unten (löscht nichts, darum nicht rot) */
+.logout-btn {
+  width: 100%;
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius-card);
+  padding: 14px var(--sp-md);
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: var(--fs-body);
+  cursor: pointer;
+  transition: background-color .15s cubic-bezier(.22, 1, .36, 1);
+}
+.logout-btn:active { background: var(--primary-light); }
+@media (hover: hover) {
+  .logout-btn:hover { background: var(--primary-light); }
 }
 
 /* ══ 6. ANMELDUNG UND FENSTER «EIGENE KATEGORIE» ══ */
 
-/* ── ANMELDUNG: Name, E-Mail und Abmelden */
+/* ── ANMELDUNG: Name und E-Mail */
 .auth-profile-row {
   display: flex;
   align-items: center;
@@ -591,23 +644,6 @@ html.embed-modal-open body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.auth-logout-btn {
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 8px 16px;
-  background: var(--bg); /* wie "Abbrechen": Abmelden löscht nichts, darum nicht rot */
-  color: var(--muted);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: var(--fs-body);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.auth-logout-btn:active {
-  background: var(--primary-light);
 }
 
 /* ── FENSTER «EIGENE KATEGORIE»: Symbol-Auswahl und Emoji-Kachel */

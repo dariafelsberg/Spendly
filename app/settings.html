@@ -55,7 +55,6 @@
           <div class="auth-profile-name" id="authProfileName">…</div>
           <div class="auth-profile-email" id="authProfileEmail">…</div>
         </div>
-        <button class="auth-logout-btn" onclick="logout()">Abmelden</button>
       </div>
       <a class="auth-edit-btn" href="account.html" target="_top">Account bearbeiten<span class="ico ico-arrow-right" aria-hidden="true"></span></a>
     </div>
@@ -179,22 +178,48 @@
         </div>
       </div>
       <div class="settings-list">
-        <button type="button" class="settings-item export-item" onclick="exportEntriesCsv(this)">
+        <button type="button" class="settings-item settings-action" onclick="exportEntriesCsv(this)">
           <span class="settings-item-info">
             <span class="settings-item-name">Einträge als Tabelle</span>
             <span class="settings-item-val">Datei für Excel, Numbers oder Google Sheets (CSV)</span>
           </span>
-          <span class="export-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+          <span class="settings-action-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
         </button>
-        <button type="button" class="settings-item export-item" onclick="exportBackupJson(this)">
+        <button type="button" class="settings-item settings-action" onclick="exportBackupJson(this)">
           <span class="settings-item-info">
             <span class="settings-item-name">Vollständige Sicherung</span>
             <span class="settings-item-val">Alle Konten, Ziele, Schulden und Einstellungen (JSON)</span>
           </span>
-          <span class="export-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+          <span class="settings-action-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
         </button>
       </div>
+      <!-- Vertrauenshinweis: Angaben wie in datenschutz.html (Rechenzentrum, HTTPS, jeder sieht nur seine Daten) -->
+      <p class="data-trust">
+        <span class="ico ico-key" aria-hidden="true"></span>
+        <span><span>Deine Daten liegen in einem Rechenzentrum in Frankfurt (EU). Die Verbindung ist verschlüsselt, und jeder Account sieht nur seine eigenen Daten.</span>
+          <a href="datenschutz.html" target="_top">Mehr zum Datenschutz</a></span>
+      </p>
     </div>
+
+    <!-- HILFE & FEEDBACK: Kontaktformular (Fenster unten), verschickt über app/api/contact.js an spendly.help@outlook.com -->
+    <div class="settings-section settings-help">
+      <div class="settings-section-header">
+        <span class="settings-section-icon"><span class="ico ico-smiley"></span></span>
+        <div>
+          <div class="settings-section-title">Hilfe &amp; Feedback</div>
+        </div>
+      </div>
+      <button type="button" class="settings-item settings-action" onclick="openContactModal()">
+        <span class="settings-item-info">
+          <span class="settings-item-name">Nachricht schreiben</span>
+          <span class="settings-item-val">Bei Fragen, Fehlern oder Ideen</span>
+        </span>
+        <span class="settings-action-ico" aria-hidden="true"><span class="ico ico-arrow-right"></span></span>
+      </button>
+    </div>
+
+    <!-- ABMELDEN: ganz unten, damit man es nicht aus Versehen antippt -->
+    <button type="button" class="logout-btn" onclick="logout()">Abmelden</button>
 
     <!-- RECHTLICHES -->
     <nav class="legal-links">
@@ -242,6 +267,47 @@
 
 </div><!-- /app-shell -->
 
+
+<!-- ══ MODAL: KONTAKT (Hilfe & Feedback) ══ -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle" tabindex="-1">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="contactModalTitle">Nachricht schreiben</div>
+    <div class="form-group">
+      <label class="form-label" for="contactTopic">Worum geht es?</label>
+      <select class="form-input form-select cat-select" id="contactTopic">
+        <option value="question" data-icon="">Frage</option>
+        <option value="bug" data-icon="">Fehler</option>
+        <option value="idea" data-icon="">Idee</option>
+        <option value="other" data-icon="">Sonstiges</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="contactMessage">Nachricht</label>
+      <textarea class="form-input contact-message" id="contactMessage" rows="6" maxlength="2000" data-required="value" data-error="Die Nachricht fehlt. Schreib kurz, worum es geht." aria-describedby="contactCount" oninput="updateContactCount()"></textarea>
+      <div class="form-hint-text contact-count" id="contactCount">0 / 2000</div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Antwort an</div>
+      <div class="contact-reply" id="contactReply">…</div>
+    </div>
+    <div class="form-group toggle-row">
+      <div>
+        <div class="toggle-label">Geräteangaben mitsenden</div>
+        <div class="toggle-sub">Sprache, Währung und Browser. Hilft bei Fehlern.</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="contactDevice" aria-label="Geräteangaben mitsenden" checked>
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeContactModal()">Abbrechen</button>
+      <button class="btn-save" id="contactSend" onclick="sendContact()">Nachricht senden</button>
+    </div>
+    <p class="contact-direct">oder melde dich direkt per E-Mail: <a id="helpMail" href="mailto:spendly.help@outlook.com?subject=Spendly">spendly.help@outlook.com</a></p>
+  </div>
+</div>
 
 <!-- ══ MODAL: KONTO ══ -->
 <div class="modal-overlay" id="accountModal">

@@ -191,7 +191,7 @@ function renderCustomCatList() {
   const el = document.getElementById('customCatList');
   const renderGroup = (groupType, label, list) => {
     if (!list.length) return '';
-    const header = `<div class="cat-subhead">${label}</div>`;
+    const header = `<div class="settings-subhead">${label}</div>`;
     const items = list.map(c => `
       <div class="settings-item">
         <div class="settings-item-info">
@@ -524,6 +524,7 @@ function changeLanguage(code) {
   I18N.setLang(code);
   state.lang = code;
   saveState();
+  toastAfterReload('Sprache geändert', 'Spendly ist jetzt auf {sprache}.', { sprache: I18N.langNames[code] });
   setTimeout(_reloadAll, 150); // kurz warten, damit das Speichern losgeschickt ist
 }
 // Wechsel der Hauptwährung gilt ab jetzt: bisherige Beträge bleiben, wie sie sind, und behalten ihre Währung (e.base)
@@ -534,7 +535,89 @@ function changeCurrency(code) {
   state.currency = code;
   I18N.setCur(code);
   saveState();
+  toastAfterReload('Währung geändert', 'Ab jetzt rechnet Spendly in {waehrung}. Bisherige Einträge behalten ihre Währung.', { waehrung: code });
   setTimeout(_reloadAll, 150);
+}
+
+// ── HILFE & FEEDBACK: Kontaktformular → app/api/contact.js → E-Mail an spendly.help@outlook.com
+// Der Link «direkt per E-Mail» darunter bekommt Sprache, Währung und Gerät schon in den Text.
+function _contactDevice() {
+  return {
+    lang: I18N.lang,
+    currency: cur(),
+    theme: document.documentElement.dataset.theme || 'system',
+    screen: window.screen ? screen.width + '×' + screen.height : '',
+    userAgent: navigator.userAgent,
+  };
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const a = document.getElementById('helpMail');
+  if (!a) return;
+  const d = _contactDevice();
+  const body = '\n\n\n---\nSpendly · ' + d.lang + ' · ' + d.currency + '\n' + d.userAgent;
+  a.href = a.href.split('&')[0] + '&body=' + encodeURIComponent(body);
+});
+function updateContactCount() {
+  const n = document.getElementById('contactMessage').value.length;
+  document.getElementById('contactCount').textContent = n.toLocaleString(I18N.locale) + ' / ' + (2000).toLocaleString(I18N.locale);
+}
+function openContactModal() {
+  // Ein angefangener Text bleibt stehen, wenn das Fenster ohne Senden geschlossen wurde
+  if (!document.getElementById('contactMessage').value) document.getElementById('contactTopic').value = 'question';
+  updateContactCount();
+  const reply = document.getElementById('contactReply');
+  reply.textContent = document.getElementById('authProfileEmail').textContent;
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session && data.session.user.email) reply.textContent = data.session.user.email;
+  }).catch(() => {});
+  document.getElementById('contactModal').classList.add('show');
+}
+function closeContactModal() { document.getElementById('contactModal').classList.remove('show'); }
+async function sendContact() {
+  const btn = document.getElementById('contactSend');
+  if (btn.disabled) return;
+  const msgEl = document.getElementById('contactMessage');
+  const message = msgEl.value.trim();
+  if (!message) { showError('Nachricht nicht gesendet', 'Die Nachricht fehlt. Schreib kurz, worum es geht.', 'contactMessage'); return; }
+  // Fehlermeldung «Nachricht fehlt» von vorhin wegräumen
+  document.querySelectorAll('.toast-item[data-key="error"]').forEach(removeToast);
+  const mail = { label: 'Per E-Mail schreiben', onClick: () => { location.href = document.getElementById('helpMail').href; } };
+  if (!navigator.onLine) {
+    showToast('Nachricht nicht gesendet', { type: 'offline', key: 'contact', text: 'Du bist offline. Dein Text bleibt hier. Sende ihn, sobald du wieder Internet hast.' });
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = t('Wird gesendet…');
+  let status = 0;
+  try {
+    const { data } = await sb.auth.getSession();
+    const token = data.session ? data.session.access_token : '';
+    const r = await fetch('api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({
+        topic: document.getElementById('contactTopic').value,
+        message,
+        device: document.getElementById('contactDevice').checked ? _contactDevice() : null,
+      }),
+    });
+    status = r.status;
+  } catch (e) { status = 0; }
+  btn.disabled = false;
+  btn.textContent = t('Nachricht senden');
+  if (status === 200) {
+    const email = document.getElementById('contactReply').textContent;
+    msgEl.value = '';
+    document.getElementById('contactDevice').checked = true;
+    closeContactModal();
+    showToast('Nachricht gesendet', { key: 'contact', text: t('Danke! Die Antwort kommt an {email}.', { email }) });
+  } else if (status === 429) {
+    showToast('Nachricht nicht gesendet', { type: 'error', key: 'contact', action: mail, text: 'Du hast heute schon 5 Nachrichten geschickt. Versuche es morgen wieder oder schreib direkt per E-Mail.' });
+  } else if (status === 401) {
+    showToast('Nachricht nicht gesendet', { type: 'error', key: 'contact', text: 'Deine Anmeldung ist abgelaufen. Lade die Seite neu, melde dich an und sende die Nachricht nochmals.' });
+  } else {
+    showToast('Nachricht nicht gesendet', { type: 'error', key: 'contact', action: mail, text: 'Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.' });
+  }
 }
 
 // ── DEINE DATEN HERUNTERLADEN ───────────────────────────────

@@ -748,6 +748,18 @@ function _toastStack() {
   }
   return stack;
 }
+// Meldung, die erst nach dem Neuladen erscheint (z.B. nach dem Wechsel von Sprache oder Währung).
+// Titel und Text werden erst dann übersetzt, also schon in der neuen Sprache.
+function toastAfterReload(title, text, vars) {
+  try { sessionStorage.setItem('spendly_toast', JSON.stringify({ title, text, vars })); } catch (e) {}
+}
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.top !== window) return; // nur im obersten Fenster, nicht im Menü-Fenster (iframe)
+  let m = null;
+  try { m = JSON.parse(sessionStorage.getItem('spendly_toast')); sessionStorage.removeItem('spendly_toast'); } catch (e) {}
+  if (m && m.title) showToast(m.title, { text: m.text ? t(m.text, m.vars || {}) : '' });
+});
+
 function showToast(title, { text = '', type = 'success', action = null, duration, sticky = false, key = null } = {}) {
   const stack = _toastStack();
   let item = key ? [...stack.children].find(x => x.dataset.key === key && !x.classList.contains('leaving')) : null;
