@@ -563,7 +563,7 @@ function updateContactCount() {
 }
 function openContactModal() {
   // Ein angefangener Text bleibt stehen, wenn das Fenster ohne Senden geschlossen wurde
-  if (!document.getElementById('contactMessage').value) document.getElementById('contactTopic').value = 'question';
+  if (!document.getElementById('contactMessage').value) document.querySelector('input[name="contactTopic"][value="question"]').checked = true;
   updateContactCount();
   const reply = document.getElementById('contactReply');
   reply.textContent = document.getElementById('authProfileEmail').textContent;
@@ -596,7 +596,7 @@ async function sendContact() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({
-        topic: document.getElementById('contactTopic').value,
+        topic: (document.querySelector('input[name="contactTopic"]:checked') || {}).value || 'other',
         message,
         device: document.getElementById('contactDevice').checked ? _contactDevice() : null,
       }),

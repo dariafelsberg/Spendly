@@ -274,13 +274,13 @@
     <div class="modal-handle"></div>
     <div class="modal-title" id="contactModalTitle">Nachricht schreiben</div>
     <div class="form-group">
-      <label class="form-label" for="contactTopic">Worum geht es?</label>
-      <select class="form-input form-select cat-select" id="contactTopic">
-        <option value="question" data-icon="">Frage</option>
-        <option value="bug" data-icon="">Fehler</option>
-        <option value="idea" data-icon="">Idee</option>
-        <option value="other" data-icon="">Sonstiges</option>
-      </select>
+      <div class="form-label" id="contactTopicLabel">Worum geht es?</div>
+      <div class="contact-topics" role="radiogroup" aria-labelledby="contactTopicLabel">
+        <label class="contact-topic"><input type="radio" name="contactTopic" value="question" checked>Frage</label>
+        <label class="contact-topic"><input type="radio" name="contactTopic" value="bug">Fehler</label>
+        <label class="contact-topic"><input type="radio" name="contactTopic" value="idea">Idee</label>
+        <label class="contact-topic"><input type="radio" name="contactTopic" value="other">Sonstiges</label>
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label" for="contactMessage">Nachricht</label>
@@ -294,7 +294,7 @@
     <div class="form-group toggle-row">
       <div>
         <div class="toggle-label">Geräteangaben mitsenden</div>
-        <div class="toggle-sub">Sprache, Währung und Browser. Hilft bei Fehlern.</div>
+        <div class="toggle-sub">Sprache, Währung und Browser. Das hilft und die Fehler zu finden.</div>
       </div>
       <label class="toggle-switch">
         <input type="checkbox" id="contactDevice" aria-label="Geräteangaben mitsenden" checked>

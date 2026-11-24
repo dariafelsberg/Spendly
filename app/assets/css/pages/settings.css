@@ -582,6 +582,48 @@ a.settings-action { text-decoration: none; }
   line-height: 1.45;
   font-family: inherit;
 }
+/* Thema: vier gleich breite Knöpfe mit Abstand (technisch Radio-Knöpfe) */
+.contact-topics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-xs);
+}
+.contact-topic {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 4px;
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color .15s cubic-bezier(.22, 1, .36, 1), border-color .15s cubic-bezier(.22, 1, .36, 1);
+}
+.contact-topic input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.contact-topic:has(input:checked) {
+  background: var(--primary-light);
+  border-color: var(--primary-dark);
+  color: var(--primary-dark);
+}
+.contact-topic:has(input:focus-visible) {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+@media (max-width: 479px) {
+  .contact-topic { font-size: var(--fs-note); }
+}
+@media (hover: hover) {
+  .contact-topic:hover { border-color: var(--primary-dark); }
+}
 .contact-count { text-align: right; }
 .contact-reply {
   font-size: var(--fs-body);
