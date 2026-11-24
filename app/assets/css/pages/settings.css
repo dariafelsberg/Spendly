@@ -1,8 +1,12 @@
 /* pages/settings.css – Einstellungen
  *
- * Die Karten stehen im HTML in der Reihenfolge, in der man sie sieht:
- * Anmeldung, Sprache und Währung, Monatsbudget, Konten, Wiederkehrend,
- * Eigene Kategorien, Darstellung, Deine Daten, Hilfe & Feedback, Abmelden, Rechtliches.
+ * Die Karten stehen im HTML in der Reihenfolge, in der man sie sieht, gruppiert
+ * nach dem, was man erledigen will:
+ *   Account (Anmeldung)
+ *   Finanzen (Monatsbudget, Konten, Wiederkehrend, Eigene Kategorien)
+ *   Darstellung & Sprache (Sprache und Währung, Darstellung)
+ *   Datenschutz (Deine Daten) · Hilfe (Kontakt)
+ *   danach «Abmelden» und die rechtlichen Links.
  *
  * Aufbau dieser Datei:
  *   1. Eingebettet im Menü-Fenster (embed-mode)
@@ -33,11 +37,22 @@ html.embed-modal-open body {
 }
 
 /* ══ 2. GRUNDLAGEN ══ */
-.settings-main {
+.settings-main,
+.settings-group {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+/* Gruppen-Titel: gleiche Schrift wie der Seitentitel, aber klein und dunkel */
+.settings-group-title {
+  margin: var(--sp-md) 4px 0;
+  font-family: 'DM Serif Display', serif;
+  font-weight: 400;
+  font-size: var(--fs-xl);
+  line-height: 1.2;
+  color: var(--text);
+}
+.settings-group:first-child .settings-group-title { margin-top: 0; }
 .settings-section {
   background: var(--card);
   border-radius: var(--radius-card);
@@ -328,7 +343,8 @@ html.embed-modal-open body {
 
 /* ══ 4. COMPUTER (ab 1024px): Konten und Wiederkehrend als Tabelle mit Spaltenköpfen ══ */
 @media (min-width: 1024px) {
-  .settings-main { gap: var(--sp-md); }
+  .settings-main,
+  .settings-group { gap: var(--sp-md); }
 
   .budget-inline-field { width: 220px; }
 

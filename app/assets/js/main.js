@@ -630,6 +630,14 @@ document.addEventListener('DOMContentLoaded', initModalSwipe);
 // position: fixed statt nur overflow: hidden, weil Safari auf dem iPhone
 // sonst trotzdem scrollt. Die Scrollposition wird gemerkt und zurückgesetzt.
 let _scrollLockY = null;
+// Zurück an die alte Stelle springen, ohne Animation. html hat scroll-behavior: smooth,
+// sonst würde die Seite nach dem Schliessen sichtbar von oben herunterscrollen.
+function _scrollBackInstant(y) {
+  const root = document.documentElement;
+  root.style.scrollBehavior = 'auto';
+  window.scrollTo(0, y);
+  root.style.scrollBehavior = '';
+}
 function _updateScrollLock() {
   const frame = document.documentElement.classList.contains('embed-mode') ? window.frameElement : null;
   if (frame) { _updateEmbedModal(frame); return; }
@@ -640,7 +648,7 @@ function _updateScrollLock() {
     Object.assign(b.style, { position: 'fixed', top: -_scrollLockY + 'px', left: '0', right: '0', width: '100%' });
   } else if (!open && _scrollLockY !== null) {
     Object.assign(b.style, { position: '', top: '', left: '', right: '', width: '' });
-    window.scrollTo(0, _scrollLockY);
+    _scrollBackInstant(_scrollLockY);
     _scrollLockY = null;
   }
 }
@@ -666,7 +674,7 @@ function _updateEmbedModal(frame) {
       root.classList.remove('embed-modal-open');
       Object.assign(b.style, { position: '', left: '', top: '', width: '', height: '', minHeight: '' });
       shell.style.marginTop = '';
-      window.scrollTo(0, _scrollLockY);
+      _scrollBackInstant(_scrollLockY);
       _scrollLockY = null;
     }, 220);
   }

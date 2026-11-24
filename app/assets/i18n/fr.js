@@ -594,6 +594,8 @@ window.SPENDLY_I18N.fr = {
  "Frage": "Question",
  "Fehler": "Bug",
  "Idee": "Idée",
+ "Betreff": "Objet",
+ "Der Betreff fehlt. Schreib in ein paar Worten, worum es geht.": "L’objet est vide. Écris en quelques mots de quoi il s’agit.",
  "Nachricht": "Message",
  "Die Nachricht fehlt. Schreib kurz, worum es geht.": "Le message est vide. Écris en quelques mots de quoi il s’agit.",
  "Antwort an": "Réponse à",
@@ -609,5 +611,9 @@ window.SPENDLY_I18N.fr = {
  "Danke! Die Antwort kommt an {email}.": "Merci ! La réponse arrivera à {email}.",
  "Du hast heute schon 5 Nachrichten geschickt. Versuche es morgen wieder oder schreib direkt per E-Mail.": "Tu as déjà envoyé 5 messages aujourd’hui. Réessaie demain ou écris directement par e-mail.",
  "Deine Anmeldung ist abgelaufen. Lade die Seite neu, melde dich an und sende die Nachricht nochmals.": "Ta session a expiré. Recharge la page, connecte-toi et renvoie le message.",
- "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "L’envoi n’a pas fonctionné. Ton texte reste ici. Réessaie plus tard ou écris directement par e-mail."
+ "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "L’envoi n’a pas fonctionné. Ton texte reste ici. Réessaie plus tard ou écris directement par e-mail.",
+ "Finanzen": "Finances",
+ "Darstellung & Sprache": "Affichage et langue",
+ "Account": "Compte",
+ "Hilfe": "Aide"
 };

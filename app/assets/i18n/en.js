@@ -594,6 +594,8 @@ window.SPENDLY_I18N.en = {
  "Frage": "Question",
  "Fehler": "Bug",
  "Idee": "Idea",
+ "Betreff": "Subject",
+ "Der Betreff fehlt. Schreib in ein paar Worten, worum es geht.": "The subject is empty. Write in a few words what it is about.",
  "Nachricht": "Message",
  "Die Nachricht fehlt. Schreib kurz, worum es geht.": "The message is empty. Briefly write what it is about.",
  "Antwort an": "Reply to",
@@ -609,5 +611,9 @@ window.SPENDLY_I18N.en = {
  "Danke! Die Antwort kommt an {email}.": "Thanks! The reply will go to {email}.",
  "Du hast heute schon 5 Nachrichten geschickt. Versuche es morgen wieder oder schreib direkt per E-Mail.": "You have already sent 5 messages today. Try again tomorrow or write directly by email.",
  "Deine Anmeldung ist abgelaufen. Lade die Seite neu, melde dich an und sende die Nachricht nochmals.": "Your login has expired. Reload the page, log in and send the message again.",
- "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "Sending did not work. Your text stays here. Try again later or write directly by email."
+ "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "Sending did not work. Your text stays here. Try again later or write directly by email.",
+ "Finanzen": "Finances",
+ "Darstellung & Sprache": "Appearance & language",
+ "Account": "Account",
+ "Hilfe": "Help"
 };

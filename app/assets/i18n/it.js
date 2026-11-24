@@ -594,6 +594,8 @@ window.SPENDLY_I18N.it = {
  "Frage": "Domanda",
  "Fehler": "Errore",
  "Idee": "Idea",
+ "Betreff": "Oggetto",
+ "Der Betreff fehlt. Schreib in ein paar Worten, worum es geht.": "Manca l’oggetto. Scrivi in poche parole di cosa si tratta.",
  "Nachricht": "Messaggio",
  "Die Nachricht fehlt. Schreib kurz, worum es geht.": "Manca il messaggio. Scrivi brevemente di cosa si tratta.",
  "Antwort an": "Risposta a",
@@ -609,5 +611,9 @@ window.SPENDLY_I18N.it = {
  "Danke! Die Antwort kommt an {email}.": "Grazie! La risposta arriverà a {email}.",
  "Du hast heute schon 5 Nachrichten geschickt. Versuche es morgen wieder oder schreib direkt per E-Mail.": "Oggi hai già inviato 5 messaggi. Riprova domani o scrivi direttamente via e-mail.",
  "Deine Anmeldung ist abgelaufen. Lade die Seite neu, melde dich an und sende die Nachricht nochmals.": "La tua sessione è scaduta. Ricarica la pagina, accedi e invia di nuovo il messaggio.",
- "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "L’invio non è riuscito. Il tuo testo resta qui. Riprova più tardi o scrivi direttamente via e-mail."
+ "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "L’invio non è riuscito. Il tuo testo resta qui. Riprova più tardi o scrivi direttamente via e-mail.",
+ "Finanzen": "Finanze",
+ "Darstellung & Sprache": "Aspetto e lingua",
+ "Account": "Account",
+ "Hilfe": "Aiuto"
 };

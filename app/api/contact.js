@@ -25,7 +25,7 @@ const SUPABASE_URL      = 'https://pniabxirdrrfxyymzynh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuaWFieGlyZHJyZnh5eW16eW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNDI4NTcsImV4cCI6MjEwNzYxODg1N30.28oVu_462OuTnKUOTBPXuf4o6DdQmWAC_w-CZXkPpAM';
 
 const TO   = process.env.CONTACT_TO   || 'spendly.help@outlook.com';
-const FROM = process.env.CONTACT_FROM || 'Spendly <noreply@spendly.ch>';
+const FROM = process.env.CONTACT_FROM || 'Spendly Kontaktformular <kontakt@spendly.ch>';
 const MAX_LEN = 2000;
 const TOPICS = { question: 'Frage', bug: 'Fehler', idea: 'Idee', other: 'Sonstiges' };
 
@@ -57,6 +57,7 @@ module.exports = async (req, res) => {
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
   body = body || {};
   const topic = TOPICS[body.topic] ? body.topic : 'other';
+  const subjectText = oneLine(body.subject, 100);
   const message = String(body.message || '').replace(/\r\n?/g, '\n').trim();
   if (!message) return res.status(400).json({ error: 'empty message' });
   if (message.length > MAX_LEN) return res.status(400).json({ error: 'message too long' });
@@ -104,7 +105,8 @@ module.exports = async (req, res) => {
   } else {
     lines.push('Geräteangaben: nicht mitgesendet');
   }
-  const subject = `[Spendly] ${TOPICS[topic]}: ${oneLine(message, 60)}${message.length > 60 ? '…' : ''}`;
+  // Betreff aus dem Formular; fehlt er (ältere App-Version), die ersten Worte der Nachricht
+  const subject = `[Spendly] ${TOPICS[topic]}: ${subjectText || oneLine(message, 60) + (message.length > 60 ? '…' : '')}`;
 
   try {
     const r = await fetch('https://api.resend.com/emails', {

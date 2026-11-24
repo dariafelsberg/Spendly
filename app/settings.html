@@ -41,182 +41,207 @@
   <!-- ── MAIN ── -->
   <div class="settings-main">
 
-    <!-- ANMELDUNG -->
-    <div class="settings-section settings-auth" id="authProfile">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-user"></span></span>
-        <div>
-          <div class="settings-section-title">Anmeldung</div>
-          <div class="settings-section-sub">Angemeldet als</div>
-        </div>
-      </div>
-      <div class="auth-profile-row">
-        <div class="auth-profile-info">
-          <div class="auth-profile-name" id="authProfileName">…</div>
-          <div class="auth-profile-email" id="authProfileEmail">…</div>
-        </div>
-      </div>
-      <a class="auth-edit-btn" href="account.html" target="_top">Account bearbeiten<span class="ico ico-arrow-right" aria-hidden="true"></span></a>
-    </div>
+    <!-- ══ ACCOUNT ══ -->
+    <section class="settings-group" aria-labelledby="grpAccount">
+      <h2 class="settings-group-title" id="grpAccount">Account</h2>
 
-    <!-- SPRACHE UND WÄHRUNG -->
-    <div class="settings-section settings-locale">
-      <div class="locale-row">
-        <label class="locale-label" for="langSelect">Sprache</label>
-        <select class="form-input form-select cat-select locale-select" data-list-width="220" id="langSelect" onchange="changeLanguage(this.value)"></select>
+      <!-- ANMELDUNG -->
+      <div class="settings-section settings-auth" id="authProfile">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-user"></span></span>
+          <div>
+            <div class="settings-section-title">Anmeldung</div>
+            <div class="settings-section-sub">Angemeldet als</div>
+          </div>
+        </div>
+        <div class="auth-profile-row">
+          <div class="auth-profile-info">
+            <div class="auth-profile-name" id="authProfileName">…</div>
+            <div class="auth-profile-email" id="authProfileEmail">…</div>
+          </div>
+        </div>
+        <a class="auth-edit-btn" href="account.html" target="_top">Account bearbeiten<span class="ico ico-arrow-right" aria-hidden="true"></span></a>
       </div>
-      <div class="locale-row">
-        <label class="locale-label" for="curSelect">Währung</label>
-        <select class="form-input form-select cat-select locale-select" data-list-width="260" id="curSelect" onchange="changeCurrency(this.value)"></select>
-      </div>
-      <div class="locale-hint" id="curHint">Gilt für Budget, Konten und neue Einträge. Bisherige Einträge bleiben in ihrer Währung.</div>
-    </div>
+      </section>
 
-    <!-- MONATSBUDGET: direkt im Feld ändern, gespeichert beim Verlassen des Feldes oder mit Enter -->
-    <div class="settings-section settings-budget">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
-        <div>
-          <div class="settings-section-title">Monatsbudget</div>
+    <!-- ══ FINANZEN: was man am häufigsten braucht ══ -->
+    <section class="settings-group" aria-labelledby="grpFinanzen">
+      <h2 class="settings-group-title" id="grpFinanzen">Finanzen</h2>
+
+      <!-- MONATSBUDGET: direkt im Feld ändern, gespeichert beim Verlassen des Feldes oder mit Enter -->
+      <div class="settings-section settings-budget">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
+          <div>
+            <div class="settings-section-title">Monatsbudget</div>
+          </div>
+        </div>
+        <div class="budget-inline">
+          <label class="budget-inline-field">
+            <span class="budget-inline-cur">CHF</span>
+            <input class="form-input" type="text" inputmode="decimal" id="budgetInlineInput" maxlength="15" placeholder="z.B. 2000" autocomplete="off"
+                   aria-label="Monatsbudget in CHF" onchange="saveBudgetInline()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+          </label>
         </div>
       </div>
-      <div class="budget-inline">
-        <label class="budget-inline-field">
-          <span class="budget-inline-cur">CHF</span>
-          <input class="form-input" type="text" inputmode="decimal" id="budgetInlineInput" maxlength="15" placeholder="z.B. 2000" autocomplete="off"
-                 aria-label="Monatsbudget in CHF" onchange="saveBudgetInline()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
-        </label>
+  
+      <!-- KONTEN -->
+      <div class="settings-section settings-accounts">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-bank"></span></span>
+          <div>
+            <div class="settings-section-title">Konten</div>
+          </div>
+        </div>
+        <!-- Spaltenköpfe: nur auf dem Computer (Konten als Tabelle) -->
+        <div class="acc-head" aria-hidden="true"><span>Konto</span><span>Guthaben</span><span>Anzeige</span><span></span></div>
+        <div id="accountsList" class="settings-list"></div>
+        <button class="settings-add-btn" onclick="openAccountModal()"><span class="ico ico-plus" aria-hidden="true"></span>Konto hinzufügen</button>
       </div>
-    </div>
-
-    <!-- KONTEN -->
-    <div class="settings-section settings-accounts">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-bank"></span></span>
-        <div>
-          <div class="settings-section-title">Konten</div>
+  
+      <!-- WIEDERKEHREND: eine Karte mit Reitern Einnahmen / Ausgaben / Überweisungen.
+           Computer: Tabelle mit Spaltenköpfen; Handy: zweizeilige Zeilen ohne Spaltenköpfe. -->
+      <div class="settings-section settings-recurring">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-calendar"></span></span>
+          <div>
+            <div class="settings-section-title">Wiederkehrend</div>
+            <div class="settings-section-sub">Wird jeden Monat automatisch gebucht</div>
+          </div>
+        </div>
+        <div class="rec-tabs" role="tablist" aria-label="Wiederkehrende Buchungen">
+          <button class="rec-tab income" role="tab" id="recTab-income" aria-controls="recPanel-income" onclick="showRecurringTab('income')">
+            <span class="ico ico-coin" aria-hidden="true"></span>Einnahmen <span class="rec-count" id="recCount-income"></span></button>
+          <button class="rec-tab expense" role="tab" id="recTab-expense" aria-controls="recPanel-expense" onclick="showRecurringTab('expense')">
+            <span class="ico ico-shoppingcart" aria-hidden="true"></span>Ausgaben <span class="rec-count" id="recCount-expense"></span></button>
+          <button class="rec-tab transfer" role="tab" id="recTab-transfer" aria-controls="recPanel-transfer" onclick="showRecurringTab('transfer')">
+            <span class="ico ico-transfer" aria-hidden="true"></span>Überweisungen <span class="rec-count" id="recCount-transfer"></span></button>
+        </div>
+        <div class="rec-panel" id="recPanel-income" role="tabpanel" aria-labelledby="recTab-income">
+          <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Konto</span><span></span></div>
+          <div id="recurringList-income" class="settings-list"></div>
+          <button class="settings-add-btn" onclick="openRecurringModal('income')"><span class="ico ico-plus" aria-hidden="true"></span>Einnahme hinzufügen</button>
+        </div>
+        <div class="rec-panel" id="recPanel-expense" role="tabpanel" aria-labelledby="recTab-expense">
+          <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Konto</span><span></span></div>
+          <div id="recurringList-expense" class="settings-list"></div>
+          <button class="settings-add-btn" onclick="openRecurringModal('expense')"><span class="ico ico-plus" aria-hidden="true"></span>Ausgabe hinzufügen</button>
+        </div>
+        <div class="rec-panel" id="recPanel-transfer" role="tabpanel" aria-labelledby="recTab-transfer">
+          <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Von → Nach</span><span></span></div>
+          <div id="recurringList-transfer" class="settings-list"></div>
+          <button class="settings-add-btn" onclick="openRecurringModal('transfer')"><span class="ico ico-plus" aria-hidden="true"></span>Überweisung hinzufügen</button>
         </div>
       </div>
-      <!-- Spaltenköpfe: nur auf dem Computer (Konten als Tabelle) -->
-      <div class="acc-head" aria-hidden="true"><span>Konto</span><span>Guthaben</span><span>Anzeige</span><span></span></div>
-      <div id="accountsList" class="settings-list"></div>
-      <button class="settings-add-btn" onclick="openAccountModal()"><span class="ico ico-plus" aria-hidden="true"></span>Konto hinzufügen</button>
-    </div>
+  
+      <!-- EIGENE KATEGORIEN: Ausgaben und Einnahmen in einer Liste -->
+      <div class="settings-section">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-tag"></span></span>
+          <div>
+            <div class="settings-section-title">Eigene Kategorien</div>
+          </div>
+        </div>
+        <div id="customCatList" class="settings-list"></div>
+        <button class="settings-add-btn" onclick="openCustomCatModal(null)"><span class="ico ico-plus" aria-hidden="true"></span>Kategorie hinzufügen</button>
+      </div>
+      </section>
 
-    <!-- WIEDERKEHREND: eine Karte mit Reitern Einnahmen / Ausgaben / Überweisungen.
-         Computer: Tabelle mit Spaltenköpfen; Handy: zweizeilige Zeilen ohne Spaltenköpfe. -->
-    <div class="settings-section settings-recurring">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-calendar"></span></span>
-        <div>
-          <div class="settings-section-title">Wiederkehrend</div>
-          <div class="settings-section-sub">Wird jeden Monat automatisch gebucht</div>
+    <!-- ══ DARSTELLUNG & SPRACHE ══ -->
+    <section class="settings-group" aria-labelledby="grpAnzeige">
+      <h2 class="settings-group-title" id="grpAnzeige">Darstellung &amp; Sprache</h2>
+
+      <!-- SPRACHE UND WÄHRUNG -->
+      <div class="settings-section settings-locale">
+        <div class="locale-row">
+          <label class="locale-label" for="langSelect">Sprache</label>
+          <select class="form-input form-select cat-select locale-select" data-list-width="220" id="langSelect" onchange="changeLanguage(this.value)"></select>
+        </div>
+        <div class="locale-row">
+          <label class="locale-label" for="curSelect">Währung</label>
+          <select class="form-input form-select cat-select locale-select" data-list-width="260" id="curSelect" onchange="changeCurrency(this.value)"></select>
+        </div>
+        <div class="locale-hint" id="curHint">Gilt für Budget, Konten und neue Einträge. Bisherige Einträge bleiben in ihrer Währung.</div>
+      </div>
+  
+      <!-- DARSTELLUNG: Hell, Dunkel oder wie das Gerät (gilt pro Gerät, siehe assets/js/theme.js) -->
+      <div class="settings-section settings-theme" id="themeSwitch" data-mode="system">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-eye_open"></span></span>
+          <div>
+            <div class="settings-section-title">Darstellung</div>
+            <div class="settings-section-sub">Gilt für dieses Gerät</div>
+          </div>
+        </div>
+        <div class="theme-row">
+          <div class="theme-label" aria-live="polite"><span data-v="light">Hell</span><span data-v="system">Wie Gerät</span><span data-v="dark">Dunkel</span></div>
+          <button type="button" class="theme-btn" id="themeBtn" onclick="cycleTheme()">
+            <svg class="theme-ico ti-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.6" class="ti-sun"/><g class="ti-rays"><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.35 5.35l1.55 1.55M17.1 17.1l1.55 1.55M5.35 18.65l1.55-1.55M17.1 6.9l1.55-1.55"/></g></svg>
+            <svg class="theme-ico ti-system" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.2a6.8 6.8 0 0 0 0 13.6z" class="ti-sun"/><path d="M12 5.2a6.8 6.8 0 0 1 0 13.6z" class="ti-night"/><g class="ti-rays"><path d="M2.4 12h2M4.6 5.6l1.4 1.4M4.6 18.4l1.4-1.4M12 2.4v1.4M12 20.2v1.4"/></g></svg>
+            <svg class="theme-ico ti-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 14.6A8 8 0 0 1 9.4 4.4a8 8 0 1 0 10.2 10.2z" class="ti-night"/><path d="M17.2 3.6v2.4M16 4.8h2.4" class="ti-spark"/></svg>
+          </button>
         </div>
       </div>
-      <div class="rec-tabs" role="tablist" aria-label="Wiederkehrende Buchungen">
-        <button class="rec-tab income" role="tab" id="recTab-income" aria-controls="recPanel-income" onclick="showRecurringTab('income')">
-          <span class="ico ico-coin" aria-hidden="true"></span>Einnahmen <span class="rec-count" id="recCount-income"></span></button>
-        <button class="rec-tab expense" role="tab" id="recTab-expense" aria-controls="recPanel-expense" onclick="showRecurringTab('expense')">
-          <span class="ico ico-shoppingcart" aria-hidden="true"></span>Ausgaben <span class="rec-count" id="recCount-expense"></span></button>
-        <button class="rec-tab transfer" role="tab" id="recTab-transfer" aria-controls="recPanel-transfer" onclick="showRecurringTab('transfer')">
-          <span class="ico ico-transfer" aria-hidden="true"></span>Überweisungen <span class="rec-count" id="recCount-transfer"></span></button>
-      </div>
-      <div class="rec-panel" id="recPanel-income" role="tabpanel" aria-labelledby="recTab-income">
-        <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Konto</span><span></span></div>
-        <div id="recurringList-income" class="settings-list"></div>
-        <button class="settings-add-btn" onclick="openRecurringModal('income')"><span class="ico ico-plus" aria-hidden="true"></span>Einnahme hinzufügen</button>
-      </div>
-      <div class="rec-panel" id="recPanel-expense" role="tabpanel" aria-labelledby="recTab-expense">
-        <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Konto</span><span></span></div>
-        <div id="recurringList-expense" class="settings-list"></div>
-        <button class="settings-add-btn" onclick="openRecurringModal('expense')"><span class="ico ico-plus" aria-hidden="true"></span>Ausgabe hinzufügen</button>
-      </div>
-      <div class="rec-panel" id="recPanel-transfer" role="tabpanel" aria-labelledby="recTab-transfer">
-        <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Von → Nach</span><span></span></div>
-        <div id="recurringList-transfer" class="settings-list"></div>
-        <button class="settings-add-btn" onclick="openRecurringModal('transfer')"><span class="ico ico-plus" aria-hidden="true"></span>Überweisung hinzufügen</button>
-      </div>
-    </div>
+      </section>
 
-    <!-- EIGENE KATEGORIEN: Ausgaben und Einnahmen in einer Liste -->
-    <div class="settings-section">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-tag"></span></span>
-        <div>
-          <div class="settings-section-title">Eigene Kategorien</div>
-        </div>
-      </div>
-      <div id="customCatList" class="settings-list"></div>
-      <button class="settings-add-btn" onclick="openCustomCatModal(null)"><span class="ico ico-plus" aria-hidden="true"></span>Kategorie hinzufügen</button>
-    </div>
+    <!-- ══ DATENSCHUTZ ══ -->
+    <section class="settings-group" aria-labelledby="grpDaten">
+      <h2 class="settings-group-title" id="grpDaten">Datenschutz</h2>
 
-    <!-- DARSTELLUNG: Hell, Dunkel oder wie das Gerät (gilt pro Gerät, siehe assets/js/theme.js) -->
-    <div class="settings-section settings-theme" id="themeSwitch" data-mode="system">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-eye_open"></span></span>
-        <div>
-          <div class="settings-section-title">Darstellung</div>
-          <div class="settings-section-sub">Gilt für dieses Gerät</div>
+      <!-- DEINE DATEN: eine Kopie herunterladen (Recht auf Datenübertragbarkeit, siehe datenschutz.html) -->
+      <div class="settings-section settings-export">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-package"></span></span>
+          <div>
+            <div class="settings-section-title">Deine Daten</div>
+          </div>
         </div>
+        <div class="settings-list">
+          <button type="button" class="settings-item settings-action" onclick="exportEntriesCsv(this)">
+            <span class="settings-item-info">
+              <span class="settings-item-name">Einträge als Tabelle</span>
+              <span class="settings-item-val">Datei für Excel, Numbers oder Google Sheets (CSV)</span>
+            </span>
+            <span class="settings-action-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+          </button>
+          <button type="button" class="settings-item settings-action" onclick="exportBackupJson(this)">
+            <span class="settings-item-info">
+              <span class="settings-item-name">Vollständige Sicherung</span>
+              <span class="settings-item-val">Alle Konten, Ziele, Schulden und Einstellungen (JSON)</span>
+            </span>
+            <span class="settings-action-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+          </button>
+        </div>
+        <!-- Vertrauenshinweis: Angaben wie in datenschutz.html (Rechenzentrum, HTTPS, jeder sieht nur seine Daten) -->
+        <p class="data-trust">
+          <span class="ico ico-key" aria-hidden="true"></span>
+          <span><span>Deine Daten liegen in einem Rechenzentrum in Frankfurt (EU). Die Verbindung ist verschlüsselt, und jeder Account sieht nur seine eigenen Daten.</span>
+            <a href="datenschutz.html" target="_top">Mehr zum Datenschutz</a></span>
+        </p>
       </div>
-      <div class="theme-row">
-        <div class="theme-label" aria-live="polite"><span data-v="light">Hell</span><span data-v="system">Wie Gerät</span><span data-v="dark">Dunkel</span></div>
-        <button type="button" class="theme-btn" id="themeBtn" onclick="cycleTheme()">
-          <svg class="theme-ico ti-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.6" class="ti-sun"/><g class="ti-rays"><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.35 5.35l1.55 1.55M17.1 17.1l1.55 1.55M5.35 18.65l1.55-1.55M17.1 6.9l1.55-1.55"/></g></svg>
-          <svg class="theme-ico ti-system" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.2a6.8 6.8 0 0 0 0 13.6z" class="ti-sun"/><path d="M12 5.2a6.8 6.8 0 0 1 0 13.6z" class="ti-night"/><g class="ti-rays"><path d="M2.4 12h2M4.6 5.6l1.4 1.4M4.6 18.4l1.4-1.4M12 2.4v1.4M12 20.2v1.4"/></g></svg>
-          <svg class="theme-ico ti-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 14.6A8 8 0 0 1 9.4 4.4a8 8 0 1 0 10.2 10.2z" class="ti-night"/><path d="M17.2 3.6v2.4M16 4.8h2.4" class="ti-spark"/></svg>
-        </button>
-      </div>
-    </div>
+      </section>
 
-    <!-- DEINE DATEN: eine Kopie herunterladen (Recht auf Datenübertragbarkeit, siehe datenschutz.html) -->
-    <div class="settings-section settings-export">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-package"></span></span>
-        <div>
-          <div class="settings-section-title">Deine Daten</div>
+    <!-- ══ HILFE ══ -->
+    <section class="settings-group" aria-labelledby="grpHilfe">
+      <h2 class="settings-group-title" id="grpHilfe">Hilfe</h2>
+
+      <!-- HILFE & FEEDBACK: Kontaktformular (Fenster unten), verschickt über app/api/contact.js an spendly.help@outlook.com -->
+      <div class="settings-section settings-help">
+        <div class="settings-section-header">
+          <span class="settings-section-icon"><span class="ico ico-smiley"></span></span>
+          <div>
+            <div class="settings-section-title">Hilfe &amp; Feedback</div>
+          </div>
         </div>
-      </div>
-      <div class="settings-list">
-        <button type="button" class="settings-item settings-action" onclick="exportEntriesCsv(this)">
+        <button type="button" class="settings-item settings-action" onclick="openContactModal()">
           <span class="settings-item-info">
-            <span class="settings-item-name">Einträge als Tabelle</span>
-            <span class="settings-item-val">Datei für Excel, Numbers oder Google Sheets (CSV)</span>
+            <span class="settings-item-name">Nachricht schreiben</span>
+            <span class="settings-item-val">Bei Fragen, Fehlern oder Ideen</span>
           </span>
-          <span class="settings-action-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
-        </button>
-        <button type="button" class="settings-item settings-action" onclick="exportBackupJson(this)">
-          <span class="settings-item-info">
-            <span class="settings-item-name">Vollständige Sicherung</span>
-            <span class="settings-item-val">Alle Konten, Ziele, Schulden und Einstellungen (JSON)</span>
-          </span>
-          <span class="settings-action-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></span>
+          <span class="settings-action-ico" aria-hidden="true"><span class="ico ico-arrow-right"></span></span>
         </button>
       </div>
-      <!-- Vertrauenshinweis: Angaben wie in datenschutz.html (Rechenzentrum, HTTPS, jeder sieht nur seine Daten) -->
-      <p class="data-trust">
-        <span class="ico ico-key" aria-hidden="true"></span>
-        <span><span>Deine Daten liegen in einem Rechenzentrum in Frankfurt (EU). Die Verbindung ist verschlüsselt, und jeder Account sieht nur seine eigenen Daten.</span>
-          <a href="datenschutz.html" target="_top">Mehr zum Datenschutz</a></span>
-      </p>
-    </div>
-
-    <!-- HILFE & FEEDBACK: Kontaktformular (Fenster unten), verschickt über app/api/contact.js an spendly.help@outlook.com -->
-    <div class="settings-section settings-help">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-smiley"></span></span>
-        <div>
-          <div class="settings-section-title">Hilfe &amp; Feedback</div>
-        </div>
-      </div>
-      <button type="button" class="settings-item settings-action" onclick="openContactModal()">
-        <span class="settings-item-info">
-          <span class="settings-item-name">Nachricht schreiben</span>
-          <span class="settings-item-val">Bei Fragen, Fehlern oder Ideen</span>
-        </span>
-        <span class="settings-action-ico" aria-hidden="true"><span class="ico ico-arrow-right"></span></span>
-      </button>
-    </div>
+    </section>
 
     <!-- ABMELDEN: ganz unten, damit man es nicht aus Versehen antippt -->
     <button type="button" class="logout-btn" onclick="logout()">Abmelden</button>
@@ -281,6 +306,10 @@
         <label class="contact-topic"><input type="radio" name="contactTopic" value="idea">Idee</label>
         <label class="contact-topic"><input type="radio" name="contactTopic" value="other">Sonstiges</label>
       </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="contactSubject">Betreff</label>
+      <input class="form-input" type="text" id="contactSubject" maxlength="100" autocomplete="off" data-required="value" data-error="Der Betreff fehlt. Schreib in ein paar Worten, worum es geht.">
     </div>
     <div class="form-group">
       <label class="form-label" for="contactMessage">Nachricht</label>

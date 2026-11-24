@@ -594,6 +594,8 @@ window.SPENDLY_I18N.nl = {
  "Frage": "Vraag",
  "Fehler": "Fout",
  "Idee": "Idee",
+ "Betreff": "Onderwerp",
+ "Der Betreff fehlt. Schreib in ein paar Worten, worum es geht.": "Het onderwerp ontbreekt. Schrijf in een paar woorden waar het over gaat.",
  "Nachricht": "Bericht",
  "Die Nachricht fehlt. Schreib kurz, worum es geht.": "Het bericht ontbreekt. Schrijf kort waar het over gaat.",
  "Antwort an": "Antwoord naar",
@@ -609,5 +611,9 @@ window.SPENDLY_I18N.nl = {
  "Danke! Die Antwort kommt an {email}.": "Bedankt! Het antwoord komt naar {email}.",
  "Du hast heute schon 5 Nachrichten geschickt. Versuche es morgen wieder oder schreib direkt per E-Mail.": "Je hebt vandaag al 5 berichten gestuurd. Probeer het morgen opnieuw of schrijf direct via e-mail.",
  "Deine Anmeldung ist abgelaufen. Lade die Seite neu, melde dich an und sende die Nachricht nochmals.": "Je sessie is verlopen. Laad de pagina opnieuw, log in en verstuur het bericht nog een keer.",
- "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "Versturen is niet gelukt. Je tekst blijft hier staan. Probeer het later opnieuw of schrijf direct via e-mail."
+ "Der Versand hat nicht geklappt. Dein Text bleibt hier. Versuche es später nochmals oder schreib direkt per E-Mail.": "Versturen is niet gelukt. Je tekst blijft hier staan. Probeer het later opnieuw of schrijf direct via e-mail.",
+ "Finanzen": "Financiën",
+ "Darstellung & Sprache": "Weergave & taal",
+ "Account": "Account",
+ "Hilfe": "Hulp"
 };

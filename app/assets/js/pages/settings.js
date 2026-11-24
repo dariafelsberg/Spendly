@@ -563,7 +563,7 @@ function updateContactCount() {
 }
 function openContactModal() {
   // Ein angefangener Text bleibt stehen, wenn das Fenster ohne Senden geschlossen wurde
-  if (!document.getElementById('contactMessage').value) document.querySelector('input[name="contactTopic"][value="question"]').checked = true;
+  if (!document.getElementById('contactMessage').value && !document.getElementById('contactSubject').value) document.querySelector('input[name="contactTopic"][value="question"]').checked = true;
   updateContactCount();
   const reply = document.getElementById('contactReply');
   reply.textContent = document.getElementById('authProfileEmail').textContent;
@@ -576,8 +576,11 @@ function closeContactModal() { document.getElementById('contactModal').classList
 async function sendContact() {
   const btn = document.getElementById('contactSend');
   if (btn.disabled) return;
+  const subjEl = document.getElementById('contactSubject');
+  const subject = subjEl.value.trim();
   const msgEl = document.getElementById('contactMessage');
   const message = msgEl.value.trim();
+  if (!subject) { showError('Nachricht nicht gesendet', 'Der Betreff fehlt. Schreib in ein paar Worten, worum es geht.', 'contactSubject'); return; }
   if (!message) { showError('Nachricht nicht gesendet', 'Die Nachricht fehlt. Schreib kurz, worum es geht.', 'contactMessage'); return; }
   // Fehlermeldung «Nachricht fehlt» von vorhin wegräumen
   document.querySelectorAll('.toast-item[data-key="error"]').forEach(removeToast);
@@ -597,6 +600,7 @@ async function sendContact() {
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({
         topic: (document.querySelector('input[name="contactTopic"]:checked') || {}).value || 'other',
+        subject,
         message,
         device: document.getElementById('contactDevice').checked ? _contactDevice() : null,
       }),
@@ -607,6 +611,7 @@ async function sendContact() {
   btn.textContent = t('Nachricht senden');
   if (status === 200) {
     const email = document.getElementById('contactReply').textContent;
+    subjEl.value = '';
     msgEl.value = '';
     document.getElementById('contactDevice').checked = true;
     closeContactModal();
