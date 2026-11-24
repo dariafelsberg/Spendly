@@ -7,21 +7,9 @@ let insightsViewDate = new Date(); insightsViewDate.setDate(1);
 // Rechtester (jüngster) Monat im aktuell angezeigten 8-Monats-Fenster der Analyse-Ansicht.
 // Bleibt beim Blättern stabil, solange der ausgewählte Monat noch im Fenster liegt.
 let insightsWindowAnchor = new Date(insightsViewDate);
-// px, muss mit .insights-bar-track in styles.css übereinstimmen
+// px, muss mit .insights-bar-track in pages/analyse.css übereinstimmen
 const INSIGHTS_TRACK_HEIGHT = 150;
 
-// ── INSIGHTS (Kalender/Analyse-Umschalter)
-function setInsightsView(view) {
-  const calView = document.getElementById('calendarView');
-  const anaView = document.getElementById('analysisView');
-  const btnCal  = document.getElementById('viewBtnCalendar');
-  const btnAna  = document.getElementById('viewBtnAnalysis');
-  if (calView) calView.style.display = view === 'calendar' ? '' : 'none';
-  if (anaView) anaView.style.display = view === 'analysis' ? '' : 'none';
-  if (btnCal) btnCal.classList.toggle('active', view === 'calendar');
-  if (btnAna) btnAna.classList.toggle('active', view === 'analysis');
-  if (view === 'analysis') renderInsightsView();
-}
 // Monat für die Analyse-Ansicht wechseln (Pfeile) bzw. per Klick auf einen Balken auswählen.
 function changeInsightsMonth(delta) {
   const now = new Date();
@@ -130,7 +118,7 @@ function renderTagSummary() {
   const cats = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
   const max = cats.length ? cats[0][1] : 1;
   const rows = cats.map(([name, sum]) => {
-    const c = ALL_CATS.find(x => x.name === name) || { color: '#ccc', emoji: '?' };
+    const c = catByName(name);
     return `<div class="tag-cat-row">
         <span class="tag-cat-name">${catIcon(c)} ${esc(catName(name))}</span><span class="tag-cat-amt">${formatNum(sum)}</span>
         <span class="tag-cat-bar"><span style="width:${(sum / max * 100).toFixed(1)}%;background:${c.color}"></span></span></div>`;
@@ -283,8 +271,8 @@ function renderInsightsMonthList() {
     .sort((a, b) => new Date(b.date) - new Date(a.date));
   listEl.querySelectorAll('.insights-cat-group').forEach(el => el.remove());
   if (countEl) countEl.textContent = entries.length;
-  if (!entries.length) { if (emptyEl) { emptyEl.textContent = t('Keine Einträge in diesem Monat.'); emptyEl.style.display = 'block'; } return; }
-  if (emptyEl) emptyEl.style.display = 'none';
+  if (!entries.length) { if (emptyEl) { emptyEl.textContent = t('Keine Einträge in diesem Monat.'); emptyEl.hidden = false; } return; }
+  if (emptyEl) emptyEl.hidden = true;
 
   const groups = {};
   entries.forEach(e => {
@@ -299,7 +287,7 @@ function renderInsightsMonthList() {
     .forEach(g => {
       const cat = g.isTransfer
         ? { color: '#7c93ff', icon: 'transfer' }
-        : ALL_CATS.find(c => c.name === g.name) || { color: '#ccc', emoji: '?' };
+        : catByName(g.name);
       const totalHtml = g.isTransfer
         ? `<div class="insights-cat-total" style="color:var(--transfer-text)">${formatNum(g.total)}</div>`
         : `<div class="insights-cat-total tx-amount ${g.total >= 0 ? 'income' : 'expense'}">${g.total >= 0 ? '+' : '−'}${formatNum(Math.abs(g.total))}</div>`;

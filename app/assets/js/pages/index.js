@@ -119,11 +119,9 @@ function renderTopBar() {
     pillsEl.innerHTML = vis.map(a =>
       `<div class="account-pill-item"><span class="pill-name">${esc(a.name)}</span><span class="pill-val">${cur()} ${hidden ? '••••' : formatNum(a.balance)}</span></div>`
     ).join('');
-    pillsEl.style.display = 'flex';
   } else {
     // Noch kein Konto: statt nur "0.00" direkt zeigen, was zu tun ist
     pillsEl.innerHTML = '<button class="account-pill-item account-pill-add" onclick="toggleAppMenu(true)"><span class="ico ico-plus" aria-hidden="true"></span> ' + t('Konto hinzufügen') + '</button>';
-    pillsEl.style.display = 'flex';
   }
 }
 
@@ -337,8 +335,8 @@ function renderTransactions() {
   const listEl = document.getElementById('txListInner');
   const emptyEl = document.getElementById('txEmpty');
   listEl.querySelectorAll('.tx-item').forEach(el => el.remove());
-  if (!entries.length) { emptyEl.style.display = 'block'; return; }
-  emptyEl.style.display = 'none';
+  emptyEl.hidden = entries.length > 0;
+  if (!entries.length) return;
   entries.forEach(e => {
     const item = document.createElement('div');
     item.className = 'tx-item';
@@ -357,7 +355,7 @@ function setEntryType(type) {
   document.getElementById('typeBtnTransfer').classList.toggle('active', type === 'transfer');
   // Checkbox nur bei Ausgabe anzeigen
   const aoGroup = document.getElementById('accountOnlyGroup');
-  if (aoGroup) aoGroup.style.display = type === 'expense' ? '' : 'none';
+  if (aoGroup) aoGroup.hidden = type !== 'expense';
   // Checkbox zurücksetzen wenn nicht Ausgabe
   const aoCheck = document.getElementById('accountOnlyCheck');
   if (aoCheck && type !== 'expense') aoCheck.checked = false;
@@ -365,18 +363,18 @@ function setEntryType(type) {
   const accGroup = document.getElementById('accountSelectGroup');
   const transferGroup = document.getElementById('transferAccountsGroup');
   const tagsGroup = document.getElementById('entryTagsGroup');
-  if (tagsGroup) tagsGroup.style.display = type === 'transfer' ? 'none' : '';
+  if (tagsGroup) tagsGroup.hidden = type === 'transfer';
   // Überweisungen zwischen eigenen Konten immer in der Hauptwährung
   const curSel = document.getElementById('entryCurrency');
   if (curSel) { curSel.hidden = type === 'transfer'; if (type === 'transfer') { curSel.value = cur(); onFxInput(true); } }
   if (type === 'transfer') {
-    if (catGroup) catGroup.style.display = 'none';
-    if (accGroup) accGroup.style.display = 'none';
-    if (transferGroup) transferGroup.style.display = '';
+    if (catGroup) catGroup.hidden = true;
+    if (accGroup) accGroup.hidden = true;
+    if (transferGroup) transferGroup.hidden = false;
     populateTransferAccountSelects();
   } else {
-    if (catGroup) catGroup.style.display = '';
-    if (transferGroup) transferGroup.style.display = 'none';
+    if (catGroup) catGroup.hidden = false;
+    if (transferGroup) transferGroup.hidden = true;
     // "Nur Konto" verwendet Ausgaben-Kategorien (bleibt eine Abbuchung, zählt nur nicht ins Budget)
     populateCategorySelect(type === 'income' ? 'income' : 'expense');
     // Neuer Eintrag: keine Kategorie vorauswählen, es steht "Kategorie auswählen" (Daria)
@@ -406,7 +404,7 @@ function populateAccountSelect(selectedId = '') {
   sel.innerHTML = `<option value="" disabled ${!selectedId ? 'selected' : ''}>${t('Konto auswählen')}</option>` +
     state.accounts.map(a => `<option value="${esc(a.id)}" ${a.id === selectedId ? 'selected' : ''}>${esc(a.name)} (${money(a.balance)})</option>`).join('');
   const grp = document.getElementById('accountSelectGroup');
-  if (grp) grp.style.display = state.accounts.length ? '' : 'none';
+  if (grp) grp.hidden = !state.accounts.length;
 }
 function populateTransferAccountSelects(fromId = '', toId = '') {
   const fromSel = document.getElementById('entryFromAccount');
@@ -443,7 +441,7 @@ function openEntryModal(editId = null) {
       fx = { rate: e.fx.rate, date: e.fx.rateDate, manual: true, stale: false, loading: false };
     }
     onFxInput(false);
-    document.getElementById('typeToggle').style.display = 'none';
+    document.getElementById('typeToggle').hidden = true;
     if (e.type === 'transfer') {
       populateTransferAccountSelects(e.fromAccountId, e.toAccountId);
     } else {
@@ -451,7 +449,7 @@ function openEntryModal(editId = null) {
       const aoCheck = document.getElementById('accountOnlyCheck');
       const aoGroup = document.getElementById('accountOnlyGroup');
       if (aoCheck) aoCheck.checked = (e.type === 'account-only');
-      if (aoGroup) aoGroup.style.display = (e.type === 'expense' || e.type === 'account-only') ? '' : 'none';
+      if (aoGroup) aoGroup.hidden = e.type !== 'expense' && e.type !== 'account-only';
       populateAccountSelect(e.accountId || '');
     }
   } else {
@@ -462,7 +460,7 @@ function openEntryModal(editId = null) {
     setEntryTags([]);
     fillCurrencySelect(cur());
     onFxInput(true);
-    document.getElementById('typeToggle').style.display = '';
+    document.getElementById('typeToggle').hidden = false;
     populateAccountSelect(defaultAccountId());
   }
   const modal = document.getElementById('entryModal');

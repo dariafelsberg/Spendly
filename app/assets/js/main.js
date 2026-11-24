@@ -30,17 +30,17 @@ const INCOME_CATEGORIES = [
   { name: 'Sonstiges', icon: 'tag', color: '#4ade80' },
   { name: 'Rückzahlung', icon: 'refund', color: '#0d9488' },   // geliehenes Geld zurück («Planen»)
 ];
-// ALL_CATS ist ein dynamischer Getter (berücksichtigt eigene Kategorien)
 // Eigene Kategorien, die gleich heissen wie eine fixe (z.B. ein früher selbst erstelltes «Abos»), nicht doppelt zeigen
 function withoutBuiltInNames(list, builtIn) {
   const names = builtIn.map(c => c.name.toLowerCase());
   return (list || []).filter(c => !names.includes(String(c.name).toLowerCase()));
 }
+// Alle Kategorien: feste und eigene
 function allExpenseCats() { return [...EXPENSE_CATEGORIES, ...withoutBuiltInNames(state.customExpenseCats, EXPENSE_CATEGORIES)]; }
 function allIncomeCats()  { return [...INCOME_CATEGORIES,  ...withoutBuiltInNames(state.customIncomeCats,  INCOME_CATEGORIES)]; }
 function allCats()        { return [...allExpenseCats(), ...allIncomeCats()]; }
-// ALL_CATS bleibt als Alias für Stellen erhalten, die es referenzieren (Kalender, Buchungen)
-Object.defineProperty(window, 'ALL_CATS', { get: allCats });
+// Kategorie zu einem gespeicherten Namen; unbekannt (z.B. gelöscht): graue Ersatz-Kategorie
+function catByName(name) { return allCats().find(c => c.name === name) || { color: '#ccc', emoji: '?' }; }
 
 // Icon einer Kategorie: Standard-Kategorien und neue eigene Kategorien haben ein SVG-Icon (assets/icons/ui).
 // Ältere eigene Kategorien haben noch ein Emoji, das weiterhin angezeigt wird.
@@ -445,12 +445,8 @@ function toggleAppMenu(forceState) {
 }
 function closeAppMenu() { toggleAppMenu(false); }
 
-// ── SEITENERKENNUNG (für saveBudget, das von Home UND Einstellungen genutzt wird)
-const IS_HOME     = !!document.getElementById('donutSvg');
-const IS_SETTINGS = !!document.getElementById('accountsList');
-
-// ── BUDGET (Modal existiert auf index.html und settings.html)
-// ── BUDGET
+// ── BUDGET-FENSTER (nur auf Home; in den Einstellungen wird das Budget direkt im Feld geändert)
+const IS_HOME = !!document.getElementById('donutSvg');
 function openBudgetModal() { document.getElementById('budgetInput').value = state.budget || ''; document.getElementById('budgetModal').classList.add('show'); }
 function closeBudgetModal() { document.getElementById('budgetModal').classList.remove('show'); }
 function saveBudget() {
@@ -458,14 +454,12 @@ function saveBudget() {
   if (!isNaN(val) && val >= 0) {
     state.budget = val; saveState();
     if (IS_HOME) { renderBudgetCard(); renderDonut(); }
-    if (IS_SETTINGS) { const sd = document.getElementById('budgetSettingDisplay'); if (sd) showBudgetSetting(sd); }
   }
   closeBudgetModal();
 }
 
-// ── EINTRÄGE (Zeile, Löschen, Konto-Salden): Home-Liste und Analyse-Liste teilen sich das
-// Baut das innere Markup eines einzelnen Eintrags (wird von der
-// Home-Liste und der Monatsliste bei "Analyse" gemeinsam genutzt).
+// ── EINTRÄGE: inneres Markup einer Eintragszeile, gemeinsam für die Home-Liste und die
+// Monatsliste bei «Analyse» (der Kalender hat eine eigene, kürzere Zeile ohne Knöpfe).
 function entryRowInner(e) {
   if (e.type === 'transfer') {
     const fromAcc = state.accounts.find(a => a.id === e.fromAccountId);
@@ -482,12 +476,12 @@ function entryRowInner(e) {
           <button class="tx-btn delete" onclick="deleteEntry(${jsArg(e.id)})" aria-label="${t('Löschen')}"><span class="ico ico-trash"></span></button>
         </div>`;
   }
-  const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
+  const cat = catByName(e.category);
   const isInc = e.type === 'income';
   const isAccOnly = e.type === 'account-only';
   const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
   const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${esc(acc.name)}</span>` : '';
-  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:var(--surface);color:var(--transfer-text);">${t('nur Konto')}</span>` : '';
+  const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag tx-acconly-tag">${t('nur Konto')}</span>` : '';
   return `
       <div class="tx-cat-dot" style="background:${cat.color}"></div>
       <div class="tx-info">
@@ -826,12 +820,6 @@ function removeToast(item) {
     });
   }, reduce ? 0 : 280); // so lange dauert das Ausfliegen (siehe .toast in main.css)
 }
-// Ohne key: alle Meldungen ausblenden; mit key: nur diese
-function hideToast(key) {
-  const stack = document.getElementById('toastStack');
-  if (!stack) return;
-  [...stack.children].filter(x => !key || x.dataset.key === key).forEach(removeToast);
-}
 // Fehler beim Speichern: Meldung zeigen und den Cursor ins betroffene Feld setzen
 function showError(title, text, focusId) {
   showToast(title, { text, type: 'error', key: 'error' }); // derselbe Fehler nochmals: ersetzen statt stapeln
@@ -859,7 +847,6 @@ function dateKey(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function formatNum(n) { return Number(n).toLocaleString(I18N.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function formatDate(d) { return d ? new Date(d).toLocaleDateString(I18N.locale) : ''; }
 // Betrag mit Hauptwährung, z.B. «CHF 12.50»
 function money(n) { return cur() + ' ' + formatNum(n); }
 // Datum als Text in der gewählten Sprache, z.B. fmtDate(d, { month: 'long', year: 'numeric' })

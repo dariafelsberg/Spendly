@@ -38,8 +38,6 @@
 
     <div class="auth-column">
 
-      <img class="auth-mark" src="assets/icons/logo_spendly.svg" alt="Spendly">
-
       <!-- ══ START: zuerst zeigen, was Spendly kann; registrieren kommt erst am Schluss ══ -->
       <form id="startForm" class="auth-form" onsubmit="return handleStart(event)" novalidate>
         <h1 class="auth-title">Behalte dein Geld im Blick</h1>
@@ -50,7 +48,7 @@
       </form>
 
       <!-- ══ EINRICHTEN 1: Ziel (fragen statt erklären, Antwort passt die Texte an) ══ -->
-      <form id="goalForm" class="auth-form onb-form" style="display:none" onsubmit="return onbGoalNext(event)" novalidate>
+      <form id="goalForm" class="auth-form onb-form" hidden onsubmit="return onbGoalNext(event)" novalidate>
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('start')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 1 von 5"><i class="on"></i><i></i><i></i><i></i><i></i></span>
@@ -90,7 +88,7 @@
       </form>
 
       <!-- ══ EINRICHTEN 2: Konto (ohne Login, wird lokal gemerkt) ══ -->
-      <form id="accountForm" class="auth-form onb-form" style="display:none" onsubmit="return onbAccountNext(event)" novalidate>
+      <form id="accountForm" class="auth-form onb-form" hidden onsubmit="return onbAccountNext(event)" novalidate>
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('goal')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 2 von 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
@@ -116,7 +114,7 @@
       </form>
 
       <!-- ══ EINRICHTEN 3: Monatsbudget ══ -->
-      <form id="budgetForm" class="auth-form onb-form" style="display:none" onsubmit="return onbBudgetNext(event)" novalidate>
+      <form id="budgetForm" class="auth-form onb-form" hidden onsubmit="return onbBudgetNext(event)" novalidate>
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('account')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 3 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
@@ -144,7 +142,7 @@
 
       <!-- ══ EINRICHTEN 4: Vorschau. Die Startseite der App mit den eigenen Angaben
            (preview.html) im Handyrahmen, bevor der Account kommt. ══ -->
-      <form id="previewForm" class="auth-form onb-form" style="display:none" onsubmit="return onbPreviewNext(event)" novalidate>
+      <form id="previewForm" class="auth-form onb-form" hidden onsubmit="return onbPreviewNext(event)" novalidate>
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('budget')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 4 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
@@ -163,7 +161,7 @@
       </form>
 
       <!-- ══ LOGIN ══ -->
-      <form id="loginForm" class="auth-form onb-form" style="display:none" onsubmit="return handleLogin(event)">
+      <form id="loginForm" class="auth-form onb-form" hidden onsubmit="return handleLogin(event)">
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('start')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
         </div>
@@ -191,14 +189,14 @@
       </form>
 
       <!-- ══ REGISTRIEREN ══ -->
-      <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
+      <form id="registerForm" class="auth-form" hidden onsubmit="return handleRegister(event)">
         <div class="onb-top">
           <button type="button" class="auth-back" onclick="showStep('preview')"><span class="ico ico-arrow-left" aria-hidden="true"></span> Zurück</button>
           <span class="onb-progress" aria-label="Schritt 5 von 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
         </div>
         <h1 class="auth-title" id="registerTitle">Dein Budget, von überall erreichbar</h1>
         <p class="auth-sub" id="registerSub">Erstelle einen Account, damit deine Angaben gespeichert bleiben und du sie auf allen Geräten siehst.</p>
-        <div class="register-exists-notice" id="registerExistsNotice">
+        <div class="register-exists-notice" id="registerExistsNotice" hidden>
           Mit dieser E-Mail-Adresse gibt es schon ein Konto.
           <button type="button" class="auth-inline-link" onclick="goLogin()">Stattdessen einloggen</button>
         </div>
@@ -258,10 +256,9 @@
       </div>
 
       <!-- Bestätigung -->
-      <div id="resetSentStep" style="display:none; text-align:center; padding: 8px 0 4px;">
-        <div style="font-size:2rem; margin-bottom:10px;">📬</div>
-        <div style="font-weight:600; margin-bottom:6px;">E-Mail gesendet!</div>
-        <div style="font-size:var(--fs-note); color:var(--muted); margin-bottom:20px; line-height:1.5;">
+      <div class="reset-sent" id="resetSentStep" hidden>
+        <div class="reset-sent-title">E-Mail gesendet!</div>
+        <div class="reset-sent-text">
           Falls ein Konto mit dieser E-Mail existiert, erhältst du in Kürze einen Reset-Link.<br>
           Der Link ist 1 Stunde gültig.
         </div>

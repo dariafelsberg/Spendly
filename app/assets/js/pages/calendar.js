@@ -67,8 +67,8 @@ function renderCalendar() {
   // Show/hide second calendar card
   const card2 = document.getElementById('calCard2');
   const label2 = document.getElementById('calMonthLabel2');
-  if (card2) card2.style.display = desktop ? '' : 'none';
-  if (label2) label2.style.display = desktop ? '' : 'none';
+  if (card2) card2.hidden = !desktop;
+  if (label2) label2.hidden = !desktop;
 
   const year = calViewDate.getFullYear(), month = calViewDate.getMonth();
   const now2 = new Date();
@@ -106,9 +106,9 @@ function renderCalendar() {
     const selYear = calSelectedDay.getFullYear(), selMonth = calSelectedDay.getMonth();
     if (selYear === year && selMonth === month) renderDayDetail(calSelectedDay);
     else if (desktop && selYear === nextMonthDate.getFullYear() && selMonth === nextMonthDate.getMonth()) renderDayDetail(calSelectedDay);
-    else document.getElementById('dayDetail').style.display = 'none';
+    else document.getElementById('dayDetail').hidden = true;
   } else {
-    document.getElementById('dayDetail').style.display = 'none';
+    document.getElementById('dayDetail').hidden = true;
   }
 }
 function renderMonthGrid(year, month, byDay, todayStr, gridId) {
@@ -144,7 +144,7 @@ function renderDayDetail(dateObj) {
   const entries = [...real, ...previews];
   const detailEl = document.getElementById('dayDetail');
   document.getElementById('dayDetailTitle').textContent = fmtDate(dateObj, { weekday: 'long', day: 'numeric', month: 'long' });
-  detailEl.style.display = '';
+  detailEl.hidden = false;
   if (!entries.length) {
     document.getElementById('dayDetailTotal').textContent = '';
     document.getElementById('dayDetailList').innerHTML = `<div class="empty-tx">${t('Keine Einträge an diesem Tag.')}</div>`;
@@ -159,10 +159,10 @@ function renderDayDetail(dateObj) {
     totalEl.textContent = (net >= 0 ? '+' : '−') + money(Math.abs(net));
     totalEl.style.color = net >= 0 ? 'var(--income-text)' : 'var(--danger-text)';
   } else if (real.length) {
-    totalEl.textContent = 'Überweisung';
+    totalEl.textContent = t('Überweisung');
     totalEl.style.color = 'var(--muted)';
   } else {
-    totalEl.textContent = 'geplant';
+    totalEl.textContent = t('geplant');
     totalEl.style.color = 'var(--muted)';
   }
   document.getElementById('dayDetailList').innerHTML = entries.map(e => {
@@ -179,12 +179,12 @@ function renderDayDetail(dateObj) {
         <div class="tx-amount" style="color:var(--transfer-text)">${formatNum(e.amount)}${baseCurHtml(e)}</div>
       </div>`;
     }
-    const cat = ALL_CATS.find(c => c.name === e.category) || { color: '#ccc', emoji: '?' };
+    const cat = catByName(e.category);
     const isInc = e.type === 'income';
     const isAccOnly = e.type === 'account-only';
     const acc = e.accountId ? state.accounts.find(a => a.id === e.accountId) : null;
     const accTag = acc ? `<span class="tx-account-tag">${iconHtml('bank')} ${esc(acc.name)}</span>` : '';
-    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag" style="background:#f0f4ff;color:#4e8cf5;">${t('nur Konto')}</span>` : '';
+    const accOnlyBadge = isAccOnly ? `<span class="tx-account-tag tx-acconly-tag">${t('nur Konto')}</span>` : '';
     const plannedBadge = e.isPreview ? `<span class="tx-account-tag tx-planned-tag">${iconHtml('clock')} ${t('geplant')}</span>` : '';
     return `<div class="tx-item${e.isPreview ? ' preview' : ''}">
       <div class="tx-cat-dot" style="background:${cat.color}"></div>

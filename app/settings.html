@@ -60,7 +60,7 @@
       <a class="auth-edit-btn" href="account.html" target="_top">Account bearbeiten<span class="ico ico-arrow-right" aria-hidden="true"></span></a>
     </div>
 
-    <!-- SPRACHE UND WÄHRUNG (Reihenfolge: direkt nach der Anmeldung, vor dem Budget) -->
+    <!-- SPRACHE UND WÄHRUNG -->
     <div class="settings-section settings-locale">
       <div class="locale-row">
         <label class="locale-label" for="langSelect">Sprache</label>
@@ -71,6 +71,23 @@
         <select class="form-input form-select cat-select locale-select" data-list-width="260" id="curSelect" onchange="changeCurrency(this.value)"></select>
       </div>
       <div class="locale-hint" id="curHint">Gilt für Budget, Konten und neue Einträge. Bisherige Einträge bleiben in ihrer Währung.</div>
+    </div>
+
+    <!-- MONATSBUDGET: direkt im Feld ändern, gespeichert beim Verlassen des Feldes oder mit Enter -->
+    <div class="settings-section settings-budget">
+      <div class="settings-section-header">
+        <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
+        <div>
+          <div class="settings-section-title">Monatsbudget</div>
+        </div>
+      </div>
+      <div class="budget-inline">
+        <label class="budget-inline-field">
+          <span class="budget-inline-cur">CHF</span>
+          <input class="form-input" type="text" inputmode="decimal" id="budgetInlineInput" maxlength="15" placeholder="z.B. 2000" autocomplete="off"
+                 aria-label="Monatsbudget in CHF" onchange="saveBudgetInline()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
+        </label>
+      </div>
     </div>
 
     <!-- KONTEN -->
@@ -87,8 +104,8 @@
       <button class="settings-add-btn" onclick="openAccountModal()"><span class="ico ico-plus" aria-hidden="true"></span>Konto hinzufügen</button>
     </div>
 
-    <!-- WIEDERKEHREND: eine Karte. Computer: Reiter Einnahmen / Ausgaben / Überweisungen.
-         Handy: alle drei Listen untereinander, je mit Zwischentitel. -->
+    <!-- WIEDERKEHREND: eine Karte mit Reitern Einnahmen / Ausgaben / Überweisungen.
+         Computer: Tabelle mit Spaltenköpfen; Handy: zweizeilige Zeilen ohne Spaltenköpfe. -->
     <div class="settings-section settings-recurring">
       <div class="settings-section-header">
         <span class="settings-section-icon"><span class="ico ico-calendar"></span></span>
@@ -106,26 +123,23 @@
           <span class="ico ico-transfer" aria-hidden="true"></span>Überweisungen <span class="rec-count" id="recCount-transfer"></span></button>
       </div>
       <div class="rec-panel" id="recPanel-income" role="tabpanel" aria-labelledby="recTab-income">
-        <div class="rec-panel-title income"><span class="ico ico-coin" aria-hidden="true"></span>Monatliche Einnahmen</div>
         <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Konto</span><span></span></div>
-        <div id="recurringIncomeList" class="settings-list"></div>
+        <div id="recurringList-income" class="settings-list"></div>
         <button class="settings-add-btn" onclick="openRecurringModal('income')"><span class="ico ico-plus" aria-hidden="true"></span>Einnahme hinzufügen</button>
       </div>
       <div class="rec-panel" id="recPanel-expense" role="tabpanel" aria-labelledby="recTab-expense">
-        <div class="rec-panel-title expense"><span class="ico ico-shoppingcart" aria-hidden="true"></span>Monatliche Ausgaben</div>
         <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Konto</span><span></span></div>
-        <div id="recurringExpenseList" class="settings-list"></div>
+        <div id="recurringList-expense" class="settings-list"></div>
         <button class="settings-add-btn" onclick="openRecurringModal('expense')"><span class="ico ico-plus" aria-hidden="true"></span>Ausgabe hinzufügen</button>
       </div>
       <div class="rec-panel" id="recPanel-transfer" role="tabpanel" aria-labelledby="recTab-transfer">
-        <div class="rec-panel-title transfer"><span class="ico ico-transfer" aria-hidden="true"></span>Monatliche Überweisungen</div>
         <div class="rec-head" aria-hidden="true"><span></span><span>Name</span><span>Betrag</span><span>Tag</span><span>Von → Nach</span><span></span></div>
-        <div id="recurringTransferList" class="settings-list"></div>
+        <div id="recurringList-transfer" class="settings-list"></div>
         <button class="settings-add-btn" onclick="openRecurringModal('transfer')"><span class="ico ico-plus" aria-hidden="true"></span>Überweisung hinzufügen</button>
       </div>
     </div>
 
-    <!-- EIGENE KATEGORIEN: KOMBINIERT -->
+    <!-- EIGENE KATEGORIEN: Ausgaben und Einnahmen in einer Liste -->
     <div class="settings-section">
       <div class="settings-section-header">
         <span class="settings-section-icon"><span class="ico ico-tag"></span></span>
@@ -133,30 +147,8 @@
           <div class="settings-section-title">Eigene Kategorien</div>
         </div>
       </div>
-      <div id="customIncomeCatList" class="settings-list"></div>
+      <div id="customCatList" class="settings-list"></div>
       <button class="settings-add-btn" onclick="openCustomCatModal(null)"><span class="ico ico-plus" aria-hidden="true"></span>Kategorie hinzufügen</button>
-    </div>
-
-    <!-- BUDGET (auf dem Computer direkt unter der Anmeldung) -->
-    <div class="settings-section settings-budget">
-      <div class="settings-section-header">
-        <span class="settings-section-icon"><span class="ico ico-wallet"></span></span>
-        <div>
-          <div class="settings-section-title">Monatsbudget</div>
-        </div>
-      </div>
-      <div class="budget-setting-row">
-        <div class="budget-setting-val" id="budgetSettingDisplay">CHF 0.00</div>
-        <button class="tx-btn" onclick="openBudgetModal()" aria-label="Budget bearbeiten"><span class="ico ico-pencil"></span></button>
-      </div>
-      <!-- Computer: Budget direkt im Feld ändern, gespeichert beim Verlassen des Feldes oder mit Enter -->
-      <div class="budget-inline">
-        <label class="budget-inline-field">
-          <span class="budget-inline-cur">CHF</span>
-          <input class="form-input" type="text" inputmode="decimal" id="budgetInlineInput" maxlength="15" placeholder="z.B. 2000" autocomplete="off"
-                 aria-label="Monatsbudget in CHF" onchange="saveBudgetInline()" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">
-        </label>
-      </div>
     </div>
 
     <!-- DARSTELLUNG: Hell, Dunkel oder wie das Gerät (gilt pro Gerät, siehe assets/js/theme.js) -->
@@ -251,22 +243,6 @@
 </div><!-- /app-shell -->
 
 
-<!-- ══ MODAL: BUDGET ══ -->
-<div class="modal-overlay" id="budgetModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle" tabindex="-1">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="budgetModalTitle">Monatsbudget</div>
-    <div class="form-group">
-      <label class="form-label" for="budgetInput">Budget (CHF)</label>
-      <input class="form-input" type="text" inputmode="decimal" id="budgetInput" maxlength="15" placeholder="z.B. 3000" autocomplete="off">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeBudgetModal()">Abbrechen</button>
-      <button class="btn-save" onclick="saveBudget()">Speichern</button>
-    </div>
-  </div>
-</div>
-
 <!-- ══ MODAL: KONTO ══ -->
 <div class="modal-overlay" id="accountModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle" tabindex="-1">
@@ -333,7 +309,7 @@
         <option value="">Kein Konto</option>
       </select>
     </div>
-    <div class="form-group toggle-row account-only-row" id="recurringAccountOnlyGroup" style="display:none;">
+    <div class="form-group toggle-row account-only-row" id="recurringAccountOnlyGroup" hidden>
       <div>
         <div class="toggle-label">Nur Konto</div>
         <div class="toggle-sub">Nicht vom Budget abziehen</div>
@@ -343,7 +319,7 @@
         <span class="toggle-track"></span>
       </label>
     </div>
-    <div class="form-row" id="recurringTransferAccountsGroup" style="display:none;">
+    <div class="form-row" id="recurringTransferAccountsGroup" hidden>
       <div class="form-group">
         <label class="form-label" for="recurringFromAccount">Von Konto</label>
         <select class="form-input form-select" id="recurringFromAccount"></select>
@@ -356,9 +332,7 @@
     <div class="form-group">
       <label class="form-label" for="recurringStartDate">Start ab</label>
       <input class="form-input" type="date" id="recurringStartDate">
-      <div style="margin-top:6px; font-size:var(--fs-note); color:var(--muted); line-height:1.4;">
-        Ab diesem Monat wird die Buchung automatisch angelegt.
-      </div>
+      <div class="form-hint-text">Ab diesem Monat wird die Buchung automatisch angelegt.</div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeRecurringModal()">Abbrechen</button>
@@ -372,7 +346,7 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="customCatModalTitle" tabindex="-1">
     <div class="modal-handle"></div>
     <div class="modal-title" id="customCatModalTitle">Eigene Kategorie hinzufügen</div>
-    <div class="auth-tabs" id="customCatTabs" style="margin-bottom: 16px;">
+    <div class="auth-tabs custom-cat-tabs" id="customCatTabs">
       <button class="auth-tab active" id="customCatTabExpense" onclick="switchCustomCatType('expense')"><span class="ico ico-shoppingcart"></span> Ausgabe</button>
       <button class="auth-tab" id="customCatTabIncome" onclick="switchCustomCatType('income')"><span class="ico ico-coin"></span> Einnahme</button>
     </div>
@@ -383,7 +357,7 @@
     <div class="form-group">
       <label class="form-label" id="customCatIconLabel">Symbol</label>
       <div class="emoji-pick-grid" id="customCatIconPicker" role="group" aria-labelledby="customCatIconLabel"></div>
-      <label class="form-label" for="customCatEmoji" style="margin-top:14px">Emoji</label>
+      <label class="form-label emoji-label" for="customCatEmoji">Emoji</label>
       <div class="emoji-tile" id="customCatEmojiTile">
         <span class="ico ico-smiley" aria-hidden="true"></span>
         <span class="emoji-tile-value" id="customCatEmojiValue" aria-hidden="true"></span>
@@ -398,15 +372,6 @@
   </div>
 </div>
 
-<script>
-function switchCustomCatType(type) {
-  const isExpense = type === 'expense';
-  document.getElementById('customCatTabExpense').classList.toggle('active', isExpense);
-  document.getElementById('customCatTabIncome').classList.toggle('active', !isExpense);
-  // expose chosen type for saveCustomCat() in assets/js/pages/settings.js
-  document.getElementById('customCatModal').dataset.catType = type;
-}
-</script>
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/pages/settings.js"></script>

@@ -1,4 +1,7 @@
-/* ── AUTH PAGE (login.html) — nutzt Tokens aus styles.css ── */
+/* auth.css – Anmelden, Einrichten und Registrieren (login.html), Passwort
+ * zurücksetzen (reset-password.html) und die Seite «Account bearbeiten»
+ * (account.html, dazu die Zeile «Account bearbeiten» in den Einstellungen).
+ * Nutzt die Tokens aus main.css. */
 
 /* Ruhige, schmale Spalte ohne Karte (angelehnt an Notion):
    Zeichen, grosser Serifentitel, ein Feld, zwei Knöpfe untereinander */
@@ -254,14 +257,6 @@
   line-height: 1.3;
 }
 .pw-req .ico { width: 14px; height: 14px; flex: none; }
-.pw-req .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
 .pw-req.ok { color: var(--income-text); }
 @media (prefers-reduced-motion: reduce) {
   .pw-bars i::after { transition: none; }
@@ -296,6 +291,7 @@
   width: 100%;
   margin-top: 8px;
 }
+.auth-form .auth-submit { flex: none; } /* .btn-save hat flex: 2, im Formular nicht wachsen */
 
 .auth-submit:disabled {
   opacity: .55;
@@ -320,7 +316,6 @@
 }
 
 .register-exists-notice {
-  display: none;
   background: var(--danger-light);
   color: var(--danger-text);
   font-size: var(--fs-note);
@@ -329,6 +324,14 @@
   margin-bottom: 16px;
   line-height: 1.4;
 }
+
+/* Passwort vergessen: Bestätigung, dass die E-Mail unterwegs ist */
+.reset-sent { text-align: center; padding: 8px 0 4px; }
+.reset-sent-title { font-weight: 600; margin-bottom: 6px; }
+.reset-sent-text { font-size: var(--fs-note); color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+/* Link, der aussieht wie der Hauptknopf (Passwort zurücksetzen: «Zum Login») */
+.auth-link-btn { display: block; text-align: center; text-decoration: none; }
 
 .auth-footnote {
   margin-top: var(--sp-xl);
@@ -341,52 +344,7 @@
   text-decoration: underline;
 }
 
-/* ── Profil-Block in den Einstellungen ── */
-.auth-profile-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.auth-profile-info {
-  min-width: 0;
-}
-
-.auth-profile-name {
-  font-weight: 600;
-  font-size: var(--fs-body);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.auth-profile-email {
-  font-size: var(--fs-note);
-  color: var(--muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.auth-logout-btn {
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 8px 16px;
-  background: var(--bg); /* wie "Abbrechen": Abmelden löscht nichts, darum nicht rot */
-  color: var(--muted);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: var(--fs-body);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.auth-logout-btn:active {
-  background: var(--primary-light);
-}
-
-/* Zeile "Account bearbeiten" in den Einstellungen */
+/* ── ACCOUNT BEARBEITEN: Zeile in den Einstellungen und Seite account.html ── */
 .auth-edit-btn {
   box-sizing: border-box;
   text-decoration: none;
@@ -569,89 +527,6 @@
   cursor: not-allowed;
 }
 
-/* ── SYMBOL-AUSWAHL (Eigene Kategorien) ── */
-.emoji-pick-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.emoji-pick-btn {
-  width: 44px;
-  height: 44px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color .15s, background .15s;
-  padding: 0;
-}
-
-.emoji-pick-btn .ico {
-  width: 24px;
-  height: 24px;
-  color: var(--text);
-}
-.emoji-pick-btn.selected .ico {
-  color: var(--primary);
-}
-
-.emoji-pick-btn.selected {
-  background: transparent;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(233,30,99,.15);
-}
-
-/* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
-@media (hover: hover) {
-  .emoji-pick-btn:hover {
-    background: transparent;
-    border-color: var(--primary);
-  }
-}
-
-/* Emoji-Kachel: farbiger Hintergrund, grauer Smiley; ein unsichtbares Feld darüber öffnet beim Antippen die Tastatur */
-.emoji-tile {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  margin-top: 4px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color .15s;
-}
-.emoji-tile .ico { width: 24px; height: 24px; color: var(--muted); }
-.emoji-tile-value { font-size: 1.3rem; line-height: 1; }
-.emoji-tile.has-emoji .ico { display: none; }
-.emoji-tile.has-emoji { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(233,30,99,.15); }
-.emoji-tile:focus-within { border-color: var(--primary); }
-.emoji-tile-input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  border: 0;
-  padding: 0;
-  font-size: 16px; /* verhindert Zoom auf dem iPhone */
-  cursor: pointer;
-  caret-color: transparent;
-}
-.emoji-tile-hint { display: none; margin-top: 6px; font-size: var(--fs-note); color: var(--muted); }
-@media (hover: hover) and (pointer: fine) {
-  .emoji-tile-hint { display: block; }
-  .emoji-tile:hover { border-color: var(--primary); }
-}
-
 /* ══ START MIT BILD (angelehnt an App-Store-Logins: oben ein Bild, unten die Knöpfe)
    Das Bild zeigt die App selbst im Handyrahmen (Bildwelt laut CD-Manual), daneben
    schweben drei Einträge in den App-Farben. Flache Flächen, kein Verlauf. */
@@ -670,20 +545,10 @@
   margin: 0 auto var(--sp-md);
   overflow: hidden;
 }
-.auth-shell[data-step="start"] .auth-mark { display: none; }
 .auth-shell[data-step="start"] .auth-title,
 .auth-shell[data-step="start"] .auth-sub { text-align: center; }
 
-/* Kreise wie im Kopf der App, hier in Pink-hell */
-.hero-circle {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--primary-light);
-}
-.hero-circle-lg { width: 300px; height: 300px; left: 50%; top: 40px; transform: translateX(-50%); }
-.hero-circle-sm { width: 90px; height: 90px; right: 6%; top: 18px; background: var(--bg); }
-
-/* Handy */
+/* Handy mit echtem Screenshot der Home-Seite (Beispieldaten) */
 .hero-phone {
   position: absolute;
   left: 50%;
@@ -707,67 +572,14 @@
   border-radius: 999px;
   background: var(--ink);
 }
-.hero-phone > :not(.hp-notch) { position: relative; }
-.hp-top {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  height: 128px;
-  padding: 36px 14px 0;
-  border-radius: 26px 26px 14px 14px;
-  background: var(--primary);
-  color: #fff;
-  overflow: hidden;
-}
-.hp-label { font-size: 9px; font-weight: 600; opacity: .9; }
-.hp-balance { font-size: 24px; font-weight: 700; line-height: 1.1; }
-.hp-balance small { font-size: 10px; font-weight: 600; }
-.hp-pill {
-  display: inline-flex;
-  gap: 6px;
-  align-self: flex-start;
-  margin-top: 8px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: rgba(45, 27, 36, .15);
-  font-size: 8px;
-}
-.hp-pill b { font-weight: 700; }
-.hero-phone .hp-card,
-.hero-phone .hp-list {
-  margin-top: 8px;
-  border-radius: 14px;
-  background: var(--card);
-}
-.hp-card {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 10px 12px;
-}
-.hp-card-label { font-size: 8px; color: var(--muted); }
-.hp-card-value { font-size: 15px; font-weight: 700; color: var(--primary-dark); }
-.hp-bar { height: 5px; border-radius: 999px; background: var(--surface); overflow: hidden; }
-.hp-bar i { display: block; width: 62%; height: 100%; background: var(--primary); border-radius: inherit; }
-.hp-list { display: flex; flex-direction: column; padding: 4px 0; }
-.hp-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
-  font-size: 9px;
-  color: var(--text);
-}
-.hp-row + .hp-row { border-top: 1px solid var(--primary-light); }
-.hp-row i { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.hp-row b { margin-left: auto; font-weight: 700; color: var(--danger-text); }
-/* Unterer Teil des Handys wird vom Bildrand abgeschnitten: Bildschirm-Hintergrund */
-.hero-phone::before {
-  content: '';
-  position: absolute;
-  inset: 8px;
+.hero-phone picture { display: contents; }
+.hp-screen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
   border-radius: 26px;
-  background: var(--bg);
 }
 
 /* Schwebende Einträge */
@@ -798,7 +610,7 @@
 .hero-chip-2 { right: 3%; top: 150px; }
 .hero-chip-3 { right: 8%; top: 300px; }
 
-/* Ein einziger Moment Bewegung beim Öffnen: die Einträge schweben nacheinander herein */
+/* Ein einziger Moment Bewegung beim Öffnen (nur Handy): die Einträge schweben nacheinander herein */
 @keyframes heroChipIn {
   from { opacity: 0; transform: translateY(14px) scale(.96); }
   to   { opacity: 1; transform: none; }
@@ -821,57 +633,7 @@
   background: linear-gradient(to bottom, transparent, var(--bg));
 }
 
-/* Computer und Tablet quer: Bild links, Formular rechts */
-@media (min-width: 900px) {
-  .auth-shell[data-step="start"] {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 64px;
-    padding: var(--sp-2xl);
-  }
-  .auth-shell[data-step="start"] .auth-hero {
-    flex: 0 0 440px;
-    max-width: 440px;
-    height: 560px;
-    margin: 0;
-    border-radius: var(--radius-card);
-    background: var(--card);
-  }
-  .auth-shell[data-step="start"] .auth-hero::after { display: none; }
-  .hero-phone { top: 70px; width: 230px; height: 470px; }
-  .hp-top { height: 150px; }
-  .hero-circle-lg { width: 360px; height: 360px; top: 100px; }
-  .hero-chip-1 { left: 18px; top: 52px; }
-  .hero-chip-2 { right: 14px; top: 270px; }
-  .hero-chip-3 { left: 30px; top: 400px; }
-  .auth-shell[data-step="start"] .auth-title,
-  .auth-shell[data-step="start"] .auth-sub { text-align: left; }
-}
-/* Computer: ohne Kreise und ohne Bewegung, nur Handy und Einträge */
-@media (min-width: 900px) {
-  .hero-circle { display: none; }
-  .hero-chip { animation: none; }
-}
-
-/* Hintergrund: statt Kreisen liegende Streifen wie Listenzeilen der App,
-   links und rechts hinter dem Handy (nur Handy, am Computer bleibt es schlicht) */
-.hero-circle { display: none; }
-.hero-bar {
-  position: absolute;
-  height: 44px;
-  border-radius: 999px;
-  background: var(--primary-light);
-}
-.hero-bar-1 { left: -40px;  top: 70px;  width: 150px; background: var(--bg); }
-.hero-bar-2 { right: -50px; top: 104px; width: 190px; }
-.hero-bar-3 { left: -60px;  top: 196px; width: 170px; }
-.hero-bar-4 { right: -30px; top: 282px; width: 140px; background: var(--bg); }
-.hero-bar-5 { left: -30px;  top: 330px; width: 120px; background: var(--bg); }
-@media (min-width: 900px) {
-  .hero-bar { display: none; }
-}
-/* Handy: Bild bis an den Bildschirmrand, damit die Streifen sauber am Rand beginnen */
+/* Handy und Tablet hoch: Bild bis an den Bildschirmrand */
 @media (max-width: 899px) {
   .auth-shell[data-step="start"] .auth-hero {
     width: calc(100% + 2 * var(--sp-md));
@@ -880,94 +642,47 @@
     margin-right: calc(-1 * var(--sp-md));
   }
 }
-/* Streifen senkrecht von oben herab, verschieden lang, unten rund (Skizze von Daria) */
-.hero-bar {
-  top: -20px !important;
-  bottom: auto;
-  right: auto !important;
-  width: 26px;
-  border-radius: 0 0 999px 999px;
-  background: var(--primary-light) !important;
-}
-.hero-bar-1 { left: 5%  !important; height: 170px; }
-.hero-bar-2 { left: 17% !important; height: 120px; }
-.hero-bar-3 { left: 38% !important; height: 210px; }
-.hero-bar-4 { left: 54% !important; height: 90px; }
-.hero-bar-5 { left: 72% !important; height: 60px; }
-.hero-bar-6 { left: 86% !important; height: 130px; }
 
-/* Echter Screenshot der Home-Seite (Beispieldaten) im Handy */
-.hp-screen {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  border-radius: 26px;
-}
-.hero-phone::before { display: none; }
-.hero-phone picture { display: contents; }
-
-/* Striche gleichmässig verteilt: 7 Striche, gleicher Abstand, Längen im Wechsel */
-.hero-bar-1 { left: calc(1 * 100% / 8 - 13px) !important; height: 150px; }
-.hero-bar-2 { left: calc(2 * 100% / 8 - 13px) !important; height: 90px; }
-.hero-bar-3 { left: calc(3 * 100% / 8 - 13px) !important; height: 190px; }
-.hero-bar-4 { left: calc(4 * 100% / 8 - 13px) !important; height: 120px; }
-.hero-bar-5 { left: calc(5 * 100% / 8 - 13px) !important; height: 190px; }
-.hero-bar-6 { left: calc(6 * 100% / 8 - 13px) !important; height: 90px; }
-.hero-bar-7 { left: calc(7 * 100% / 8 - 13px) !important; height: 150px; }
-
-/* Computer: keine weisse Fläche hinter dem Handy, dafür auch hier die Striche */
+/* Computer und Tablet quer: Bild links, Formular rechts, ohne Bewegung */
 @media (min-width: 900px) {
-  .auth-shell[data-step="start"] .auth-hero { background: transparent; }
-  .hero-bar { display: block; }
-  .hero-bar-1, .hero-bar-7 { height: 220px; }
-  .hero-bar-3, .hero-bar-5 { height: 280px; }
-  .hero-bar-2, .hero-bar-6 { height: 140px; }
-  .hero-bar-4 { height: 180px; }
-}
-/* Computer: Striche kommen wie am Handy vom oberen Bildschirmrand herab */
-@media (min-width: 900px) {
-  .auth-shell[data-step="start"] { overflow: hidden; }
-  .auth-shell[data-step="start"] .auth-hero { overflow: visible; }
-  .hero-bar { top: -50vh !important; }
-  .hero-bar-1, .hero-bar-7 { height: calc(50vh + 200px); }
-  .hero-bar-3, .hero-bar-5 { height: calc(50vh + 260px); }
-  .hero-bar-2, .hero-bar-6 { height: calc(50vh + 120px); }
-  .hero-bar-4 { height: calc(50vh + 160px); }
-}
-/* Ab Tablet-Breite (768px) keine Striche mehr, nur am Handy */
-@media (min-width: 768px) {
-  .hero-bar { display: none !important; }
-}
-/* Computer: «Aufs Sparkonto» nur so breit wie sein Inhalt (rechts-Wert vom Handy aufheben) */
-@media (min-width: 900px) {
-  .hero-chip-3 { right: auto; }
+  .auth-shell[data-step="start"] {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 64px;
+    padding: var(--sp-2xl);
+    overflow: hidden;
+  }
+  .auth-shell[data-step="start"] .auth-hero {
+    flex: 0 0 440px;
+    max-width: 440px;
+    height: 560px;
+    margin: 0;
+    overflow: visible;
+  }
+  .auth-shell[data-step="start"] .auth-hero::after { display: none; }
+  .hero-phone { top: 70px; width: 230px; height: 470px; }
+  .hero-chip { animation: none; }
+  .hero-chip-1 { left: 18px; top: 52px; }
+  .hero-chip-2 { right: 14px; top: 270px; }
+  .hero-chip-3 { left: 30px; right: auto; top: 400px; } /* nur so breit wie der Inhalt */
+  .auth-shell[data-step="start"] .auth-title,
+  .auth-shell[data-step="start"] .auth-sub { text-align: left; }
 }
 
-/* Handy: beim Start nur die Knöpfe, ohne E-Mail-Feld (das kommt bei «Registrieren»).
-   Bild und Höhe oben wie zuvor, das Kleingedruckte bleibt sichtbar. */
-@media (max-width: 767px) {
-  .auth-shell[data-step="start"] #startForm .form-group,
-  .auth-shell[data-step="start"] #startError { display: none; }
-  .auth-shell[data-step="start"] .auth-sub { margin-bottom: var(--sp-lg); }
-  .auth-shell[data-step="start"] .auth-submit { margin-top: 0; }
-  .auth-shell[data-step="start"] .auth-divider { margin: var(--sp-sm) 0; }
-  .auth-shell[data-step="start"] .auth-footnote { margin-top: var(--sp-lg); text-align: center; }
-}
-/* Handy: Knöpfe und Kleingedrucktes rutschen nach unten an den Bildschirmrand */
+/* Handy: beim Start nur die Knöpfe, ohne E-Mail-Feld (das kommt bei «Registrieren»)
+   und ohne Trennlinie «Schon ein Konto?». Knöpfe und Kleingedrucktes rutschen
+   nach unten an den Bildschirmrand. */
 @media (max-width: 767px) {
   .auth-shell[data-step="start"] { min-height: 100vh; min-height: 100dvh; }
   .auth-shell[data-step="start"] .auth-column { flex: 1; display: flex; flex-direction: column; }
   .auth-shell[data-step="start"] #startForm { flex: 1; }
-  .auth-shell[data-step="start"] .auth-submit { margin-top: auto; }
-}
-.auth-form .auth-submit { flex: none; } /* .btn-save hat flex: 2, im Formular nicht wachsen */
-.hero-bar { display: none !important; } /* Striche entfernt (Wunsch Daria, 9.11.) */
-/* Handy: Trennlinie «Schon ein Konto?» weglassen, Knöpfe direkt untereinander */
-@media (max-width: 767px) {
+  .auth-shell[data-step="start"] #startForm .form-group,
   .auth-shell[data-step="start"] .auth-divider { display: none; }
+  .auth-shell[data-step="start"] .auth-sub { margin-bottom: var(--sp-lg); }
+  .auth-shell[data-step="start"] .auth-submit { margin-top: auto; }
   .auth-shell[data-step="start"] .auth-secondary { margin-top: var(--sp-sm); }
+  .auth-shell[data-step="start"] .auth-footnote { margin-top: var(--sp-lg); text-align: center; }
 }
 
 /* ══ EINRICHTEN VOR DER REGISTRIERUNG (Konto, Budget, dann Account) ══
@@ -989,38 +704,19 @@
 }
 .onb-progress i.on { background: var(--primary); }
 
-/* Zusammenfassung vor dem Registrieren: zeigt den Nutzen der Angaben */
-.onb-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: var(--sp-md) 0 var(--sp-xs);
-  padding: var(--sp-md) var(--sp-lg);
-  border-radius: var(--radius-card);
-  background: var(--primary);
-  color: #fff;
-}
-.onb-summary[hidden] { display: none; }
-.onb-summary-label { font-size: var(--fs-note); font-weight: 600; }
-.onb-summary-value { font-size: var(--fs-2xl); font-weight: 700; line-height: 1.1; }
-.onb-summary-sub { font-size: var(--fs-note); }
-.onb-summary-sub:empty { display: none; }
-
-/* Handy: jeder Schritt füllt den Bildschirm, Weiter-Knopf unten */
+/* Handy: jeder Schritt (auch Einloggen) füllt den Bildschirm, Weiter-Knopf unten am Daumen */
 @media (max-width: 767px) {
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) {
+  .auth-shell[data-step]:not([data-step="start"]) {
     align-items: stretch;
     padding-top: calc(var(--sp-md) + env(safe-area-inset-top));
   }
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) .auth-column {
+  .auth-shell[data-step]:not([data-step="start"]) .auth-column {
     display: flex;
     flex-direction: column;
     min-height: calc(var(--vvh, 100dvh) - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="preview"], [data-step="register"]) .auth-mark { display: none; }
   .onb-form { flex: 1; }
   .onb-form .auth-submit { margin-top: auto; }
-  .auth-shell[data-step="register"] .auth-mark { display: none; }
 }
 .onb-form .auth-title { font-size: var(--fs-2xl); }
 
@@ -1113,9 +809,7 @@
   transform-origin: 0 0;
   pointer-events: none;
 }
-/* Grosse Bildschirme: Handy etwas grösser, ohne Logo darüber, damit
-   «Speichern und weiter» ohne Scrollen sichtbar bleibt */
-.auth-shell[data-step="preview"] .auth-mark { display: none; }
+/* Grosse Bildschirme: Handy etwas grösser, «Speichern und weiter» bleibt ohne Scrollen sichtbar */
 @media (min-width: 768px) and (min-height: 900px) {
   .onb-phone { --pv-scale: .6; --pv-h: 484px; }
 }
@@ -1153,7 +847,7 @@
 }
 
 /* Computer: jeder Schritt passt ohne Scrollen auf einen Bildschirm.
-   Kein Logo über den Schritten, weniger Rand, kleinerer Titel bei der Registrierung. */
+   Weniger Rand, kleinerer Titel bei der Registrierung. */
 @media (min-width: 768px) {
   /* Zurück, Balken und Titel stehen bei jedem Schritt auf gleicher Höhe:
      oben beginnen statt senkrecht zentrieren */
@@ -1162,7 +856,6 @@
     padding-top: clamp(20px, 4vh, 64px);
     padding-bottom: var(--sp-lg);
   }
-  .auth-shell:is([data-step="goal"], [data-step="account"], [data-step="budget"], [data-step="register"]) .auth-mark { display: none; }
   #registerForm .auth-title { font-size: var(--fs-2xl); }
   #registerForm .auth-sub { margin-bottom: var(--sp-lg); }
   .auth-shell[data-step="register"] .auth-footnote { margin-top: var(--sp-md); }
@@ -1214,21 +907,6 @@
   white-space: nowrap;
 }
 
-/* Einloggen sieht aus wie die Einrichten-Seiten: oben beginnend, ohne Logo,
-   am Handy sitzt «Einloggen» unten am Daumen */
-.auth-shell[data-step="login"] .auth-mark { display: none; }
-@media (max-width: 767px) {
-  .auth-shell[data-step="login"] {
-    align-items: stretch;
-    padding-top: calc(var(--sp-md) + env(safe-area-inset-top));
-  }
-  .auth-shell[data-step="login"] .auth-column {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(var(--vvh, 100dvh) - var(--sp-md) - var(--sp-2xl) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  }
-}
-
 /* Hinweis unter einem Feld («Du kannst es jederzeit ändern.») */
 .onb-hint {
   margin: var(--sp-xs) 0 0;
@@ -1270,6 +948,4 @@
 }
 
 /* Dunkelmodus: weisse Schrift auf Pink-Flächen braucht das dunklere Button-Pink (--primary ist dort heller) */
-:root[data-theme="dark"] .onb-summary,
-:root[data-theme="dark"] .hp-top,
 :root[data-theme="dark"] .onb-goal:has(input:checked) .onb-goal-ico { background: var(--btn); }

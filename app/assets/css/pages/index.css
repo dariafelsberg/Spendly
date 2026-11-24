@@ -68,10 +68,9 @@
   font-weight: 600;
 }
 
-/* ── INSIGHTS CHART ── */
-/* account pills */
+/* ── KONTEN-PILLEN im Kopf von Home */
 .account-pills {
-  display: grid;
+  display: flex;
   flex-flow: column wrap;
   gap: 8px;
   margin-bottom: 12px;
@@ -93,12 +92,6 @@
 }
 
 /* ── MAIN */
-.month-label {
-  text-align: center;
-  font-size: var(--fs-note);
-  color: var(--muted);
-  margin-bottom: 12px;
-}
 
 /* ── BUDGET CARD */
 .budget-section {
@@ -169,8 +162,8 @@
 }
 .donut-arc {
   transition: stroke-dasharray .7s cubic-bezier(.34, 1.2, .64, 1),
-              stroke-dashoffset .7s cubic-bezier(.34, 1.2, .64, 1),
-              stroke .3s ease;
+    stroke-dashoffset .7s cubic-bezier(.34, 1.2, .64, 1),
+    stroke .3s ease;
 }
 .donut-arc-pulse {
   animation: donutArcPulse .9s ease-in-out;
@@ -197,11 +190,11 @@
   font-weight: 700;
   opacity: 0;
   transition: left .7s cubic-bezier(.34, 1.2, .64, 1),
-              top .7s cubic-bezier(.34, 1.2, .64, 1),
-              transform .7s cubic-bezier(.34, 1.2, .64, 1),
-              opacity .4s ease;
+    top .7s cubic-bezier(.34, 1.2, .64, 1),
+    transform .7s cubic-bezier(.34, 1.2, .64, 1),
+    opacity .4s ease;
+  color: var(--c);
 }
-.donut-label { color: var(--c); }
 :root[data-theme="dark"] .donut-label { color: color-mix(in oklch, var(--c) 60%, var(--text)); }
 :root[data-theme="dark"] .donut-arc[style*="--c"] { stroke: color-mix(in oklch, var(--c) 85%, var(--text)); }
 .donut-label.show {
@@ -353,6 +346,8 @@
   cursor: pointer;
   color: var(--muted);
   transition: background .18s, color .18s;
+  position: relative;
+  z-index: 1;
 }
 .type-btn.active {
   color: var(--text);
@@ -372,10 +367,6 @@
   transform: translateX(var(--ind-x, 3px));
   transition: transform .2s ease, width .2s ease;
 }
-.type-btn {
-  position: relative;
-  z-index: 1;
-}
 .type-btn.expense {
   color: var(--danger-text);
 }
@@ -389,105 +380,101 @@
 /* ── BREAKPOINT ≥480px */
 @media (min-width:480px) {
   .total-balance {
-      font-size: var(--fs-hero);
-    }
+    font-size: var(--fs-hero);
+  }
   .donut-container {
-      width: 220px;
-      height: 220px;
-    }
+    width: 220px;
+    height: 220px;
+  }
 }
 
 /* ── BREAKPOINT ≥768px */
 @media (min-width:768px) {
   .topbar {
-      display: grid;
-      grid-template-columns: .8fr 1.1fr 2rem; /* 3. Spalte hält rechts Platz frei für das Zahnrad (absolut positioniert wie auf allen Seiten, siehe main.css) */
-      align-items: start;
-      gap: 32px;
-    }
+    display: grid;
+    grid-template-columns: .8fr 1.1fr 2rem; /* 3. Spalte hält rechts Platz frei für das Zahnrad (absolut positioniert wie auf allen Seiten, siehe main.css) */
+    align-items: start;
+    gap: 32px;
+  }
   .topbar-inner {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
   .topbar-inner-accounts {
-      max-height: 120px;
-      overflow: hidden;
-    }
+    max-height: 120px;
+    overflow: hidden;
+  }
   .fab {
-      width: auto;
-      min-width: 220px;
-      max-width: 320px;
-    }
+    width: auto;
+    min-width: 220px;
+    max-width: 320px;
+  }
   .account-pill-item {
-      display: inline-flex;
-      width: auto;
-      max-width: 220px;
-      break-inside: avoid;
-    }
+    display: inline-flex;
+    width: auto;
+    max-width: 220px;
+    break-inside: avoid;
+  }
   .pill-name {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .account-pills {
-      display: flex;
-      flex-flow: column wrap;
-      gap: 8px;
-      height: 120px;
-      overflow: hidden;
-    }
-  .month-label {
-      grid-column: 1/span 10;
-      grid-row: 1;
-    }
+    display: flex;
+    flex-flow: column wrap;
+    gap: 8px;
+    height: 120px;
+    overflow: hidden;
+  }
   .budget-section {
-      grid-column: 1/span 4;
-      grid-row: 2/span 2;
-    }
+    grid-column: 1/span 4;
+    grid-row: 2/span 2;
+  }
   .donut-wrapper {
-      grid-column: 5/span 6;
-      grid-row: 2/span 16;
-    }
+    grid-column: 5/span 6;
+    grid-row: 2/span 16;
+  }
   .total-balance {
-      font-size: var(--fs-hero);
-    }
+    font-size: var(--fs-hero);
+  }
   .categories-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    grid-template-columns: repeat(2, 1fr);
+  }
   .donut-container {
-      width: 240px;
-      height: 240px;
-    }
+    width: 240px;
+    height: 240px;
+  }
   .donut-center-budget {
-      font-size: var(--fs-lg);
-    }
+    font-size: var(--fs-lg);
+  }
   .tx-chevron {
-      font-size: 1.8rem;
-    }
+    font-size: 1.8rem;
+  }
 
 }
 
 /* ── BREAKPOINT ≥1024px */
 @media (min-width:1024px) {
   .total-balance {
-      font-size: var(--fs-hero);
-    }
+    font-size: var(--fs-hero);
+  }
   .categories-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
   .donut-container {
-      width: 260px;
-      height: 260px;
-    }
+    width: 260px;
+    height: 260px;
+  }
 }
 
 /* ── SAFE AREA */
 @supports (padding-bottom:env(safe-area-inset-bottom)) {
   .fab {
-      bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
-    }
+    bottom: calc(64px + env(safe-area-inset-bottom) + 12px);
+  }
 }
 
 /* ── LADEBILDSCHIRM (Skeleton) ─────────────────────────────
@@ -603,13 +590,11 @@
     z-index: 60;
   }
   .fab:active { transform: translateX(-50%) scale(.97); }
+  /* Platz unter dem Inhalt, damit der schwebende Knopf nichts verdeckt */
+  .main { padding-bottom: 120px; }
 }
 @media (min-width: 1024px) and (hover: hover) {
   .fab:hover { transform: translateX(-50%) translateY(-2px); }
-}
-/* Platz unter dem Inhalt, damit der schwebende Knopf nichts verdeckt */
-@media (min-width: 1024px) {
-  .main { padding-bottom: 120px; }
 }
 /* Monat als grosser Titel über den Karten (DM Serif Display wie die Seitentitel) */
 .month-title {

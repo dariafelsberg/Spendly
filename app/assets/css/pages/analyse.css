@@ -144,12 +144,12 @@
 /* ── CALENDAR */
 @media (min-width:768px) {
   #analysisView.calendar-main {
-      display: block;
-      padding: 24px 20px 52px;
-    }
+    display: block;
+    padding: 24px 20px 52px;
+  }
   #analysisView.calendar-main .card {
-      height: auto;
-    }
+    height: auto;
+  }
 }
 
 /* ── MONATSRÜCKBLICK */

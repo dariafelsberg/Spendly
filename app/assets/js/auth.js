@@ -248,7 +248,7 @@ function showStep(step) {
   const prev = shell ? shell.dataset.step : '';
   if (shell) shell.dataset.step = step;
   Object.entries(AUTH_STEPS).forEach(([key, id]) => {
-    document.getElementById(id).style.display = key === step ? 'flex' : 'none';
+    document.getElementById(id).hidden = key !== step;
   });
   // Übergang: vorwärts kommt der neue Schritt von rechts, zurück von links.
   // Nicht beim ersten Laden der Seite (dann ist prev der Startwert aus dem HTML).
@@ -266,10 +266,10 @@ function showStep(step) {
     if (el && !el.dataset.lockout) el.textContent = '';
   });
   const notice = document.getElementById('registerExistsNotice');
-  if (notice) notice.style.display = 'none';
+  if (notice) notice.hidden = true;
   // Rechtlicher Hinweis gehört nur zu Start und Registrierung
   const foot = document.querySelector('.auth-footnote');
-  if (foot) foot.style.display = (step === 'start' || step === 'register') ? '' : 'none';
+  if (foot) foot.hidden = step !== 'start' && step !== 'register';
   window.scrollTo(0, 0);
 }
 function _focusFirstEmpty(ids) {
@@ -288,7 +288,6 @@ function handleStart(event) {
 const _onb = { goal: '', account: null, budget: 0 };
 window._onb = _onb; // liest die Vorschau (preview.html) im iframe
 function _parseAmount(v) { return parseFloat(String(v).trim().replace(/[\s'’]/g, '').replace(',', '.')); }
-function _formatNum(n) { return Number(n).toLocaleString(I18N.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function _uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
 function onbGoalNext(event) {
@@ -579,7 +578,7 @@ async function handleRegister(event) {
     const password = document.getElementById("regPassword").value;
     const errEl = document.getElementById("registerError");
     const notice = document.getElementById('registerExistsNotice');
-    if (notice) notice.style.display = 'none';
+    if (notice) notice.hidden = true;
     errEl.textContent = '';
     const pwMiss = pwMissing(password);
     if (pwMiss.length) { errEl.textContent = pwMissingText('Account nicht erstellt', pwMiss); document.getElementById('regPassword').focus(); return; }
@@ -606,7 +605,7 @@ async function handleRegister(event) {
     if (error) {
         if (error.code === 'user_already_exists') {
             errEl.textContent = t("Diese E-Mail-Adresse ist bereits vergeben.");
-            if (notice) notice.style.display = '';
+            if (notice) notice.hidden = false;
         } else if (error.code === 'weak_password') {
             errEl.textContent = t("Passwort ist zu schwach. Bitte ein längeres Passwort wählen.");
         } else {
@@ -629,7 +628,7 @@ async function handleRegister(event) {
     // Supabase einen Benutzer ohne Identitäten zurück (ohne Fehler).
     if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
         errEl.textContent = t("Diese E-Mail-Adresse ist bereits vergeben.");
-        if (notice) notice.style.display = '';
+        if (notice) notice.hidden = false;
         return;
     }
     errEl.textContent =
@@ -637,8 +636,8 @@ async function handleRegister(event) {
 }
 
 function openResetConfirm() {
-  document.getElementById('resetInputStep').style.display = '';
-  document.getElementById('resetSentStep').style.display = 'none';
+  document.getElementById('resetInputStep').hidden = false;
+  document.getElementById('resetSentStep').hidden = true;
   document.getElementById('resetEmailInput').value = '';
   document.getElementById('resetEmailError').textContent = '';
   const m = document.getElementById('resetModal');
@@ -690,8 +689,8 @@ async function sendResetEmail() {
       return;
     }
     // Sonst immer Erfolg zeigen (kein User-Enumeration)
-    document.getElementById('resetInputStep').style.display = 'none';
-    document.getElementById('resetSentStep').style.display = '';
+    document.getElementById('resetInputStep').hidden = true;
+    document.getElementById('resetSentStep').hidden = false;
   } catch (e) {
     errEl.textContent = t('Verbindungsfehler. Bitte erneut versuchen.');
   } finally {

@@ -168,8 +168,7 @@ button {
    sonst wird er abgeschnitten und man sieht nicht, wo der Fokus ist */
 .nav-btn:focus-visible,
 .type-btn:focus-visible,
-.auth-tab:focus-visible,
-.view-toggle-btn:focus-visible {
+.auth-tab:focus-visible {
   outline-offset: -4px;
   border-radius: var(--radius-sm);
 }
@@ -239,37 +238,6 @@ button {
   z-index: 1;
 }
 
-/* ── VIEW TOGGLE (Kalender / Analyse) ── */
-.view-toggle {
-  display: flex;
-  position: relative;
-  z-index: 1;
-  background: rgba(45, 27, 36, .15); /* dunkler statt heller als das Pink: weisse Schrift darauf 5.4:1 */
-  backdrop-filter: blur(8px);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  gap: 4px;
-}
-.view-toggle-btn {
-  flex: 1;
-  border: none;
-  background: none;
-  border-radius: 9px;
-  padding: 12px;
-  font-family: inherit;
-  font-size: var(--fs-note);
-  font-weight: 600;
-  cursor: pointer;
-  color: #fff;
-  transition: background .18s, color .18s;
-  -webkit-tap-highlight-color: transparent;
-}
-.view-toggle-btn.active {
-  background: #fff;
-  color: #c2185b; /* bleibt auf Weiss, auch im Dunkelmodus */
-  box-shadow: var(--shadow-raised);
-}
-
 /* ── HEADER MENU ICON ── */
 /* Doppelter Klassen-Selektor, damit .icon-btn (weiter unten) den transparenten Hintergrund nicht überschreibt */
 .icon-btn.menu-toggle-btn {
@@ -293,9 +261,9 @@ button {
 @media (min-width: 768px) {
   /* ≥768px: Oberkante des Zahnrads auf Höhe der Oberkante des Topbar-Inhalts (= oberer Innenabstand 30px von .topbar/.settings-topbar) */
   .icon-btn.menu-toggle-btn {
-      top: 30px;
-      transform: none;
-    }
+    top: 30px;
+    transform: none;
+  }
 }
 
 /* ── APP MENU OVERLAY ── */
@@ -311,7 +279,7 @@ button {
   opacity: 0;
   transition: opacity .25s ease;
 }
-/* .open = im Layout vorhanden, .show = sichtbar (beides setzt toggleAppMenu() in script.js, damit auch das Schliessen animiert wird) */
+/* .open = im Layout vorhanden, .show = sichtbar (beides setzt toggleAppMenu() in main.js, damit auch das Schliessen animiert wird) */
 .app-menu-overlay.open {
   display: flex;
   align-items: flex-end; /* Menü klebt am unteren Bildschirmrand */
@@ -357,75 +325,24 @@ button {
   font-size: var(--fs-xl);
   color: var(--text);
 }
-.app-menu-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  overflow-y: auto;
-}
-.app-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  border-radius: var(--radius);
-  background: var(--bg);
-  transition: background .15s;
-}
-.app-menu-item:active {
-  background: var(--primary-light);
-}
-.app-menu-item.active {
-  background: var(--primary-light);
-}
-.app-menu-item-icon {
-  font-size: 1.5rem;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.app-menu-item-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.app-menu-item-title {
-  font-weight: 600;
-  font-size: var(--fs-body);
-  color: var(--text);
-}
-.app-menu-item-sub {
-  font-size: var(--fs-note);
-  color: var(--muted);
-}
 @media (min-width: 768px) {
-
-  .app-menu-list {
-      grid-template-columns: repeat(2, 1fr);
-      align-content: start;
-    }
   /* Desktop: Einstellungen als Seitenpanel rechts, volle Höhe, 80% Breite */
   .app-menu-overlay.open {
-      align-items: stretch;
-      justify-content: flex-end;
-    }
+    align-items: stretch;
+    justify-content: flex-end;
+  }
   .app-menu-panel {
-      width: 65%;
-      height: 100%;
-      height: 100dvh;
-      border-radius: var(--radius-card) 0 0 var(--radius-card);
-    }
+    width: 65%;
+    height: 100%;
+    height: 100dvh;
+    border-radius: var(--radius-card) 0 0 var(--radius-card);
+  }
   .app-menu-overlay .app-menu-panel {
-      transform: translateX(100%);
-    }
+    transform: translateX(100%);
+  }
   .app-menu-overlay.show .app-menu-panel {
-      transform: translateX(0);
-    }
+    transform: translateX(0);
+  }
 }
 
 /* ── APP MENU SETTINGS FRAME ── */
@@ -505,8 +422,8 @@ button {
 .icon-btn:active {
   background: var(--primary-light);
 }
-/* Stift beim Budget in den Einstellungen */
-.page-settings .icon-btn:not(.menu-toggle-btn) {
+/* Einstellungen: Schliessen-Knopf im Menü-Fenster gedämpft */
+.page-settings .icon-btn.app-menu-close-btn {
   color: var(--muted);
 }
 
@@ -637,6 +554,11 @@ button {
   font-weight: 500;
   vertical-align: middle;
 }
+/* «nur Konto»: zählt nicht ins Budget, darum in der Farbe der Überweisungen */
+.tx-acconly-tag {
+  background: var(--surface);
+  color: var(--transfer-text);
+}
 .tx-note {
   font-size: var(--fs-note);
   color: var(--muted);
@@ -733,6 +655,7 @@ button {
   background: var(--ink);
   color: #fff;
   box-shadow: var(--shadow-float);
+  overflow: hidden;
   pointer-events: auto;
   /* Ausgeblendet: oberhalb des eigenen Platzes. Ausfliegen nach oben, beschleunigt */
   visibility: hidden;
@@ -821,9 +744,6 @@ button {
   outline-color: #fff;
 }
 /* Zeitbalken unten in der Meldung: läuft von voll nach leer, solange "Rückgängig" möglich ist */
-.toast {
-  overflow: hidden;
-}
 .toast-timer {
   position: absolute;
   left: 0;
@@ -879,8 +799,7 @@ button {
   letter-spacing: .03em;
 }
 
-/* ── SETTINGS PAGE */
-/* toggle switch */
+/* ── SCHALTER (Ein/Aus in Fenstern, z.B. «Im Gesamtguthaben anzeigen») */
 .toggle-row {
   display: flex;
   align-items: center;
@@ -1220,111 +1139,95 @@ button {
 /* ── BREAKPOINT ≥480px */
 @media (min-width:480px) {
   .topbar {
-      padding: 48px var(--sp-xl) var(--sp-xl);
-    }
+    padding: 48px var(--sp-xl) var(--sp-xl);
+  }
   .settings-topbar {
-      padding: 48px var(--sp-xl) var(--sp-lg);
-    }
+    padding: 48px var(--sp-xl) var(--sp-lg);
+  }
   .main,
-    .settings-main {
-      padding: var(--sp-lg) var(--sp-xl) var(--sp-xl);
-    }
+  .settings-main {
+    padding: var(--sp-lg) var(--sp-xl) var(--sp-xl);
+  }
   .settings-title {
-      font-size: var(--fs-2xl);
-    }
+    font-size: var(--fs-2xl);
+  }
   .form-row {
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
 }
 
 /* ── BREAKPOINT ≥768px */
 @media (min-width:768px) {
   .app-shell {
-      width: 100%;
-      margin: 0 auto;
-      box-shadow: 0 0 0 1px var(--primary-light);
-      border-radius: 0 0 var(--radius-card) var(--radius-card);
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-template-rows: auto 1fr;
-      column-gap: 12px;
-    }
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 0 0 1px var(--primary-light);
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 12px;
+  }
   .topbar,
-    .settings-topbar {
-      grid-column: 1/span 8;
-      grid-row: 1;
-      padding: 32px 32px 20px;
-    }
+  .settings-topbar {
+    grid-column: 1/span 8;
+    grid-row: 1;
+    padding: 32px 32px 20px;
+  }
   .main,
-    .settings-main,
-    .calendar-main {
-      grid-column: 1/span 8;
-      grid-row: 2;
-      padding: 24px 20px 52px;
-    }
+  .settings-main,
+  .calendar-main {
+    grid-column: 1/span 8;
+    grid-row: 2;
+    padding: 24px 20px 52px;
+  }
   .bottom-nav {
-      width: 100%;
-      left: 50%;
-      right: auto;
-      transform: translateX(-50%);
-      border-radius: 0 0 var(--radius-card) var(--radius-card);
-      overflow: hidden;
-    }
+    width: 100%;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    overflow: hidden;
+  }
   .main {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      grid-template-rows: repeat(17, auto);
-      gap: 12px;
-      align-items: stretch;
-    }
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(17, auto);
+    gap: 12px;
+    align-items: stretch;
+  }
   .transactions-section {
-      grid-column: 1/span 4;
-      grid-row: 4/span 3;
-    }
+    grid-column: 1/span 4;
+    grid-row: 4/span 3;
+  }
   .card {
-      padding: var(--sp-lg);
-      height: 100%;
-    }
+    padding: var(--sp-lg);
+    height: 100%;
+  }
 
 }
 
-/* ── BREAKPOINT ≥1024px */
+/* ── BREAKPOINT ≥1024px (Seitenleiste und Vollbild: siehe «COMPUTER» weiter unten) */
 @media (min-width:1024px) {
   body {
-      background: var(--surface);
-    }
+    background: var(--surface);
+  }
   .app-shell {
-      width: 100%;
-      margin: auto 0;
-      border-radius: var(--radius-card);
-      min-height: calc(100vh - 64px);
-      box-shadow: 0 0 0 1px var(--primary-light);
-      overflow: hidden;
-    }
-  .topbar,
-    .settings-topbar {
-      border-radius: 0;
-    }
-  .bottom-nav {
-      width: 100%;
-      border-radius: 0;
-    }
+    overflow: hidden;
+  }
   .main,
-    .settings-main {
-      padding: 24px 36px 40px;
-    }
-  .nav-label {
-      font-size: var(--fs-note);
-    }
+  .settings-main {
+    padding: 24px 36px 40px;
+  }
   .nav-icon {
-      font-size: 1.35rem;
-    }
+    font-size: 1.35rem;
+  }
   .modal {
-      max-width: 640px;
-      padding: 28px 32px 44px;
-    }
+    max-width: 640px;
+    padding: 28px 32px 44px;
+  }
 }
 
 /* ── CALENDAR */
@@ -1366,32 +1269,32 @@ button {
 }
 @media (min-width:768px) {
   #calendarView.calendar-main {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 12px;
-      padding: 24px 20px 52px;
-      align-content: start;
-    }
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+    padding: 24px 20px 52px;
+    align-content: start;
+  }
   #calendarView.calendar-main .calendar-nav {
-      grid-column: 1/-1;
-      grid-row: 1;
-    }
+    grid-column: 1/-1;
+    grid-row: 1;
+  }
   .cal-month-label, .cal-month-label-2 {
-      flex: 1;
-      text-align: center;
-    }
+    flex: 1;
+    text-align: center;
+  }
 
 }
 
 /* ── SAFE AREA */
 @supports (padding-bottom:env(safe-area-inset-bottom)) {
   :root {
-      --nav-h: calc(64px + env(safe-area-inset-bottom));
-    }
+    --nav-h: calc(64px + env(safe-area-inset-bottom));
+  }
   .bottom-nav {
-      height: var(--nav-h);
-    }
+    height: var(--nav-h);
+  }
 }
 
 /* ── BEWEGUNG REDUZIEREN: Mikroanimationen aus, wenn im System so eingestellt */
@@ -1579,9 +1482,6 @@ button {
 
 /* ── HOVER: nur auf Geräten mit Maus/Trackpad (auf dem iPad bleibt sonst ein angetipptes Element "gehovert") */
 @media (hover: hover) {
-  .app-menu-item:hover {
-    background: var(--primary-light);
-  }
   .icon-btn:hover {
     background: var(--primary-light);
   }
@@ -1605,7 +1505,7 @@ button {
   }
 }
 
-/* ── COMPUTER (≥1024px): Navigation links statt unten, Inhalt mit fester Breite
+/* ── COMPUTER (≥1024px): Navigation links statt unten, Inhalt über die ganze Breite.
    Die untere Leiste wird zur Seitenleiste mit Logo; "Eintrag hinzufügen" sitzt darin.
    Im eingebetteten Einstellungs-Fenster (embed-mode) bleibt alles wie bisher. */
 @media (min-width: 1024px) {
@@ -1723,7 +1623,7 @@ button {
 
 /* ── WECHSEL HELL / DUNKEL: alle Farben gleiten kurz über (theme.js setzt die Klasse 650 ms) */
 html.theme-anim,
-html.theme-anim *:not(.theme-switch *),
+html.theme-anim *,
 html.theme-anim *::before,
 html.theme-anim *::after {
   transition: background-color .5s ease, color .5s ease, border-color .5s ease, fill .5s ease, stroke .5s ease, box-shadow .5s ease !important;
